@@ -774,7 +774,7 @@ export default function BrickGrid({
       )}
 
       <div ref={containerRef}
-        className="w-full h-full overflow-auto flex items-center justify-center relative workspace-dots"
+        className="w-full h-full overflow-hidden flex items-center justify-center relative workspace-dots"
         style={{ background: workspaceBg ?? DEFAULT_WORKSPACE_BG, cursor: isPanning ? "grabbing" : "default", touchAction: "none" }}
         onWheel={handleWheel}
         onMouseDown={handleContainerMouseDown}
