@@ -19,6 +19,7 @@ export default function BrickEditor() {
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showPiecesDialog, setShowPiecesDialog] = useState(false);
   const [showExportPngDialog, setShowExportPngDialog] = useState(false);
+  const [showRemoveImageDialog, setShowRemoveImageDialog] = useState(false);
   const clearPipetteColor = useCallback(() => setPipetteColor(null), []);
   const openWelcomeDialog = useCallback(() => setShowWelcomeDialog(true), []);
   const closeWelcomeDialog = useCallback(() => setShowWelcomeDialog(false), []);
@@ -41,6 +42,7 @@ export default function BrickEditor() {
   }, [editor.hasBricks, editor.referenceImage, editor.newProject]);
 
   const openPiecesDialog = useCallback(() => setShowPiecesDialog(true), []);
+  const openRemoveImageDialog = useCallback(() => setShowRemoveImageDialog(true), []);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
