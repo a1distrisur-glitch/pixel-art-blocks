@@ -145,7 +145,7 @@ export default function BrickEditor() {
           onRedo={editor.redo}
           canUndo={editor.canUndo}
           canRedo={editor.canRedo}
-          onSave={editor.saveProject}
+          onSave={() => editor.saveProject()}
           onExport={() => editor.exportAsPng()}
           selectedColor={editor.selectedColor}
           onColorChange={editor.setSelectedColor}
