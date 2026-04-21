@@ -248,6 +248,14 @@ export default function BrickEditor() {
           projectName={editor.projectName}
           onOpenWelcome={openWelcomeDialog}
           topActions={topActions}
+          hasImage={!!editor.referenceImage}
+          imageVisible={editor.imageVisible}
+          imageOpacity={editor.imageOpacity}
+          onImageUpload={editor.handleImageUpload}
+          onRemoveImage={editor.removeImage}
+          onImageVisibleChange={editor.setImageVisible}
+          onImageOpacityChange={editor.setImageOpacity}
+          onImageEditModeChange={editor.setImageEditMode}
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
         <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
