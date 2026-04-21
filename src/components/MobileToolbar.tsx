@@ -101,8 +101,7 @@ export default function MobileToolbar({
 
         <TopBtn label="Deshacer" onClick={onUndo} disabled={!canUndo}><Undo2 size={18} /></TopBtn>
         <TopBtn label="Rehacer" onClick={onRedo} disabled={!canRedo}><Redo2 size={18} /></TopBtn>
-        <TopBtn label="Guardar proyecto" onClick={onSave}><Save size={18} /></TopBtn>
-        <TopBtn label="Exportar PNG" onClick={onExport}><Download size={18} /></TopBtn>
+        {topActions}
       </header>
 
       {/* Spacer so canvas doesn't sit under the top bar */}
