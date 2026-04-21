@@ -1,10 +1,11 @@
 import { ReactNode, useState } from "react";
 import {
   Undo2, Redo2, Menu, Eraser, Move, Type,
-  Shapes, Pipette, Paintbrush, Palette,
+  Shapes, Pipette, Paintbrush,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import type { EditorTool, BrickColor } from "@/hooks/useBrickEditor";
+import ColorPickerButton from "@/components/ColorPickerButton";
 
 interface MobileToolbarProps {
   tool: EditorTool;
@@ -16,6 +17,7 @@ interface MobileToolbarProps {
   selectedColor: string;
   onColorChange: (hex: string) => void;
   colors: BrickColor[];
+  onAddColor: (name: string, value: string) => void;
   fullToolbar: ReactNode;
   imageEditMode: boolean;
   projectName: string;
