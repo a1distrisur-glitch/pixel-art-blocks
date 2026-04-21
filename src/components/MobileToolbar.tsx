@@ -2,10 +2,13 @@ import { ReactNode, useState } from "react";
 import {
   Undo2, Redo2, Menu, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
+  MousePointer2, Bold, Italic, X,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { EditorTool, BrickColor, BrickSize, BrickOrientation } from "@/hooks/useBrickEditor";
+import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, ShapeType, ShapeFillMode } from "@/hooks/useBrickEditor";
+import { SHAPE_LIST } from "@/lib/shapeRasterizer";
+import ShapeIcon from "@/components/ShapeIcon";
 import ColorPickerButton from "@/components/ColorPickerButton";
 
 interface MobileToolbarProps {
@@ -23,6 +26,24 @@ interface MobileToolbarProps {
   onSizeChange: (s: BrickSize) => void;
   orientation: BrickOrientation;
   onOrientationChange: (o: BrickOrientation) => void;
+  // Shape props
+  shapeType: ShapeType;
+  onShapeTypeChange: (s: ShapeType) => void;
+  shapeFillMode: ShapeFillMode;
+  onShapeFillModeChange: (m: ShapeFillMode) => void;
+  // Text props
+  pixelText: string;
+  onPixelTextChange: (v: string) => void;
+  textFontSize: number;
+  onTextFontSizeChange: (v: number) => void;
+  textFontFamily: string;
+  onTextFontFamilyChange: (v: string) => void;
+  textBold: boolean;
+  onTextBoldChange: (v: boolean) => void;
+  textItalic: boolean;
+  onTextItalicChange: (v: boolean) => void;
+  textOverlays: TextOverlay[];
+  onRemoveTextOverlay: (id: string) => void;
   fullToolbar: ReactNode;
   imageEditMode: boolean;
   projectName: string;
@@ -69,8 +90,8 @@ function BottomTool({
 }
 
 function PopBtn({
-  active, disabled, onClick, label, children,
-}: { active?: boolean; disabled?: boolean; onClick: () => void; label: string; children: ReactNode }) {
+  active, disabled, onClick, label, children, className,
+}: { active?: boolean; disabled?: boolean; onClick: () => void; label: string; children: ReactNode; className?: string }) {
   return (
     <button
       type="button"
@@ -82,21 +103,32 @@ function PopBtn({
         active
           ? "bg-primary text-primary-foreground"
           : "bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover"
-      }`}
+      } ${className ?? ""}`}
     >
       {children}
     </button>
   );
 }
 
+const inputCls = "w-full h-8 px-2 rounded-md bg-toolbar-section border border-toolbar-border text-xs text-toolbar-foreground placeholder:text-toolbar-muted focus:outline-none focus:ring-1 focus:ring-primary";
+
 export default function MobileToolbar({
   tool, onToolChange, onUndo, onRedo, canUndo, canRedo,
   selectedColor, onColorChange, colors, onAddColor,
   selectedSize, onSizeChange, orientation, onOrientationChange,
+  shapeType, onShapeTypeChange, shapeFillMode, onShapeFillModeChange,
+  pixelText, onPixelTextChange,
+  textFontSize, onTextFontSizeChange,
+  textFontFamily, onTextFontFamilyChange,
+  textBold, onTextBoldChange,
+  textItalic, onTextItalicChange,
+  textOverlays, onRemoveTextOverlay,
   fullToolbar, imageEditMode, projectName, onOpenWelcome, topActions,
 }: MobileToolbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [paintOpen, setPaintOpen] = useState(false);
+  const [shapeOpen, setShapeOpen] = useState(false);
+  const [textOpen, setTextOpen] = useState(false);
 
   const guarded = (next: EditorTool) => () => {
     if (imageEditMode) return; // mirror desktop behavior; user can fix image from More menu
@@ -165,6 +197,7 @@ export default function MobileToolbar({
 
       {/* Bottom tools bar */}
       <nav className="fixed bottom-0 inset-x-0 z-30 flex items-stretch gap-0.5 px-1.5 pt-1 pb-[max(env(safe-area-inset-bottom),6px)] bg-toolbar border-t border-toolbar-border toolbar-shadow">
+        {/* Pintar */}
         <Popover open={paintOpen} onOpenChange={setPaintOpen}>
           <PopoverTrigger asChild>
             <button
@@ -217,18 +250,167 @@ export default function MobileToolbar({
             </div>
           </PopoverContent>
         </Popover>
+
         <BottomTool active={tool === "erase"} danger onClick={guarded("erase")} label="Borrar">
           <Eraser size={18} />
         </BottomTool>
         <BottomTool active={tool === "move"} onClick={guarded("move")} label="Mover">
           <Move size={18} />
         </BottomTool>
-        <BottomTool active={tool === "shape"} onClick={guarded("shape")} label="Formas">
-          <Shapes size={18} />
-        </BottomTool>
-        <BottomTool active={tool === "text"} onClick={guarded("text")} label="Texto">
-          <Type size={18} />
-        </BottomTool>
+
+        {/* Formas */}
+        <Popover open={shapeOpen} onOpenChange={setShapeOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-label="Formas"
+              title="Formas"
+              className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
+                tool === "shape"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-toolbar-foreground hover:bg-toolbar-hover"
+              }`}
+            >
+              <Shapes size={18} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            side="top"
+            align="center"
+            sideOffset={8}
+            className="w-[280px] p-2.5 bg-toolbar border-toolbar-border space-y-2"
+          >
+            <div>
+              <p className="text-[10px] text-toolbar-foreground mb-1">Forma</p>
+              <div className="grid grid-cols-4 gap-1">
+                {SHAPE_LIST.map((s) => (
+                  <button
+                    key={s.type}
+                    type="button"
+                    aria-label={s.label}
+                    title={s.label}
+                    onClick={() => onShapeTypeChange(s.type)}
+                    className={`flex items-center justify-center w-full h-8 rounded-md text-xs transition-all ${
+                      shapeType === s.type
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover"
+                    }`}
+                  >
+                    <ShapeIcon type={s.type} size={14} />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] text-toolbar-foreground mb-1">Relleno</p>
+              <div className="flex gap-1">
+                <PopBtn active={shapeFillMode === "outline"} onClick={() => onShapeFillModeChange("outline")} label="Contorno">
+                  Contorno
+                </PopBtn>
+                <PopBtn active={shapeFillMode === "fill"} onClick={() => onShapeFillModeChange("fill")} label="Relleno">
+                  Relleno
+                </PopBtn>
+              </div>
+            </div>
+            <p className="text-[9px] text-toolbar-foreground/70 flex items-center gap-1">
+              <MousePointer2 size={9} /> Arrastra en la grilla para dibujar
+            </p>
+          </PopoverContent>
+        </Popover>
+
+        {/* Texto */}
+        <Popover open={textOpen} onOpenChange={setTextOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-label="Texto"
+              title="Texto"
+              className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
+                tool === "text"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-toolbar-foreground hover:bg-toolbar-hover"
+              }`}
+            >
+              <Type size={18} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            side="top"
+            align="center"
+            sideOffset={8}
+            className="w-[280px] p-2.5 bg-toolbar border-toolbar-border space-y-2"
+          >
+            <input
+              type="text"
+              value={pixelText}
+              onChange={(e) => onPixelTextChange(e.target.value)}
+              placeholder="Escribe tu texto…"
+              className={inputCls}
+            />
+            <div className="flex gap-2">
+              <label className="flex-1">
+                <span className="text-[10px] text-toolbar-foreground">Tamaño</span>
+                <input
+                  type="number"
+                  min={8}
+                  max={120}
+                  value={textFontSize}
+                  onChange={(e) => onTextFontSizeChange(parseInt(e.target.value) || 16)}
+                  className={`${inputCls} mt-0.5`}
+                />
+              </label>
+              <label className="flex-1">
+                <span className="text-[10px] text-toolbar-foreground">Fuente</span>
+                <select
+                  value={textFontFamily}
+                  onChange={(e) => onTextFontFamilyChange(e.target.value)}
+                  className={`${inputCls} mt-0.5`}
+                >
+                  <option value="Arial">Arial</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                  <option value="Courier New">Courier New</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Verdana">Verdana</option>
+                  <option value="Impact">Impact</option>
+                  <option value="Comic Sans MS">Comic Sans MS</option>
+                </select>
+              </label>
+            </div>
+            <div className="flex gap-1">
+              <PopBtn active={textBold} onClick={() => onTextBoldChange(!textBold)} label="Negrita" className="!flex-none !w-10">
+                <Bold size={14} />
+              </PopBtn>
+              <PopBtn active={textItalic} onClick={() => onTextItalicChange(!textItalic)} label="Cursiva" className="!flex-none !w-10">
+                <Italic size={14} />
+              </PopBtn>
+            </div>
+            <p className="text-[9px] text-toolbar-foreground/70 flex items-center gap-1">
+              <MousePointer2 size={9} /> Clic en la grilla para colocar
+            </p>
+            {textOverlays && textOverlays.length > 0 && (
+              <div className="pt-1 border-t border-toolbar-border">
+                <p className="text-[10px] text-toolbar-foreground mb-1">Textos ({textOverlays.length})</p>
+                <div className="space-y-0.5 max-h-32 overflow-y-auto toolbar-scroll">
+                  {textOverlays.map((t) => (
+                    <div key={t.id} className="flex items-center gap-1 text-[10px] text-toolbar-foreground bg-toolbar-section rounded-md px-2 py-1">
+                      <Type size={9} className="opacity-40 shrink-0" />
+                      <span className="flex-1 truncate">{t.text}</span>
+                      <button
+                        type="button"
+                        aria-label="Eliminar texto"
+                        onClick={() => onRemoveTextOverlay(t.id)}
+                        className="text-destructive hover:text-destructive/80 p-0.5 rounded"
+                      >
+                        <X size={10} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
+
         <BottomTool active={tool === "pipette"} onClick={guarded("pipette")} label="Pipeta">
           <Pipette size={18} />
         </BottomTool>
