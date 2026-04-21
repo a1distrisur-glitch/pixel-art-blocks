@@ -1,5 +1,7 @@
 import { FolderOpen, Trash2, FilePlus2, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ColorPickerButton from "@/components/ColorPickerButton";
+import type { BrickColor } from "@/hooks/useBrickEditor";
 
 interface TopActionsProps {
   hasBricks: boolean;
@@ -9,6 +11,10 @@ interface TopActionsProps {
   onSaveProject: () => void;
   onExportPieces: () => void;
   onOpenWelcome: () => void;
+  selectedColor: string;
+  colors: BrickColor[];
+  onColorChange: (hex: string) => void;
+  onAddColor: (name: string, value: string) => void;
   /** Visual variant: "floating" for desktop overlay, "inline" for top bars */
   variant?: "floating" | "inline";
   className?: string;
@@ -54,6 +60,10 @@ export default function TopActions({
   onSaveProject,
   onExportPieces,
   onOpenWelcome,
+  selectedColor,
+  colors,
+  onColorChange,
+  onAddColor,
   variant = "floating",
   className,
 }: TopActionsProps) {
@@ -74,6 +84,17 @@ export default function TopActions({
         >
           <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md object-cover" />
         </button>
+      )}
+      {variant === "floating" && (
+        <ColorPickerButton
+          selectedColor={selectedColor}
+          colors={colors}
+          onColorChange={onColorChange}
+          onAddColor={onAddColor}
+          swatchSize={28}
+          align="end"
+          side="bottom"
+        />
       )}
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />

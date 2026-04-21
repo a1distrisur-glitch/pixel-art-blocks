@@ -187,6 +187,10 @@ export default function BrickEditor() {
       onSaveProject={handleTopSave}
       onExportPieces={handleTopExport}
       onOpenWelcome={openWelcomeDialog}
+      selectedColor={editor.selectedColor}
+      colors={editor.colors}
+      onColorChange={editor.setSelectedColor}
+      onAddColor={editor.addColor}
       variant={isCompact ? "inline" : "floating"}
     />
   );
@@ -204,6 +208,7 @@ export default function BrickEditor() {
           selectedColor={editor.selectedColor}
           onColorChange={editor.setSelectedColor}
           colors={editor.colors}
+          onAddColor={editor.addColor}
           fullToolbar={toolbarEl}
           imageEditMode={editor.imageEditMode}
           projectName={editor.projectName}
