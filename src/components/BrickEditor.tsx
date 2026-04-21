@@ -174,6 +174,18 @@ export default function BrickEditor() {
     />
   );
 
+  const topActions = (
+    <TopActions
+      hasBricks={editor.hasBricks}
+      hasImage={!!editor.referenceImage}
+      onLoadProject={handleTopLoad}
+      onClear={handleTopClear}
+      onSaveProject={handleTopSave}
+      onExportPieces={handleTopExport}
+      variant={isCompact ? "inline" : "floating"}
+    />
+  );
+
   if (isCompact) {
     return (
       <div className="flex flex-col h-screen w-screen overflow-hidden">
@@ -184,14 +196,13 @@ export default function BrickEditor() {
           onRedo={editor.redo}
           canUndo={editor.canUndo}
           canRedo={editor.canRedo}
-          onSave={() => editor.saveProject()}
-          onExport={() => editor.exportAsPng()}
           selectedColor={editor.selectedColor}
           onColorChange={editor.setSelectedColor}
           colors={editor.colors}
           fullToolbar={toolbarEl}
           imageEditMode={editor.imageEditMode}
           projectName={editor.projectName}
+          topActions={topActions}
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
       </div>
@@ -201,7 +212,10 @@ export default function BrickEditor() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {toolbarEl}
-      {grid}
+      <div className="flex-1 min-w-0 relative">
+        {grid}
+        {topActions}
+      </div>
     </div>
   );
 }
