@@ -26,11 +26,10 @@ export default function BrickEditor() {
   }, [editor.hasBricks, editor.referenceImage, editor.loadProject]);
 
   const handleTopClear = useCallback(() => {
-    if (!editor.hasBricks && !editor.referenceImage) return;
     const ok = window.confirm("¿Eliminar todo el contenido del lienzo?");
     if (!ok) return;
     editor.clearAll();
-  }, [editor.hasBricks, editor.referenceImage, editor.clearAll]);
+  }, [editor.clearAll]);
 
   const handleTopSave = useCallback(() => {
     let name = editor.projectName?.trim() ?? "";
