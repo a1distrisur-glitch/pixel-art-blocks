@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import ReferenceImageControls from "@/components/ReferenceImageControls";
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
