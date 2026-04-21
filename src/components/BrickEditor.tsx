@@ -154,7 +154,7 @@ export default function BrickEditor() {
           imageEditMode={editor.imageEditMode}
           projectName={editor.projectName}
       />
-        <main className="flex-1 min-h-0 min-w-0 pb-14">{grid}</main>
+        <main className="flex-1 min-h-0 min-w-0 bg-workspace">{grid}</main>
       </div>
     );
   }
