@@ -42,6 +42,7 @@ interface BrickGridProps {
   shapeOverlays: ShapeOverlay[];
   onUpdateShapeOverlay: (id: string, updates: Partial<ShapeOverlay>) => void;
   onRemoveShapeOverlay: (id: string) => void;
+  onUndo?: () => void;
 }
 
 const CELL_SIZE = 28;
