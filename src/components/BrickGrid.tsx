@@ -199,6 +199,148 @@ export default function BrickGrid({
     }
   }, [pan]);
 
+  // ───── Touch gestures: pinch-zoom, two-finger pan, long-press erase, two-finger tap undo ─────
+  const touchStateRef = useRef<{
+    mode: "none" | "single" | "multi";
+    startDist: number;
+    startZoom: number;
+    startMid: { x: number; y: number };
+    startPan: { x: number; y: number };
+    startTime: number;
+    moved: boolean;
+    longPressTimer: number | null;
+    longPressTarget: { row: number; col: number } | null;
+    initialTouchClient: { x: number; y: number } | null;
+  }>({
+    mode: "none",
+    startDist: 0,
+    startZoom: 1,
+    startMid: { x: 0, y: 0 },
+    startPan: { x: 0, y: 0 },
+    startTime: 0,
+    moved: false,
+    longPressTimer: null,
+    longPressTarget: null,
+    initialTouchClient: null,
+  });
+
+  const distance = (a: Touch, b: Touch) =>
+    Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  const midpoint = (a: Touch, b: Touch) => ({
+    x: (a.clientX + b.clientX) / 2,
+    y: (a.clientY + b.clientY) / 2,
+  });
+
+  const cancelLongPress = useCallback(() => {
+    if (touchStateRef.current.longPressTimer !== null) {
+      window.clearTimeout(touchStateRef.current.longPressTimer);
+      touchStateRef.current.longPressTimer = null;
+      touchStateRef.current.longPressTarget = null;
+    }
+  }, []);
+
+  const cellFromClientPoint = useCallback((clientX: number, clientY: number) => {
+    if (!containerRef.current) return null;
+    // Find the inner grid <svg> via the actual element under the touch
+    const el = document.elementFromPoint(clientX, clientY) as HTMLElement | null;
+    if (!el) return null;
+    const svg = el.closest("svg");
+    if (!svg) return null;
+    const svgRect = svg.getBoundingClientRect();
+    const localX = clientX - svgRect.left;
+    const localY = clientY - svgRect.top;
+    // svg renders gridW × gridH at scale `zoom`
+    const cellPx = CELL_SIZE * zoom;
+    const col = Math.floor(localX / cellPx);
+    const row = Math.floor(localY / cellPx);
+    if (row < 0 || col < 0 || row >= height || col >= width) return null;
+    return { row, col };
+  }, [zoom, height, width]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches;
+    if (t.length === 2) {
+      cancelLongPress();
+      touchStateRef.current.mode = "multi";
+      touchStateRef.current.startDist = distance(t[0], t[1]);
+      touchStateRef.current.startZoom = zoom;
+      touchStateRef.current.startMid = midpoint(t[0], t[1]);
+      touchStateRef.current.startPan = { x: pan.x, y: pan.y };
+      touchStateRef.current.startTime = performance.now();
+      touchStateRef.current.moved = false;
+      userZoomedRef.current = true;
+    } else if (t.length === 1) {
+      touchStateRef.current.mode = "single";
+      touchStateRef.current.startTime = performance.now();
+      touchStateRef.current.moved = false;
+      touchStateRef.current.initialTouchClient = { x: t[0].clientX, y: t[0].clientY };
+      // Long-press to erase: only when not in image edit mode and not already erasing
+      const target = cellFromClientPoint(t[0].clientX, t[0].clientY);
+      if (target && !imageEditMode) {
+        const occupant = getCellOccupant(target.row, target.col);
+        if (occupant) {
+          touchStateRef.current.longPressTarget = target;
+          touchStateRef.current.longPressTimer = window.setTimeout(() => {
+            // Trigger erase: temporarily switch tool, place, restore
+            const prevTool = tool;
+            onToolChange("erase");
+            // Use a microtask to ensure onCellClick reads latest tool
+            setTimeout(() => {
+              onCellClick(target.row, target.col);
+              onToolChange(prevTool);
+            }, 0);
+            touchStateRef.current.longPressTimer = null;
+          }, 500);
+        }
+      }
+    }
+  }, [zoom, pan, cancelLongPress, cellFromClientPoint, imageEditMode, getCellOccupant, tool, onToolChange, onCellClick]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const t = e.touches;
+    if (touchStateRef.current.mode === "multi" && t.length === 2) {
+      e.preventDefault();
+      touchStateRef.current.moved = true;
+      const dist = distance(t[0], t[1]);
+      const mid = midpoint(t[0], t[1]);
+      const scaleFactor = dist / Math.max(1, touchStateRef.current.startDist);
+      const newZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, touchStateRef.current.startZoom * scaleFactor));
+      setZoom(newZoom);
+      // Two-finger pan: translate by mid delta
+      const dx = mid.x - touchStateRef.current.startMid.x;
+      const dy = mid.y - touchStateRef.current.startMid.y;
+      setPan({
+        x: touchStateRef.current.startPan.x + dx,
+        y: touchStateRef.current.startPan.y + dy,
+      });
+    } else if (touchStateRef.current.mode === "single" && t.length === 1) {
+      const start = touchStateRef.current.initialTouchClient;
+      if (start) {
+        const moved = Math.hypot(t[0].clientX - start.x, t[0].clientY - start.y) > 8;
+        if (moved) {
+          touchStateRef.current.moved = true;
+          cancelLongPress();
+        }
+      }
+    }
+  }, [cancelLongPress]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const elapsed = performance.now() - touchStateRef.current.startTime;
+    if (touchStateRef.current.mode === "multi") {
+      // Two-finger tap (no movement, quick) → undo
+      if (!touchStateRef.current.moved && elapsed < 250 && onUndo) {
+        onUndo();
+      }
+    }
+    cancelLongPress();
+    if (e.touches.length === 0) {
+      touchStateRef.current.mode = "none";
+      touchStateRef.current.initialTouchClient = null;
+    }
+  }, [cancelLongPress, onUndo]);
+  // ──────────────────────────────────────────────────────────────────────────────
+
   const handleContainerMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isPanning) return;
     setPan({
