@@ -179,6 +179,19 @@ export default function ProjectActionDialogs({
         </div>
       )}
 
+      {showRemoveImageDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm">
+          <div className={panelClass} role="dialog" aria-modal="true" aria-labelledby="remove-image-dialog-title">
+            <h3 id="remove-image-dialog-title" className={titleClass}>¿Eliminar imagen de referencia?</h3>
+            <p className={descriptionClass}>Se eliminará la imagen de referencia del lienzo.</p>
+            <div className="flex gap-2 justify-end">
+              <button type="button" onClick={() => onRemoveImageDialogChange(false)} className={secondaryBtn}>Cancelar</button>
+              <button type="button" onClick={() => { onRemoveImageDialogChange(false); onRemoveImage(); }} className={dangerBtn}>Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showProjectNamePrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm">
           <div className={panelClass} role="dialog" aria-modal="true" aria-labelledby="project-name-dialog-title">
