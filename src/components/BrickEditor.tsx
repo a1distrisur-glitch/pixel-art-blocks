@@ -3,11 +3,14 @@ import { useEffect, useState, useCallback } from "react";
 import { useBrickEditor } from "@/hooks/useBrickEditor";
 import Toolbar from "@/components/Toolbar";
 import BrickGrid from "@/components/BrickGrid";
+import MobileToolbar from "@/components/MobileToolbar";
+import { useBreakpoint } from "@/hooks/use-breakpoint";
 
 export default function BrickEditor() {
   const editor = useBrickEditor();
   const [pipetteColor, setPipetteColor] = useState<string | null>(null);
   const clearPipetteColor = useCallback(() => setPipetteColor(null), []);
+  const isCompact = useBreakpoint(1024);
   const handleProjectStart = useCallback((name: string) => {
     editor.setProjectName(name);
     editor.setProjectStarted(true);
@@ -27,9 +30,8 @@ export default function BrickEditor() {
     return () => window.removeEventListener("keydown", handler);
   }, [editor.undo, editor.redo]);
 
-  return (
-    <div className="flex h-screen w-screen overflow-hidden">
-      <Toolbar
+  const toolbarEl = (
+    <Toolbar
         selectedColor={editor.selectedColor}
         onColorChange={editor.setSelectedColor}
         selectedSize={editor.selectedSize}
@@ -90,8 +92,11 @@ export default function BrickEditor() {
         projectStarted={editor.projectStarted}
         onProjectStart={handleProjectStart}
         projectName={editor.projectName}
-      />
-      <BrickGrid
+    />
+  );
+
+  const grid = (
+    <BrickGrid
         width={editor.gridWidth}
         height={editor.gridHeight}
         bricks={editor.bricks}
@@ -126,7 +131,38 @@ export default function BrickEditor() {
         shapeOverlays={editor.shapeOverlays}
         onUpdateShapeOverlay={editor.updateShapeOverlay}
         onRemoveShapeOverlay={editor.removeShapeOverlay}
+        onUndo={editor.undo}
+    />
+  );
+
+  if (isCompact) {
+    return (
+      <div className="flex flex-col h-screen w-screen overflow-hidden">
+        <MobileToolbar
+          tool={editor.tool}
+          onToolChange={editor.setTool}
+          onUndo={editor.undo}
+          onRedo={editor.redo}
+          canUndo={editor.canUndo}
+          canRedo={editor.canRedo}
+          onSave={editor.saveProject}
+          onExport={() => editor.exportAsPng()}
+          selectedColor={editor.selectedColor}
+          onColorChange={editor.setSelectedColor}
+          colors={editor.colors}
+          fullToolbar={toolbarEl}
+          imageEditMode={editor.imageEditMode}
+          projectName={editor.projectName}
       />
+        <main className="flex-1 min-h-0 min-w-0 pb-14">{grid}</main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen w-screen overflow-hidden">
+      {toolbarEl}
+      {grid}
     </div>
   );
 }
