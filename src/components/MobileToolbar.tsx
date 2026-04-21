@@ -13,14 +13,13 @@ interface MobileToolbarProps {
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  onSave: () => void;
-  onExport: () => void;
   selectedColor: string;
   onColorChange: (hex: string) => void;
   colors: BrickColor[];
   fullToolbar: ReactNode;
   imageEditMode: boolean;
   projectName: string;
+  topActions?: ReactNode;
 }
 
 function TopBtn({
