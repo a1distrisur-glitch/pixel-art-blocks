@@ -19,6 +19,7 @@ interface MobileToolbarProps {
   fullToolbar: ReactNode;
   imageEditMode: boolean;
   projectName: string;
+  onOpenWelcome: () => void;
   topActions?: ReactNode;
 }
 
@@ -63,7 +64,7 @@ function BottomTool({
 export default function MobileToolbar({
   tool, onToolChange, onUndo, onRedo, canUndo, canRedo,
   selectedColor, onColorChange, colors,
-  fullToolbar, imageEditMode, projectName, topActions,
+  fullToolbar, imageEditMode, projectName, onOpenWelcome, topActions,
 }: MobileToolbarProps) {
   const [colorSheetOpen, setColorSheetOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -94,7 +95,7 @@ export default function MobileToolbar({
 
         <button
           type="button"
-          onClick={() => window.dispatchEvent(new CustomEvent("pixcool:open-welcome"))}
+          onClick={onOpenWelcome}
           className="flex items-center gap-1.5 min-w-0 flex-1 hover:opacity-80 transition-opacity cursor-pointer"
           aria-label="Abrir bienvenida"
         >

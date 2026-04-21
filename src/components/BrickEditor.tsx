@@ -5,12 +5,16 @@ import Toolbar from "@/components/Toolbar";
 import BrickGrid from "@/components/BrickGrid";
 import MobileToolbar from "@/components/MobileToolbar";
 import TopActions from "@/components/TopActions";
+import WelcomeDialog from "@/components/WelcomeDialog";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 
 export default function BrickEditor() {
   const editor = useBrickEditor();
   const [pipetteColor, setPipetteColor] = useState<string | null>(null);
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
   const clearPipetteColor = useCallback(() => setPipetteColor(null), []);
+  const openWelcomeDialog = useCallback(() => setShowWelcomeDialog(true), []);
+  const closeWelcomeDialog = useCallback(() => setShowWelcomeDialog(false), []);
   const isCompact = useBreakpoint(1024);
   const handleProjectStart = useCallback((name: string) => {
     editor.setProjectName(name);
@@ -130,6 +134,7 @@ export default function BrickEditor() {
         projectStarted={editor.projectStarted}
         onProjectStart={handleProjectStart}
         projectName={editor.projectName}
+        onOpenWelcome={openWelcomeDialog}
     />
   );
 
@@ -181,6 +186,7 @@ export default function BrickEditor() {
       onClear={handleTopClear}
       onSaveProject={handleTopSave}
       onExportPieces={handleTopExport}
+      onOpenWelcome={openWelcomeDialog}
       variant={isCompact ? "inline" : "floating"}
     />
   );
@@ -201,9 +207,11 @@ export default function BrickEditor() {
           fullToolbar={toolbarEl}
           imageEditMode={editor.imageEditMode}
           projectName={editor.projectName}
+          onOpenWelcome={openWelcomeDialog}
           topActions={topActions}
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
+        <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
       </div>
     );
   }
@@ -215,6 +223,7 @@ export default function BrickEditor() {
         {grid}
         {topActions}
       </div>
+      <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
     </div>
   );
 }

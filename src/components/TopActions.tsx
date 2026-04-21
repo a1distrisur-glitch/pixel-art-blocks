@@ -8,6 +8,7 @@ interface TopActionsProps {
   onClear: () => void;
   onSaveProject: () => void;
   onExportPieces: () => void;
+  onOpenWelcome: () => void;
   /** Visual variant: "floating" for desktop overlay, "inline" for top bars */
   variant?: "floating" | "inline";
   className?: string;
@@ -52,6 +53,7 @@ export default function TopActions({
   onClear,
   onSaveProject,
   onExportPieces,
+  onOpenWelcome,
   variant = "floating",
   className,
 }: TopActionsProps) {
@@ -67,7 +69,7 @@ export default function TopActions({
           type="button"
           aria-label="Abrir bienvenida"
           title="Abrir bienvenida"
-          onClick={() => window.dispatchEvent(new CustomEvent("pixcool:open-welcome"))}
+          onClick={onOpenWelcome}
           className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-toolbar-hover transition-colors"
         >
           <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md object-cover" />
