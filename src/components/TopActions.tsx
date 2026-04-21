@@ -65,7 +65,7 @@ export default function TopActions({
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
-      <Btn title="Eliminar todo" variant="danger" onClick={onClear} disabled={!hasBricks && !hasImage}>
+      <Btn title="Eliminar todo" variant="danger" onClick={onClear}>
         <Trash2 size={18} />
       </Btn>
       <Btn title="Guardar proyecto" onClick={onSaveProject}>
