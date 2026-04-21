@@ -62,8 +62,8 @@ function BottomTool({
 
 export default function MobileToolbar({
   tool, onToolChange, onUndo, onRedo, canUndo, canRedo,
-  onSave, onExport, selectedColor, onColorChange, colors,
-  fullToolbar, imageEditMode, projectName,
+  selectedColor, onColorChange, colors,
+  fullToolbar, imageEditMode, projectName, topActions,
 }: MobileToolbarProps) {
   const [colorSheetOpen, setColorSheetOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
