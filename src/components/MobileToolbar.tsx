@@ -217,6 +217,48 @@ export default function MobileToolbar({
           align="end"
           side="bottom"
         />
+
+        {/* Imagen de referencia (estilo idéntico a "Cargar" de TopActions) */}
+        <Popover open={refImageOpen} onOpenChange={setRefImageOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-label="Imagen de referencia"
+              title="Imagen de referencia"
+              className={`flex items-center justify-center w-9 h-9 rounded-md transition-colors ${
+                imageEditMode || hasImage
+                  ? "bg-primary/15 text-primary"
+                  : "text-toolbar-foreground hover:bg-toolbar-hover"
+              }`}
+            >
+              <ImageIcon size={18} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            side="bottom"
+            align="end"
+            sideOffset={8}
+            className="w-[280px] p-2.5 bg-toolbar border-toolbar-border"
+          >
+            <p className="text-[10px] text-toolbar-foreground mb-1.5 uppercase tracking-wider">
+              Imagen de referencia
+            </p>
+            <ReferenceImageControls
+              hasImage={hasImage}
+              imageVisible={imageVisible}
+              imageOpacity={imageOpacity}
+              imageEditMode={imageEditMode}
+              onImageUpload={onImageUpload}
+              onRemoveImage={onRemoveImage}
+              onImageVisibleChange={onImageVisibleChange}
+              onImageOpacityChange={onImageOpacityChange}
+              onImageEditModeChange={onImageEditModeChange}
+              variant="compact"
+              onRequestRemove={onRequestRemoveImage}
+            />
+          </PopoverContent>
+        </Popover>
+
         <TopBtn label="Deshacer" onClick={onUndo} disabled={!canUndo}><Undo2 size={18} /></TopBtn>
         <TopBtn label="Rehacer" onClick={onRedo} disabled={!canRedo}><Redo2 size={18} /></TopBtn>
         {topActions}
