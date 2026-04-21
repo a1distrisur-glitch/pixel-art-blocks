@@ -6,12 +6,19 @@ import BrickGrid from "@/components/BrickGrid";
 import MobileToolbar from "@/components/MobileToolbar";
 import TopActions from "@/components/TopActions";
 import WelcomeDialog from "@/components/WelcomeDialog";
+import ProjectActionDialogs from "@/components/ProjectActionDialogs";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 
 export default function BrickEditor() {
   const editor = useBrickEditor();
   const [pipetteColor, setPipetteColor] = useState<string | null>(null);
   const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showConfirmNewDialog, setShowConfirmNewDialog] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showPiecesDialog, setShowPiecesDialog] = useState(false);
+  const [showExportPngDialog, setShowExportPngDialog] = useState(false);
   const clearPipetteColor = useCallback(() => setPipetteColor(null), []);
   const openWelcomeDialog = useCallback(() => setShowWelcomeDialog(true), []);
   const closeWelcomeDialog = useCallback(() => setShowWelcomeDialog(false), []);
@@ -21,42 +28,19 @@ export default function BrickEditor() {
     editor.setProjectStarted(true);
   }, [editor.setProjectName, editor.setProjectStarted]);
 
-  const handleTopLoad = useCallback(() => {
-    if (editor.hasBricks || !!editor.referenceImage) {
-      const ok = window.confirm("¿Cargar otro proyecto? Se perderán los cambios no guardados.");
-      if (!ok) return;
-    }
-    editor.loadProject();
+  const openLoadDialog = useCallback(() => {
+    if (editor.hasBricks || !!editor.referenceImage) setShowLoadDialog(true);
+    else editor.loadProject();
   }, [editor.hasBricks, editor.referenceImage, editor.loadProject]);
 
-  const handleTopClear = useCallback(() => {
-    const ok = window.confirm("¿Eliminar todo el contenido del lienzo?");
-    if (!ok) return;
-    editor.clearAll();
-  }, [editor.clearAll]);
+  const openClearDialog = useCallback(() => setShowClearDialog(true), []);
 
-  const handleTopSave = useCallback(() => {
-    let name = editor.projectName?.trim() ?? "";
-    if (!name) {
-      const input = window.prompt("Nombre del proyecto:", "Mi proyecto");
-      if (!input || !input.trim()) return;
-      name = input.trim();
-      editor.setProjectName(name);
-    }
-    editor.saveProject(name);
-  }, [editor.projectName, editor.saveProject, editor.setProjectName]);
+  const openSaveDialog = useCallback(() => {
+    if (editor.hasBricks || !!editor.referenceImage) setShowSaveDialog(true);
+    else editor.newProject();
+  }, [editor.hasBricks, editor.referenceImage, editor.newProject]);
 
-  const handleTopExport = useCallback(() => {
-    if (!editor.hasBricks) return;
-    let name = editor.projectName?.trim() ?? "";
-    if (!name) {
-      const input = window.prompt("Nombre del proyecto para exportar:", "Mi proyecto");
-      if (!input || !input.trim()) return;
-      name = input.trim();
-      editor.setProjectName(name);
-    }
-    editor.exportPieceList(name);
-  }, [editor.hasBricks, editor.projectName, editor.exportPieceList, editor.setProjectName]);
+  const openPiecesDialog = useCallback(() => setShowPiecesDialog(true), []);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
@@ -135,6 +119,10 @@ export default function BrickEditor() {
         onProjectStart={handleProjectStart}
         projectName={editor.projectName}
         onOpenWelcome={openWelcomeDialog}
+        onRequestLoadProject={openLoadDialog}
+        onRequestClear={openClearDialog}
+        onRequestSaveProject={openSaveDialog}
+        onRequestExportPieces={openPiecesDialog}
     />
   );
 
@@ -182,16 +170,42 @@ export default function BrickEditor() {
     <TopActions
       hasBricks={editor.hasBricks}
       hasImage={!!editor.referenceImage}
-      onLoadProject={handleTopLoad}
-      onClear={handleTopClear}
-      onSaveProject={handleTopSave}
-      onExportPieces={handleTopExport}
+      onLoadProject={openLoadDialog}
+      onClear={openClearDialog}
+      onSaveProject={openSaveDialog}
+      onExportPieces={openPiecesDialog}
       onOpenWelcome={openWelcomeDialog}
       selectedColor={editor.selectedColor}
       colors={editor.colors}
       onColorChange={editor.setSelectedColor}
       onAddColor={editor.addColor}
       variant={isCompact ? "inline" : "floating"}
+    />
+  );
+
+  const projectActionDialogs = (
+    <ProjectActionDialogs
+      showSaveDialog={showSaveDialog}
+      onSaveDialogChange={setShowSaveDialog}
+      showConfirmNewDialog={showConfirmNewDialog}
+      onConfirmNewDialogChange={setShowConfirmNewDialog}
+      showLoadDialog={showLoadDialog}
+      onLoadDialogChange={setShowLoadDialog}
+      showClearDialog={showClearDialog}
+      onClearDialogChange={setShowClearDialog}
+      showPiecesDialog={showPiecesDialog}
+      onPiecesDialogChange={setShowPiecesDialog}
+      showExportPngDialog={showExportPngDialog}
+      onExportPngDialogChange={setShowExportPngDialog}
+      hasImage={!!editor.referenceImage}
+      projectName={editor.projectName}
+      onProjectStart={handleProjectStart}
+      onNewProject={editor.newProject}
+      onLoadProject={editor.loadProject}
+      onClear={editor.clearAll}
+      onSaveProject={editor.saveProject}
+      onExportPieceList={editor.exportPieceList}
+      onExport={editor.exportAsPng}
     />
   );
 
@@ -237,6 +251,7 @@ export default function BrickEditor() {
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
         <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
+        {projectActionDialogs}
       </div>
     );
   }
@@ -249,6 +264,7 @@ export default function BrickEditor() {
         {topActions}
       </div>
       <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
+      {projectActionDialogs}
     </div>
   );
 }
