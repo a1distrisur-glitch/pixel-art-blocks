@@ -119,6 +119,10 @@ export default function BrickEditor() {
         onProjectStart={handleProjectStart}
         projectName={editor.projectName}
         onOpenWelcome={openWelcomeDialog}
+        onRequestLoadProject={openLoadDialog}
+        onRequestClear={openClearDialog}
+        onRequestSaveProject={openSaveDialog}
+        onRequestExportPieces={openPiecesDialog}
     />
   );
 
@@ -166,16 +170,42 @@ export default function BrickEditor() {
     <TopActions
       hasBricks={editor.hasBricks}
       hasImage={!!editor.referenceImage}
-      onLoadProject={handleTopLoad}
-      onClear={handleTopClear}
-      onSaveProject={handleTopSave}
-      onExportPieces={handleTopExport}
+      onLoadProject={openLoadDialog}
+      onClear={openClearDialog}
+      onSaveProject={openSaveDialog}
+      onExportPieces={openPiecesDialog}
       onOpenWelcome={openWelcomeDialog}
       selectedColor={editor.selectedColor}
       colors={editor.colors}
       onColorChange={editor.setSelectedColor}
       onAddColor={editor.addColor}
       variant={isCompact ? "inline" : "floating"}
+    />
+  );
+
+  const projectActionDialogs = (
+    <ProjectActionDialogs
+      showSaveDialog={showSaveDialog}
+      onSaveDialogChange={setShowSaveDialog}
+      showConfirmNewDialog={showConfirmNewDialog}
+      onConfirmNewDialogChange={setShowConfirmNewDialog}
+      showLoadDialog={showLoadDialog}
+      onLoadDialogChange={setShowLoadDialog}
+      showClearDialog={showClearDialog}
+      onClearDialogChange={setShowClearDialog}
+      showPiecesDialog={showPiecesDialog}
+      onPiecesDialogChange={setShowPiecesDialog}
+      showExportPngDialog={showExportPngDialog}
+      onExportPngDialogChange={setShowExportPngDialog}
+      hasImage={!!editor.referenceImage}
+      projectName={editor.projectName}
+      onProjectStart={handleProjectStart}
+      onNewProject={editor.newProject}
+      onLoadProject={editor.loadProject}
+      onClear={editor.clearAll}
+      onSaveProject={editor.saveProject}
+      onExportPieceList={editor.exportPieceList}
+      onExport={editor.exportAsPng}
     />
   );
 
@@ -221,6 +251,7 @@ export default function BrickEditor() {
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
         <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
+        {projectActionDialogs}
       </div>
     );
   }
@@ -233,6 +264,7 @@ export default function BrickEditor() {
         {topActions}
       </div>
       <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
+      {projectActionDialogs}
     </div>
   );
 }
