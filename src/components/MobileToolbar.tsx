@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import {
   Undo2, Redo2, Menu, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
-  MousePointer2, Bold, Italic, X,
+  MousePointer2, Bold, Italic, X, Image as ImageIcon,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -10,6 +10,7 @@ import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, 
 import { SHAPE_LIST } from "@/lib/shapeRasterizer";
 import ShapeIcon from "@/components/ShapeIcon";
 import ColorPickerButton from "@/components/ColorPickerButton";
+import ReferenceImageControls from "@/components/ReferenceImageControls";
 
 interface MobileToolbarProps {
   tool: EditorTool;
