@@ -16,6 +16,44 @@ export default function BrickEditor() {
     editor.setProjectName(name);
     editor.setProjectStarted(true);
   }, [editor.setProjectName, editor.setProjectStarted]);
+
+  const handleTopLoad = useCallback(() => {
+    if (editor.hasBricks || !!editor.referenceImage) {
+      const ok = window.confirm("¿Cargar otro proyecto? Se perderán los cambios no guardados.");
+      if (!ok) return;
+    }
+    editor.loadProject();
+  }, [editor.hasBricks, editor.referenceImage, editor.loadProject]);
+
+  const handleTopClear = useCallback(() => {
+    if (!editor.hasBricks && !editor.referenceImage) return;
+    const ok = window.confirm("¿Eliminar todo el contenido del lienzo?");
+    if (!ok) return;
+    editor.clearAll();
+  }, [editor.hasBricks, editor.referenceImage, editor.clearAll]);
+
+  const handleTopSave = useCallback(() => {
+    let name = editor.projectName?.trim() ?? "";
+    if (!name) {
+      const input = window.prompt("Nombre del proyecto:", "Mi proyecto");
+      if (!input || !input.trim()) return;
+      name = input.trim();
+      editor.setProjectName(name);
+    }
+    editor.saveProject(name);
+  }, [editor.projectName, editor.saveProject, editor.setProjectName]);
+
+  const handleTopExport = useCallback(() => {
+    if (!editor.hasBricks) return;
+    let name = editor.projectName?.trim() ?? "";
+    if (!name) {
+      const input = window.prompt("Nombre del proyecto para exportar:", "Mi proyecto");
+      if (!input || !input.trim()) return;
+      name = input.trim();
+      editor.setProjectName(name);
+    }
+    editor.exportPieceList(name);
+  }, [editor.hasBricks, editor.projectName, editor.exportPieceList, editor.setProjectName]);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
