@@ -767,11 +767,15 @@ export default function BrickGrid({
 
       <div ref={containerRef}
         className="w-full h-full overflow-auto flex items-center justify-center relative workspace-dots"
-        style={{ background: workspaceBg ?? DEFAULT_WORKSPACE_BG, cursor: isPanning ? "grabbing" : "default" }}
+        style={{ background: workspaceBg ?? DEFAULT_WORKSPACE_BG, cursor: isPanning ? "grabbing" : "default", touchAction: "none" }}
         onWheel={handleWheel}
         onMouseDown={handleContainerMouseDown}
         onMouseMove={handleContainerMouseMove}
         onMouseUp={handleContainerMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
         onMouseLeave={() => { setHoverCell(null); setIsMouseDown(false); setIsPanning(false); setIsSelecting(false); setIsDrawingShape(false); }}
         onContextMenu={(e) => {
           // Only handle when right-click happens on the workspace itself (not on grid/SVG/overlays)
