@@ -125,6 +125,7 @@ export default function BrickEditor() {
         onRequestClear={openClearDialog}
         onRequestSaveProject={openSaveDialog}
         onRequestExportPieces={openPiecesDialog}
+        onRequestRemoveImage={openRemoveImageDialog}
     />
   );
 
@@ -199,6 +200,8 @@ export default function BrickEditor() {
       onPiecesDialogChange={setShowPiecesDialog}
       showExportPngDialog={showExportPngDialog}
       onExportPngDialogChange={setShowExportPngDialog}
+      showRemoveImageDialog={showRemoveImageDialog}
+      onRemoveImageDialogChange={setShowRemoveImageDialog}
       hasImage={!!editor.referenceImage}
       projectName={editor.projectName}
       onProjectStart={handleProjectStart}
@@ -208,6 +211,7 @@ export default function BrickEditor() {
       onSaveProject={editor.saveProject}
       onExportPieceList={editor.exportPieceList}
       onExport={editor.exportAsPng}
+      onRemoveImage={editor.removeImage}
     />
   );
 
@@ -258,6 +262,7 @@ export default function BrickEditor() {
           onImageVisibleChange={editor.setImageVisible}
           onImageOpacityChange={editor.setImageOpacity}
           onImageEditModeChange={editor.setImageEditMode}
+          onRequestRemoveImage={openRemoveImageDialog}
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
         <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
