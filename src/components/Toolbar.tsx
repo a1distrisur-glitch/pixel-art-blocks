@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import ReferenceImageControls from "@/components/ReferenceImageControls";
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -642,57 +643,19 @@ export default function Toolbar({
 
           {/* Reference Image — its own section (below Colors) */}
           <section className="border-b border-toolbar-border last:border-b-0 px-4 py-3">
-            
-            <input ref={fileRef} type="file" accept="image/*" className="hidden"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) onImageUpload(f); e.target.value = ""; }} />
-            <div className="flex gap-1 flex-nowrap">
-              <ToolBtn
-                onClick={() => hasImage && setShowRemoveImageDialog(true)}
-                disabled={!hasImage}
-                tooltip="Eliminar imagen"
-                className="flex-1 justify-center !px-1.5 !bg-destructive/20 hover:!bg-destructive/30 !text-toolbar-foreground !border-transparent"
-              >
-                <Trash2 size={13} />
-              </ToolBtn>
-              <ToolBtn
-                active={false}
-                onClick={() => hasImage && onImageVisibleChange(!imageVisible)}
-                disabled={!hasImage}
-                tooltip={imageVisible ? "Ocultar imagen" : "Mostrar imagen"}
-                className="flex-1 justify-center !px-1.5"
-              >
-                {imageVisible ? <EyeOff size={13} /> : <Eye size={13} />}
-              </ToolBtn>
-              <ToolBtn
-                active={imageEditMode}
-                onClick={() => hasImage && onImageEditModeChange(!imageEditMode)}
-                disabled={!hasImage}
-                tooltip={imageEditMode ? "Fijar imagen" : "Mover/redimensionar imagen"}
-                className="flex-1 justify-center !px-1.5"
-              >
-                <Move size={13} />
-              </ToolBtn>
-              <ToolBtn
-                active={showOpacitySlider}
-                onClick={() => hasImage && setShowOpacitySlider((v) => !v)}
-                disabled={!hasImage}
-                tooltip="Ajustar opacidad"
-                className="flex-1 justify-center !px-1.5"
-              >
-                <SlidersHorizontal size={13} />
-              </ToolBtn>
-              <ToolBtn onClick={() => fileRef.current?.click()} tooltip="Cargar imagen" className="flex-1 justify-center !px-1.5">
-                <Image size={13} />
-              </ToolBtn>
-            </div>
-            {hasImage && showOpacitySlider && (
-              <div className="mt-2">
-                <input type="range" min={0.05} max={1} step={0.05}
-                  value={imageOpacity}
-                  onChange={(e) => onImageOpacityChange(parseFloat(e.target.value))}
-                  className="opacity-slider w-full" />
-              </div>
-            )}
+            <ReferenceImageControls
+              hasImage={hasImage}
+              imageVisible={imageVisible}
+              imageOpacity={imageOpacity}
+              imageEditMode={imageEditMode}
+              onImageUpload={onImageUpload}
+              onRemoveImage={onRemoveImage}
+              onImageVisibleChange={onImageVisibleChange}
+              onImageOpacityChange={onImageOpacityChange}
+              onImageEditModeChange={onImageEditModeChange}
+              variant="lateral"
+              onRequestRemove={() => setShowRemoveImageDialog(true)}
+            />
           </section>
 
           {/* Grid Size — single line, no title */}
