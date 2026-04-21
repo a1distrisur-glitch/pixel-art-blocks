@@ -68,7 +68,6 @@ export default function MobileToolbar({
   selectedColor, onColorChange, colors, onAddColor,
   fullToolbar, imageEditMode, projectName, onOpenWelcome, topActions,
 }: MobileToolbarProps) {
-  const [colorSheetOpen, setColorSheetOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const guarded = (next: EditorTool) => () => {
@@ -107,6 +106,15 @@ export default function MobileToolbar({
           </span>
         </button>
 
+        <ColorPickerButton
+          selectedColor={selectedColor}
+          colors={colors}
+          onColorChange={(hex) => { onColorChange(hex); if (!imageEditMode) onToolChange("place"); }}
+          onAddColor={onAddColor}
+          swatchSize={28}
+          align="end"
+          side="bottom"
+        />
         <TopBtn label="Deshacer" onClick={onUndo} disabled={!canUndo}><Undo2 size={18} /></TopBtn>
         <TopBtn label="Rehacer" onClick={onRedo} disabled={!canRedo}><Redo2 size={18} /></TopBtn>
         {topActions}
