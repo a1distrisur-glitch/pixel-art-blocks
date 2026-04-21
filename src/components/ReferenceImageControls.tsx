@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import { Trash2, Eye, EyeOff, Move, SlidersHorizontal, Image as ImageIcon } from "lucide-react";
+// NOTE: el diálogo de confirmación de eliminación es global y vive en ProjectActionDialogs.
+// Este componente sólo dispara onRequestRemove; nunca renderiza su propio modal.
 import {
   Tooltip,
   TooltipContent,
@@ -19,8 +21,8 @@ export interface ReferenceImageControlsProps {
   onImageEditModeChange: (v: boolean) => void;
   /** "lateral" = sidebar styling, "compact" = mobile bottom bar styling */
   variant?: "lateral" | "compact";
-  /** When provided, clicking the trash button calls this instead of opening the built-in dialog */
-  onRequestRemove?: () => void;
+  /** Required: clicking the trash button always delegates to the global confirmation dialog */
+  onRequestRemove: () => void;
 }
 
 function CtrlBtn({
@@ -83,7 +85,6 @@ export default function ReferenceImageControls({
 }: ReferenceImageControlsProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [showOpacitySlider, setShowOpacitySlider] = useState(false);
-  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
 
   const iconSize = variant === "compact" ? 14 : 13;
 
@@ -107,8 +108,7 @@ export default function ReferenceImageControls({
             disabled={!hasImage}
             onClick={() => {
               if (!hasImage) return;
-              if (onRequestRemove) onRequestRemove();
-              else setShowRemoveDialog(true);
+              onRequestRemove();
             }}
             tooltip="Eliminar imagen"
           >
@@ -156,32 +156,6 @@ export default function ReferenceImageControls({
           </div>
         )}
 
-        {showRemoveDialog && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm">
-            <div className="bg-card rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4 animate-fade-in border border-border">
-              <h3 className="text-base font-semibold text-foreground mb-4 text-center">
-                ¿Eliminar imagen de referencia?
-              </h3>
-              <div className="flex gap-2 justify-center">
-                <button
-                  onClick={() => setShowRemoveDialog(false)}
-                  className="px-4 py-2 rounded-lg text-sm font-medium bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={() => {
-                    setShowRemoveDialog(false);
-                    onRemoveImage();
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </TooltipProvider>
   );

@@ -19,6 +19,7 @@ export default function BrickEditor() {
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showPiecesDialog, setShowPiecesDialog] = useState(false);
   const [showExportPngDialog, setShowExportPngDialog] = useState(false);
+  const [showRemoveImageDialog, setShowRemoveImageDialog] = useState(false);
   const clearPipetteColor = useCallback(() => setPipetteColor(null), []);
   const openWelcomeDialog = useCallback(() => setShowWelcomeDialog(true), []);
   const closeWelcomeDialog = useCallback(() => setShowWelcomeDialog(false), []);
@@ -41,6 +42,7 @@ export default function BrickEditor() {
   }, [editor.hasBricks, editor.referenceImage, editor.newProject]);
 
   const openPiecesDialog = useCallback(() => setShowPiecesDialog(true), []);
+  const openRemoveImageDialog = useCallback(() => setShowRemoveImageDialog(true), []);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
@@ -123,6 +125,7 @@ export default function BrickEditor() {
         onRequestClear={openClearDialog}
         onRequestSaveProject={openSaveDialog}
         onRequestExportPieces={openPiecesDialog}
+        onRequestRemoveImage={openRemoveImageDialog}
     />
   );
 
@@ -197,6 +200,8 @@ export default function BrickEditor() {
       onPiecesDialogChange={setShowPiecesDialog}
       showExportPngDialog={showExportPngDialog}
       onExportPngDialogChange={setShowExportPngDialog}
+      showRemoveImageDialog={showRemoveImageDialog}
+      onRemoveImageDialogChange={setShowRemoveImageDialog}
       hasImage={!!editor.referenceImage}
       projectName={editor.projectName}
       onProjectStart={handleProjectStart}
@@ -206,6 +211,7 @@ export default function BrickEditor() {
       onSaveProject={editor.saveProject}
       onExportPieceList={editor.exportPieceList}
       onExport={editor.exportAsPng}
+      onRemoveImage={editor.removeImage}
     />
   );
 
@@ -256,6 +262,7 @@ export default function BrickEditor() {
           onImageVisibleChange={editor.setImageVisible}
           onImageOpacityChange={editor.setImageOpacity}
           onImageEditModeChange={editor.setImageEditMode}
+          onRequestRemoveImage={openRemoveImageDialog}
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
         <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />

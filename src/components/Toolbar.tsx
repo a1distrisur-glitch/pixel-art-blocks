@@ -146,6 +146,7 @@ interface ToolbarProps {
   onRequestClear?: () => void;
   onRequestSaveProject?: () => void;
   onRequestExportPieces?: () => void;
+  onRequestRemoveImage?: () => void;
 }
 
 /* ────── Reusable sub-components ────── */
@@ -313,7 +314,7 @@ export default function Toolbar({
   shapeType, onShapeTypeChange,
   shapeFillMode, onShapeFillModeChange,
   projectStarted, onProjectStart, projectName, onOpenWelcome,
-  onRequestLoadProject, onRequestClear, onRequestSaveProject, onRequestExportPieces,
+  onRequestLoadProject, onRequestClear, onRequestSaveProject, onRequestExportPieces, onRequestRemoveImage,
 }: ToolbarProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const colorMapRef = useRef<HTMLDivElement>(null);
@@ -323,7 +324,7 @@ export default function Toolbar({
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showFixImageDialog, setShowFixImageDialog] = useState(false);
   const [showLoadDialog, setShowLoadDialog] = useState(false);
-  const [showRemoveImageDialog, setShowRemoveImageDialog] = useState(false);
+  // Removal of reference image is handled by the global dialog in BrickEditor (via onRequestRemove)
   const [showOpacitySlider, setShowOpacitySlider] = useState(false);
   const [showExportPngDialog, setShowExportPngDialog] = useState(false);
   const [showPiecesDialog, setShowPiecesDialog] = useState(false);
@@ -654,7 +655,7 @@ export default function Toolbar({
               onImageOpacityChange={onImageOpacityChange}
               onImageEditModeChange={onImageEditModeChange}
               variant="lateral"
-              onRequestRemove={() => setShowRemoveImageDialog(true)}
+              onRequestRemove={() => onRequestRemoveImage?.()}
             />
           </section>
 
@@ -808,26 +809,7 @@ export default function Toolbar({
           </div>
         )}
 
-        {showRemoveImageDialog && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm">
-            <div className="bg-card rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4 animate-fade-in border border-border">
-              <h3 className="text-base font-semibold text-foreground mb-2">¿Eliminar imagen de referencia?</h3>
-              <p className="text-sm text-muted-foreground mb-5">
-                Se eliminará la imagen de referencia del lienzo.
-              </p>
-              <div className="flex gap-2 justify-end">
-                <button onClick={() => setShowRemoveImageDialog(false)}
-                  className="px-4 py-2 rounded-lg text-sm font-medium bg-secondary text-secondary-foreground hover:bg-muted transition-colors">
-                  Cancelar
-                </button>
-                <button onClick={() => { setShowRemoveImageDialog(false); onRemoveImage(); }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors">
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Remove-image dialog moved to ProjectActionDialogs (single source of truth) */}
 
         {showPiecesDialog && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm">

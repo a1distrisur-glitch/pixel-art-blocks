@@ -59,6 +59,7 @@ interface MobileToolbarProps {
   onImageVisibleChange: (v: boolean) => void;
   onImageOpacityChange: (v: number) => void;
   onImageEditModeChange: (v: boolean) => void;
+  onRequestRemoveImage: () => void;
 }
 
 function TopBtn({
@@ -137,6 +138,7 @@ export default function MobileToolbar({
   hasImage, imageVisible, imageOpacity,
   onImageUpload, onRemoveImage, onImageVisibleChange,
   onImageOpacityChange, onImageEditModeChange,
+  onRequestRemoveImage,
 }: MobileToolbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [paintOpen, setPaintOpen] = useState(false);
@@ -503,6 +505,7 @@ export default function MobileToolbar({
               onImageOpacityChange={onImageOpacityChange}
               onImageEditModeChange={onImageEditModeChange}
               variant="compact"
+              onRequestRemove={onRequestRemoveImage}
             />
           </PopoverContent>
         </Popover>

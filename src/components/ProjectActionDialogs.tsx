@@ -15,6 +15,8 @@ interface ProjectActionDialogsProps {
   onPiecesDialogChange: (open: boolean) => void;
   showExportPngDialog: boolean;
   onExportPngDialogChange: (open: boolean) => void;
+  showRemoveImageDialog: boolean;
+  onRemoveImageDialogChange: (open: boolean) => void;
   hasImage: boolean;
   projectName: string;
   onProjectStart: (name: string) => void;
@@ -24,6 +26,7 @@ interface ProjectActionDialogsProps {
   onSaveProject: (nameOverride?: string) => void;
   onExportPieceList: (nameOverride?: string) => void;
   onExport: (includeRefImage?: boolean) => void;
+  onRemoveImage: () => void;
 }
 
 const panelClass = "bg-toolbar text-toolbar-foreground rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4 animate-fade-in border border-toolbar-border";
@@ -47,6 +50,8 @@ export default function ProjectActionDialogs({
   onPiecesDialogChange,
   showExportPngDialog,
   onExportPngDialogChange,
+  showRemoveImageDialog,
+  onRemoveImageDialogChange,
   hasImage,
   projectName,
   onProjectStart,
@@ -56,6 +61,7 @@ export default function ProjectActionDialogs({
   onSaveProject,
   onExportPieceList,
   onExport,
+  onRemoveImage,
 }: ProjectActionDialogsProps) {
   const [showProjectNamePrompt, setShowProjectNamePrompt] = useState(false);
   const [projectNamePromptAction, setProjectNamePromptAction] = useState<ProjectNameAction | null>(null);
@@ -168,6 +174,19 @@ export default function ProjectActionDialogs({
             <div className="flex gap-2 justify-end">
               <button type="button" onClick={() => { onExportPngDialogChange(false); onExport(true); }} className={secondaryBtn}>Agregar</button>
               <button type="button" onClick={() => { onExportPngDialogChange(false); onExport(false); }} className={primaryBtn}>No Agregar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRemoveImageDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm">
+          <div className={panelClass} role="dialog" aria-modal="true" aria-labelledby="remove-image-dialog-title">
+            <h3 id="remove-image-dialog-title" className={titleClass}>¿Eliminar imagen de referencia?</h3>
+            <p className={descriptionClass}>Se eliminará la imagen de referencia del lienzo.</p>
+            <div className="flex gap-2 justify-end">
+              <button type="button" onClick={() => onRemoveImageDialogChange(false)} className={secondaryBtn}>Cancelar</button>
+              <button type="button" onClick={() => { onRemoveImageDialogChange(false); onRemoveImage(); }} className={dangerBtn}>Eliminar</button>
             </div>
           </div>
         </div>
