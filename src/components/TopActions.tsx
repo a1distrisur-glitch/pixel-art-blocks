@@ -62,6 +62,17 @@ export default function TopActions({
 
   return (
     <div className={cn(wrapper, className)}>
+      {variant === "floating" && (
+        <button
+          type="button"
+          aria-label="Abrir bienvenida"
+          title="Abrir bienvenida"
+          onClick={() => window.dispatchEvent(new CustomEvent("pixcool:open-welcome"))}
+          className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-toolbar-hover transition-colors"
+        >
+          <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md object-cover" />
+        </button>
+      )}
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
