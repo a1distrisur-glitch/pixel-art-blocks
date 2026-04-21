@@ -15,6 +15,8 @@ interface ProjectActionDialogsProps {
   onPiecesDialogChange: (open: boolean) => void;
   showExportPngDialog: boolean;
   onExportPngDialogChange: (open: boolean) => void;
+  showRemoveImageDialog: boolean;
+  onRemoveImageDialogChange: (open: boolean) => void;
   hasImage: boolean;
   projectName: string;
   onProjectStart: (name: string) => void;
@@ -24,6 +26,7 @@ interface ProjectActionDialogsProps {
   onSaveProject: (nameOverride?: string) => void;
   onExportPieceList: (nameOverride?: string) => void;
   onExport: (includeRefImage?: boolean) => void;
+  onRemoveImage: () => void;
 }
 
 const panelClass = "bg-toolbar text-toolbar-foreground rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4 animate-fade-in border border-toolbar-border";
@@ -47,6 +50,8 @@ export default function ProjectActionDialogs({
   onPiecesDialogChange,
   showExportPngDialog,
   onExportPngDialogChange,
+  showRemoveImageDialog,
+  onRemoveImageDialogChange,
   hasImage,
   projectName,
   onProjectStart,
@@ -56,6 +61,7 @@ export default function ProjectActionDialogs({
   onSaveProject,
   onExportPieceList,
   onExport,
+  onRemoveImage,
 }: ProjectActionDialogsProps) {
   const [showProjectNamePrompt, setShowProjectNamePrompt] = useState(false);
   const [projectNamePromptAction, setProjectNamePromptAction] = useState<ProjectNameAction | null>(null);
