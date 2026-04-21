@@ -1,7 +1,7 @@
 import { ReactNode, useState } from "react";
 import {
-  Undo2, Redo2, Save, Download, Menu, Eraser, Move, Type,
-  Shapes, Pipette, Paintbrush, Palette, X,
+  Undo2, Redo2, Menu, Eraser, Move, Type,
+  Shapes, Pipette, Paintbrush, Palette,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import type { EditorTool, BrickColor } from "@/hooks/useBrickEditor";
