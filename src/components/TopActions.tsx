@@ -85,15 +85,17 @@ export default function TopActions({
           <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md object-cover" />
         </button>
       )}
-      <ColorPickerButton
-        selectedColor={selectedColor}
-        colors={colors}
-        onColorChange={onColorChange}
-        onAddColor={onAddColor}
-        swatchSize={28}
-        align={variant === "floating" ? "end" : "start"}
-        side="bottom"
-      />
+      {variant === "floating" && (
+        <ColorPickerButton
+          selectedColor={selectedColor}
+          colors={colors}
+          onColorChange={onColorChange}
+          onAddColor={onAddColor}
+          swatchSize={28}
+          align="end"
+          side="bottom"
+        />
+      )}
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
