@@ -58,6 +58,7 @@ export default function BrickGrid({
   imageTransform, onImageTransformChange, onCellClick, canPlace, getCellOccupant,
   textOverlays, onUpdateTextOverlay, onRemoveTextOverlay, onMoveBricks, onPipetteColor,
   shapeType, shapeFillMode, onAddShapeOverlay, shapeOverlays, onUpdateShapeOverlay, onRemoveShapeOverlay,
+  onUndo,
 }: BrickGridProps) {
   const [hoverCell, setHoverCell] = useState<{ row: number; col: number } | null>(null);
   const [isMouseDown, setIsMouseDown] = useState(false);
