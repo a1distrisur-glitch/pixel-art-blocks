@@ -4,6 +4,7 @@ import { useBrickEditor } from "@/hooks/useBrickEditor";
 import Toolbar from "@/components/Toolbar";
 import BrickGrid from "@/components/BrickGrid";
 import MobileToolbar from "@/components/MobileToolbar";
+import TopActions from "@/components/TopActions";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 
 export default function BrickEditor() {
