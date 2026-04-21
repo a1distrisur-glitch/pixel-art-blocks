@@ -209,6 +209,10 @@ export default function BrickEditor() {
           onColorChange={editor.setSelectedColor}
           colors={editor.colors}
           onAddColor={editor.addColor}
+          selectedSize={editor.selectedSize}
+          onSizeChange={editor.setSelectedSize}
+          orientation={editor.orientation}
+          onOrientationChange={editor.setOrientation}
           fullToolbar={toolbarEl}
           imageEditMode={editor.imageEditMode}
           projectName={editor.projectName}
