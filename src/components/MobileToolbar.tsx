@@ -136,50 +136,6 @@ export default function MobileToolbar({
           <Pipette size={18} />
         </BottomTool>
 
-        {/* Active color → opens color sheet */}
-        <Sheet open={colorSheetOpen} onOpenChange={setColorSheetOpen}>
-          <SheetTrigger asChild>
-            <button
-              type="button"
-              aria-label="Elegir color"
-              className="flex flex-col items-center justify-center gap-0.5 flex-1 min-w-0 h-12 rounded-lg text-[10px] font-medium text-toolbar-foreground hover:bg-toolbar-hover transition-colors"
-            >
-              <span
-                className="w-6 h-6 rounded-md ring-1 ring-toolbar-border"
-                style={{ backgroundColor: selectedColor, boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.2)" }}
-              />
-              <span className="leading-none">Color</span>
-            </button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="bg-toolbar border-toolbar-border max-h-[60vh]">
-            <div className="flex items-center gap-2 mb-3">
-              <Palette size={16} className="text-toolbar-foreground" />
-              <span className="text-sm font-semibold text-toolbar-foreground">Paleta</span>
-            </div>
-            <div className="grid grid-cols-7 sm:grid-cols-9 gap-2 overflow-y-auto pr-1">
-              {colors.map((c, i) => (
-                <button
-                  key={`${c.value}-${i}`}
-                  type="button"
-                  title={c.name}
-                  onClick={() => { onColorChange(c.value); onToolChange("place"); setColorSheetOpen(false); }}
-                  className={`w-10 h-10 rounded-lg transition-all ${
-                    selectedColor === c.value
-                      ? "ring-2 ring-primary ring-offset-2 ring-offset-toolbar"
-                      : "hover:ring-1 hover:ring-toolbar-muted/50"
-                  }`}
-                  style={{
-                    backgroundColor: c.value,
-                    boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.2)",
-                  }}
-                />
-              ))}
-            </div>
-            <p className="mt-3 text-[11px] text-toolbar-foreground/60">
-              Para añadir o editar colores, abre el menú completo.
-            </p>
-          </SheetContent>
-        </Sheet>
       </nav>
     </>
   );
