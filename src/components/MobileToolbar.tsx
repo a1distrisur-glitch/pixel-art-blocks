@@ -138,6 +138,7 @@ export default function MobileToolbar({
   hasImage, imageVisible, imageOpacity,
   onImageUpload, onRemoveImage, onImageVisibleChange,
   onImageOpacityChange, onImageEditModeChange,
+  onRequestRemoveImage,
 }: MobileToolbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [paintOpen, setPaintOpen] = useState(false);
