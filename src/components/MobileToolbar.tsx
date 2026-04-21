@@ -1,7 +1,7 @@
 import { ReactNode, useState } from "react";
 import {
-  Undo2, Redo2, Save, Download, Menu, Eraser, Move, Type,
-  Shapes, Pipette, Paintbrush, Palette, X,
+  Undo2, Redo2, Menu, Eraser, Move, Type,
+  Shapes, Pipette, Paintbrush, Palette,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import type { EditorTool, BrickColor } from "@/hooks/useBrickEditor";
@@ -13,14 +13,13 @@ interface MobileToolbarProps {
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  onSave: () => void;
-  onExport: () => void;
   selectedColor: string;
   onColorChange: (hex: string) => void;
   colors: BrickColor[];
   fullToolbar: ReactNode;
   imageEditMode: boolean;
   projectName: string;
+  topActions?: ReactNode;
 }
 
 function TopBtn({
@@ -63,8 +62,8 @@ function BottomTool({
 
 export default function MobileToolbar({
   tool, onToolChange, onUndo, onRedo, canUndo, canRedo,
-  onSave, onExport, selectedColor, onColorChange, colors,
-  fullToolbar, imageEditMode, projectName,
+  selectedColor, onColorChange, colors,
+  fullToolbar, imageEditMode, projectName, topActions,
 }: MobileToolbarProps) {
   const [colorSheetOpen, setColorSheetOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -102,8 +101,7 @@ export default function MobileToolbar({
 
         <TopBtn label="Deshacer" onClick={onUndo} disabled={!canUndo}><Undo2 size={18} /></TopBtn>
         <TopBtn label="Rehacer" onClick={onRedo} disabled={!canRedo}><Redo2 size={18} /></TopBtn>
-        <TopBtn label="Guardar proyecto" onClick={onSave}><Save size={18} /></TopBtn>
-        <TopBtn label="Exportar PNG" onClick={onExport}><Download size={18} /></TopBtn>
+        {topActions}
       </header>
 
       {/* Spacer so canvas doesn't sit under the top bar */}

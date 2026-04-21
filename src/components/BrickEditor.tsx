@@ -4,6 +4,7 @@ import { useBrickEditor } from "@/hooks/useBrickEditor";
 import Toolbar from "@/components/Toolbar";
 import BrickGrid from "@/components/BrickGrid";
 import MobileToolbar from "@/components/MobileToolbar";
+import TopActions from "@/components/TopActions";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 
 export default function BrickEditor() {
@@ -15,6 +16,44 @@ export default function BrickEditor() {
     editor.setProjectName(name);
     editor.setProjectStarted(true);
   }, [editor.setProjectName, editor.setProjectStarted]);
+
+  const handleTopLoad = useCallback(() => {
+    if (editor.hasBricks || !!editor.referenceImage) {
+      const ok = window.confirm("¿Cargar otro proyecto? Se perderán los cambios no guardados.");
+      if (!ok) return;
+    }
+    editor.loadProject();
+  }, [editor.hasBricks, editor.referenceImage, editor.loadProject]);
+
+  const handleTopClear = useCallback(() => {
+    if (!editor.hasBricks && !editor.referenceImage) return;
+    const ok = window.confirm("¿Eliminar todo el contenido del lienzo?");
+    if (!ok) return;
+    editor.clearAll();
+  }, [editor.hasBricks, editor.referenceImage, editor.clearAll]);
+
+  const handleTopSave = useCallback(() => {
+    let name = editor.projectName?.trim() ?? "";
+    if (!name) {
+      const input = window.prompt("Nombre del proyecto:", "Mi proyecto");
+      if (!input || !input.trim()) return;
+      name = input.trim();
+      editor.setProjectName(name);
+    }
+    editor.saveProject(name);
+  }, [editor.projectName, editor.saveProject, editor.setProjectName]);
+
+  const handleTopExport = useCallback(() => {
+    if (!editor.hasBricks) return;
+    let name = editor.projectName?.trim() ?? "";
+    if (!name) {
+      const input = window.prompt("Nombre del proyecto para exportar:", "Mi proyecto");
+      if (!input || !input.trim()) return;
+      name = input.trim();
+      editor.setProjectName(name);
+    }
+    editor.exportPieceList(name);
+  }, [editor.hasBricks, editor.projectName, editor.exportPieceList, editor.setProjectName]);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
@@ -135,6 +174,18 @@ export default function BrickEditor() {
     />
   );
 
+  const topActions = (
+    <TopActions
+      hasBricks={editor.hasBricks}
+      hasImage={!!editor.referenceImage}
+      onLoadProject={handleTopLoad}
+      onClear={handleTopClear}
+      onSaveProject={handleTopSave}
+      onExportPieces={handleTopExport}
+      variant={isCompact ? "inline" : "floating"}
+    />
+  );
+
   if (isCompact) {
     return (
       <div className="flex flex-col h-screen w-screen overflow-hidden">
@@ -145,14 +196,13 @@ export default function BrickEditor() {
           onRedo={editor.redo}
           canUndo={editor.canUndo}
           canRedo={editor.canRedo}
-          onSave={() => editor.saveProject()}
-          onExport={() => editor.exportAsPng()}
           selectedColor={editor.selectedColor}
           onColorChange={editor.setSelectedColor}
           colors={editor.colors}
           fullToolbar={toolbarEl}
           imageEditMode={editor.imageEditMode}
           projectName={editor.projectName}
+          topActions={topActions}
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
       </div>
@@ -162,7 +212,10 @@ export default function BrickEditor() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {toolbarEl}
-      {grid}
+      <div className="flex-1 min-w-0 relative">
+        {grid}
+        {topActions}
+      </div>
     </div>
   );
 }
