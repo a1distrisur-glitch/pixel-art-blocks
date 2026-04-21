@@ -224,9 +224,9 @@ export default function BrickGrid({
     initialTouchClient: null,
   });
 
-  const distance = (a: Touch, b: Touch) =>
+  const distance = (a: { clientX: number; clientY: number }, b: { clientX: number; clientY: number }) =>
     Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
-  const midpoint = (a: Touch, b: Touch) => ({
+  const midpoint = (a: { clientX: number; clientY: number }, b: { clientX: number; clientY: number }) => ({
     x: (a.clientX + b.clientX) / 2,
     y: (a.clientY + b.clientY) / 2,
   });
