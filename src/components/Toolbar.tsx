@@ -324,6 +324,11 @@ export default function Toolbar({
   const [showNameDialog, setShowNameDialog] = useState(false);
   const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
   const [welcomeFromLogo, setWelcomeFromLogo] = useState(false);
+  useEffect(() => {
+    const handler = () => { setShowWelcomeDialog(true); setWelcomeFromLogo(true); };
+    window.addEventListener("pixcool:open-welcome", handler);
+    return () => window.removeEventListener("pixcool:open-welcome", handler);
+  }, []);
   const [showProjectNamePrompt, setShowProjectNamePrompt] = useState(false);
   const [projectNamePromptAction, setProjectNamePromptAction] = useState<"save" | "pieces" | "png" | null>(null);
   const [pendingAfterPromptAction, setPendingAfterPromptAction] = useState<(() => void) | null>(null);
