@@ -134,11 +134,15 @@ export default function MobileToolbar({
   textItalic, onTextItalicChange,
   textOverlays, onRemoveTextOverlay,
   fullToolbar, imageEditMode, projectName, onOpenWelcome, topActions,
+  hasImage, imageVisible, imageOpacity,
+  onImageUpload, onRemoveImage, onImageVisibleChange,
+  onImageOpacityChange, onImageEditModeChange,
 }: MobileToolbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [paintOpen, setPaintOpen] = useState(false);
   const [shapeOpen, setShapeOpen] = useState(false);
   const [textOpen, setTextOpen] = useState(false);
+  const [refImageOpen, setRefImageOpen] = useState(false);
 
   const activateTool = (next: EditorTool) => {
     if (imageEditMode) return;
