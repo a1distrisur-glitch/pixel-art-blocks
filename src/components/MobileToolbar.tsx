@@ -48,8 +48,9 @@ function BottomTool({
     <button
       type="button"
       aria-label={label}
+      title={label}
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-0.5 flex-1 min-w-0 h-12 rounded-lg text-[10px] font-medium transition-colors ${
+      className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
         active
           ? danger
             ? "bg-destructive text-destructive-foreground"
@@ -58,14 +59,13 @@ function BottomTool({
       }`}
     >
       {children}
-      <span className="leading-none">{label}</span>
     </button>
   );
 }
 
 export default function MobileToolbar({
   tool, onToolChange, onUndo, onRedo, canUndo, canRedo,
-  selectedColor, onColorChange, colors,
+  selectedColor, onColorChange, colors, onAddColor,
   fullToolbar, imageEditMode, projectName, onOpenWelcome, topActions,
 }: MobileToolbarProps) {
   const [colorSheetOpen, setColorSheetOpen] = useState(false);
