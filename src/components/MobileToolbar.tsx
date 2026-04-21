@@ -1,10 +1,11 @@
 import { ReactNode, useState } from "react";
 import {
   Undo2, Redo2, Menu, Eraser, Move, Type,
-  Shapes, Pipette, Paintbrush,
+  Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import type { EditorTool, BrickColor } from "@/hooks/useBrickEditor";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import type { EditorTool, BrickColor, BrickSize, BrickOrientation } from "@/hooks/useBrickEditor";
 import ColorPickerButton from "@/components/ColorPickerButton";
 
 interface MobileToolbarProps {
@@ -18,6 +19,10 @@ interface MobileToolbarProps {
   onColorChange: (hex: string) => void;
   colors: BrickColor[];
   onAddColor: (name: string, value: string) => void;
+  selectedSize: BrickSize;
+  onSizeChange: (s: BrickSize) => void;
+  orientation: BrickOrientation;
+  onOrientationChange: (o: BrickOrientation) => void;
   fullToolbar: ReactNode;
   imageEditMode: boolean;
   projectName: string;
@@ -63,16 +68,51 @@ function BottomTool({
   );
 }
 
+function PopBtn({
+  active, disabled, onClick, label, children,
+}: { active?: boolean; disabled?: boolean; onClick: () => void; label: string; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex items-center justify-center flex-1 h-9 rounded-md text-xs font-medium transition-colors disabled:opacity-30 disabled:pointer-events-none ${
+        active
+          ? "bg-primary text-primary-foreground"
+          : "bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function MobileToolbar({
   tool, onToolChange, onUndo, onRedo, canUndo, canRedo,
   selectedColor, onColorChange, colors, onAddColor,
+  selectedSize, onSizeChange, orientation, onOrientationChange,
   fullToolbar, imageEditMode, projectName, onOpenWelcome, topActions,
 }: MobileToolbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [paintOpen, setPaintOpen] = useState(false);
 
   const guarded = (next: EditorTool) => () => {
     if (imageEditMode) return; // mirror desktop behavior; user can fix image from More menu
     onToolChange(next);
+  };
+
+  const handleSizeSelect = (size: BrickSize) => {
+    if (imageEditMode) return;
+    onSizeChange(size);
+    onToolChange("place");
+    setPaintOpen(false);
+  };
+
+  const handleOrientationSelect = (o: BrickOrientation) => {
+    if (imageEditMode) return;
+    onOrientationChange(o);
   };
 
   return (
@@ -125,9 +165,58 @@ export default function MobileToolbar({
 
       {/* Bottom tools bar */}
       <nav className="fixed bottom-0 inset-x-0 z-30 flex items-stretch gap-0.5 px-1.5 pt-1 pb-[max(env(safe-area-inset-bottom),6px)] bg-toolbar border-t border-toolbar-border toolbar-shadow">
-        <BottomTool active={tool === "place"} onClick={guarded("place")} label="Pintar">
-          <Paintbrush size={18} />
-        </BottomTool>
+        <Popover open={paintOpen} onOpenChange={setPaintOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-label="Pintar"
+              title="Pintar"
+              className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
+                tool === "place"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-toolbar-foreground hover:bg-toolbar-hover"
+              }`}
+            >
+              <Paintbrush size={18} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            side="top"
+            align="start"
+            sideOffset={8}
+            className="w-[260px] p-2 bg-toolbar border-toolbar-border"
+          >
+            <div className="flex gap-1">
+              <PopBtn
+                active={orientation === "horizontal"}
+                disabled={selectedSize === 1 || imageEditMode}
+                onClick={() => handleOrientationSelect("horizontal")}
+                label="Orientación horizontal"
+              >
+                <ArrowRightLeft size={14} />
+              </PopBtn>
+              <PopBtn
+                active={orientation === "vertical"}
+                disabled={selectedSize === 1 || imageEditMode}
+                onClick={() => handleOrientationSelect("vertical")}
+                label="Orientación vertical"
+              >
+                <ArrowUpDown size={14} />
+              </PopBtn>
+              {([3, 2, 1] as BrickSize[]).map((size) => (
+                <PopBtn
+                  key={size}
+                  active={selectedSize === size && tool === "place"}
+                  disabled={imageEditMode}
+                  onClick={() => handleSizeSelect(size)}
+                  label={`Bloque 1×${size}`}
+                >
+                  1×{size}
+                </PopBtn>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
         <BottomTool active={tool === "erase"} danger onClick={guarded("erase")} label="Borrar">
           <Eraser size={18} />
         </BottomTool>
