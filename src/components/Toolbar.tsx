@@ -141,6 +141,10 @@ interface ToolbarProps {
   onProjectStart: (name: string) => void;
   projectName: string;
   onOpenWelcome: () => void;
+  onRequestLoadProject?: () => void;
+  onRequestClear?: () => void;
+  onRequestSaveProject?: () => void;
+  onRequestExportPieces?: () => void;
 }
 
 /* ────── Reusable sub-components ────── */
@@ -308,6 +312,7 @@ export default function Toolbar({
   shapeType, onShapeTypeChange,
   shapeFillMode, onShapeFillModeChange,
   projectStarted, onProjectStart, projectName, onOpenWelcome,
+  onRequestLoadProject, onRequestClear, onRequestSaveProject, onRequestExportPieces,
 }: ToolbarProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const colorMapRef = useRef<HTMLDivElement>(null);
