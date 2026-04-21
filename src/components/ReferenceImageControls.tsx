@@ -105,7 +105,11 @@ export default function ReferenceImageControls({
           <CtrlBtn
             danger
             disabled={!hasImage}
-            onClick={() => hasImage && setShowRemoveDialog(true)}
+            onClick={() => {
+              if (!hasImage) return;
+              if (onRequestRemove) onRequestRemove();
+              else setShowRemoveDialog(true);
+            }}
             tooltip="Eliminar imagen"
           >
             <Trash2 size={iconSize} />
