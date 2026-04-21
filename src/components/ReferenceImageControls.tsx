@@ -19,6 +19,8 @@ export interface ReferenceImageControlsProps {
   onImageEditModeChange: (v: boolean) => void;
   /** "lateral" = sidebar styling, "compact" = mobile bottom bar styling */
   variant?: "lateral" | "compact";
+  /** When provided, clicking the trash button calls this instead of opening the built-in dialog */
+  onRequestRemove?: () => void;
 }
 
 function CtrlBtn({
