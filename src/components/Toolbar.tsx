@@ -17,7 +17,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import welcomeImg from "@/assets/welcome.gif";
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -141,6 +140,7 @@ interface ToolbarProps {
   projectStarted: boolean;
   onProjectStart: (name: string) => void;
   projectName: string;
+  onOpenWelcome: () => void;
 }
 
 /* ────── Reusable sub-components ────── */
@@ -307,7 +307,7 @@ export default function Toolbar({
   textOverlays, onRemoveTextOverlay,
   shapeType, onShapeTypeChange,
   shapeFillMode, onShapeFillModeChange,
-  projectStarted, onProjectStart, projectName,
+  projectStarted, onProjectStart, projectName, onOpenWelcome,
 }: ToolbarProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const colorMapRef = useRef<HTMLDivElement>(null);
@@ -322,13 +322,6 @@ export default function Toolbar({
   const [showExportPngDialog, setShowExportPngDialog] = useState(false);
   const [showPiecesDialog, setShowPiecesDialog] = useState(false);
   const [showNameDialog, setShowNameDialog] = useState(false);
-  const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
-  const [welcomeFromLogo, setWelcomeFromLogo] = useState(false);
-  useEffect(() => {
-    const handler = () => { setShowWelcomeDialog(true); setWelcomeFromLogo(true); };
-    window.addEventListener("pixcool:open-welcome", handler);
-    return () => window.removeEventListener("pixcool:open-welcome", handler);
-  }, []);
   const [showProjectNamePrompt, setShowProjectNamePrompt] = useState(false);
   const [projectNamePromptAction, setProjectNamePromptAction] = useState<"save" | "pieces" | "png" | null>(null);
   const [pendingAfterPromptAction, setPendingAfterPromptAction] = useState<(() => void) | null>(null);
@@ -427,7 +420,7 @@ export default function Toolbar({
         <div className="flex items-center gap-2.5 px-4 py-3 border-b border-toolbar-border">
           <button
             type="button"
-            onClick={() => { setShowWelcomeDialog(true); setWelcomeFromLogo(true); }}
+            onClick={onOpenWelcome}
             className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
           >
             <img
@@ -1025,51 +1018,6 @@ export default function Toolbar({
                   Sí
                 </button>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Welcome dialog (only opened from the logo button) */}
-        {showWelcomeDialog && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm">
-            <div className="bg-card rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4 animate-fade-in border border-border flex flex-col items-center gap-4">
-              <img src={welcomeImg} alt="Bienvenido" className="max-w-full rounded-lg" />
-              <div className="flex items-center gap-2 text-foreground font-semibold">
-                <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md object-cover" />
-                <span>Arte Bricks 2D</span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Creado por Jesus Linares
-              </div>
-              <a
-                href="https://instagram.com/pixcool_ve"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <defs>
-                    <radialGradient id="ig-grad" cx="30%" cy="107%" r="150%">
-                      <stop offset="0%" stopColor="#fdf497" />
-                      <stop offset="5%" stopColor="#fdf497" />
-                      <stop offset="45%" stopColor="#fd5949" />
-                      <stop offset="60%" stopColor="#d6249f" />
-                      <stop offset="90%" stopColor="#285AEB" />
-                    </radialGradient>
-                  </defs>
-                  <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#ig-grad)" />
-                  <circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" strokeWidth="1.8" />
-                  <circle cx="17.5" cy="6.5" r="1.2" fill="#fff" />
-                </svg>
-                <span>@pixcool_ve</span>
-              </a>
-              <button
-                autoFocus
-                onClick={() => { setShowWelcomeDialog(false); setWelcomeFromLogo(false); }}
-                className="px-6 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                Continuar
-              </button>
             </div>
           </div>
         )}
