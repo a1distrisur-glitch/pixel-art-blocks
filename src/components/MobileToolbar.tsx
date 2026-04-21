@@ -92,12 +92,17 @@ export default function MobileToolbar({
           </SheetContent>
         </Sheet>
 
-        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent("pixcool:open-welcome"))}
+          className="flex items-center gap-1.5 min-w-0 flex-1 hover:opacity-80 transition-opacity cursor-pointer"
+          aria-label="Abrir bienvenida"
+        >
           <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md shrink-0" />
           <span className="text-xs font-semibold text-toolbar-foreground truncate">
             {projectName?.trim() || "PixCool Art"}
           </span>
-        </div>
+        </button>
 
         <TopBtn label="Deshacer" onClick={onUndo} disabled={!canUndo}><Undo2 size={18} /></TopBtn>
         <TopBtn label="Rehacer" onClick={onRedo} disabled={!canRedo}><Redo2 size={18} /></TopBtn>
