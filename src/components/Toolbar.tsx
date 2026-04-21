@@ -146,6 +146,7 @@ interface ToolbarProps {
   onRequestClear?: () => void;
   onRequestSaveProject?: () => void;
   onRequestExportPieces?: () => void;
+  onRequestRemoveImage?: () => void;
 }
 
 /* ────── Reusable sub-components ────── */
@@ -313,7 +314,7 @@ export default function Toolbar({
   shapeType, onShapeTypeChange,
   shapeFillMode, onShapeFillModeChange,
   projectStarted, onProjectStart, projectName, onOpenWelcome,
-  onRequestLoadProject, onRequestClear, onRequestSaveProject, onRequestExportPieces,
+  onRequestLoadProject, onRequestClear, onRequestSaveProject, onRequestExportPieces, onRequestRemoveImage,
 }: ToolbarProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const colorMapRef = useRef<HTMLDivElement>(null);
@@ -654,7 +655,7 @@ export default function Toolbar({
               onImageOpacityChange={onImageOpacityChange}
               onImageEditModeChange={onImageEditModeChange}
               variant="lateral"
-              onRequestRemove={() => setShowRemoveImageDialog(true)}
+              onRequestRemove={() => onRequestRemoveImage?.()}
             />
           </section>
 
