@@ -130,9 +130,23 @@ export default function MobileToolbar({
   const [shapeOpen, setShapeOpen] = useState(false);
   const [textOpen, setTextOpen] = useState(false);
 
-  const guarded = (next: EditorTool) => () => {
-    if (imageEditMode) return; // mirror desktop behavior; user can fix image from More menu
+  const activateTool = (next: EditorTool) => {
+    if (imageEditMode) return;
     onToolChange(next);
+  };
+
+  const handleShapeOpenChange = (open: boolean) => {
+    setShapeOpen(open);
+    if (open) activateTool("shape");
+  };
+
+  const handleTextOpenChange = (open: boolean) => {
+    setTextOpen(open);
+    if (open) activateTool("text");
+  };
+
+  const guarded = (next: EditorTool) => () => {
+    activateTool(next);
   };
 
   const handleSizeSelect = (size: BrickSize) => {
@@ -259,7 +273,7 @@ export default function MobileToolbar({
         </BottomTool>
 
         {/* Formas */}
-        <Popover open={shapeOpen} onOpenChange={setShapeOpen}>
+        <Popover open={shapeOpen} onOpenChange={handleShapeOpenChange}>
           <PopoverTrigger asChild>
             <button
               type="button"
@@ -289,7 +303,10 @@ export default function MobileToolbar({
                     type="button"
                     aria-label={s.label}
                     title={s.label}
-                    onClick={() => onShapeTypeChange(s.type)}
+                    onClick={() => {
+                      activateTool("shape");
+                      onShapeTypeChange(s.type);
+                    }}
                     className={`flex items-center justify-center w-full h-8 rounded-md text-xs transition-all ${
                       shapeType === s.type
                         ? "bg-primary text-primary-foreground shadow-sm"
@@ -304,10 +321,16 @@ export default function MobileToolbar({
             <div>
               <p className="text-[10px] text-toolbar-foreground mb-1">Relleno</p>
               <div className="flex gap-1">
-                <PopBtn active={shapeFillMode === "outline"} onClick={() => onShapeFillModeChange("outline")} label="Contorno">
+                <PopBtn active={shapeFillMode === "outline"} onClick={() => {
+                  activateTool("shape");
+                  onShapeFillModeChange("outline");
+                }} label="Contorno">
                   Contorno
                 </PopBtn>
-                <PopBtn active={shapeFillMode === "fill"} onClick={() => onShapeFillModeChange("fill")} label="Relleno">
+                <PopBtn active={shapeFillMode === "fill"} onClick={() => {
+                  activateTool("shape");
+                  onShapeFillModeChange("fill");
+                }} label="Relleno">
                   Relleno
                 </PopBtn>
               </div>
@@ -319,7 +342,7 @@ export default function MobileToolbar({
         </Popover>
 
         {/* Texto */}
-        <Popover open={textOpen} onOpenChange={setTextOpen}>
+        <Popover open={textOpen} onOpenChange={handleTextOpenChange}>
           <PopoverTrigger asChild>
             <button
               type="button"
@@ -343,7 +366,10 @@ export default function MobileToolbar({
             <input
               type="text"
               value={pixelText}
-              onChange={(e) => onPixelTextChange(e.target.value)}
+               onChange={(e) => {
+                 activateTool("text");
+                 onPixelTextChange(e.target.value);
+               }}
               placeholder="Escribe tu texto…"
               className={inputCls}
             />
@@ -355,7 +381,10 @@ export default function MobileToolbar({
                   min={8}
                   max={120}
                   value={textFontSize}
-                  onChange={(e) => onTextFontSizeChange(parseInt(e.target.value) || 16)}
+                   onChange={(e) => {
+                     activateTool("text");
+                     onTextFontSizeChange(parseInt(e.target.value) || 16);
+                   }}
                   className={`${inputCls} mt-0.5`}
                 />
               </label>
@@ -363,7 +392,10 @@ export default function MobileToolbar({
                 <span className="text-[10px] text-toolbar-foreground">Fuente</span>
                 <select
                   value={textFontFamily}
-                  onChange={(e) => onTextFontFamilyChange(e.target.value)}
+                   onChange={(e) => {
+                     activateTool("text");
+                     onTextFontFamilyChange(e.target.value);
+                   }}
                   className={`${inputCls} mt-0.5`}
                 >
                   <option value="Arial">Arial</option>
@@ -377,10 +409,16 @@ export default function MobileToolbar({
               </label>
             </div>
             <div className="flex gap-1">
-              <PopBtn active={textBold} onClick={() => onTextBoldChange(!textBold)} label="Negrita" className="!flex-none !w-10">
+               <PopBtn active={textBold} onClick={() => {
+                 activateTool("text");
+                 onTextBoldChange(!textBold);
+               }} label="Negrita" className="!flex-none !w-10">
                 <Bold size={14} />
               </PopBtn>
-              <PopBtn active={textItalic} onClick={() => onTextItalicChange(!textItalic)} label="Cursiva" className="!flex-none !w-10">
+               <PopBtn active={textItalic} onClick={() => {
+                 activateTool("text");
+                 onTextItalicChange(!textItalic);
+               }} label="Cursiva" className="!flex-none !w-10">
                 <Italic size={14} />
               </PopBtn>
             </div>
