@@ -183,12 +183,20 @@ export default function BrickGrid({
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
       userZoomedRef.current = true;
       setZoom((z) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z - e.deltaY * 0.005)));
     } else {
       setPan((p) => ({ x: p.x - e.deltaX, y: p.y - e.deltaY }));
     }
+  }, []);
+
+  // Prevent native scroll/zoom from clamping the workspace at boundaries (e.g. wheel-up getting stuck).
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const prevent = (e: WheelEvent) => { e.preventDefault(); };
+    el.addEventListener("wheel", prevent, { passive: false });
+    return () => el.removeEventListener("wheel", prevent);
   }, []);
 
   const handleContainerMouseDown = useCallback((e: React.MouseEvent) => {
