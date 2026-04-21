@@ -50,6 +50,15 @@ interface MobileToolbarProps {
   projectName: string;
   onOpenWelcome: () => void;
   topActions?: ReactNode;
+  // Reference image
+  hasImage: boolean;
+  imageVisible: boolean;
+  imageOpacity: number;
+  onImageUpload: (file: File) => void;
+  onRemoveImage: () => void;
+  onImageVisibleChange: (v: boolean) => void;
+  onImageOpacityChange: (v: number) => void;
+  onImageEditModeChange: (v: boolean) => void;
 }
 
 function TopBtn({
