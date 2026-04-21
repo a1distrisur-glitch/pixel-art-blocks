@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 225 14% 95%;
+    --foreground: 225 25% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 225 25% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 25% 12%;
+    --primary: 245 58% 51%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 225 14% 91%;
+    --secondary-foreground: 225 25% 12%;
+    --muted: 225 14% 93%;
+    --muted-foreground: 225 10% 44%;
+    --accent: 160 60% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 70% 38%;
+    --success-foreground: 0 0% 100%;
+    --border: 225 14% 86%;
+    --input: 225 14% 86%;
+    --ring: 245 58% 51%;
+    --radius: 0.5rem;
+
+    --workspace: 225 12% 92%;
+    --workspace-dot: 225 14% 80%;
+    --grid-line: 225 14% 78%;
+    --toolbar: 230 25% 14%;
+    --toolbar-foreground: 225 14% 90%;
+    --toolbar-border: 230 20% 22%;
+    --toolbar-section: 230 22% 18%;
+    --toolbar-hover: 230 20% 24%;
+    --toolbar-muted: 225 12% 52%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .brick-shadow {
+    box-shadow: inset -1px -1px 0 rgba(0,0,0,0.15), inset 1px 1px 0 rgba(255,255,255,0.25);
+  }
+  .toolbar-shadow {
+    box-shadow: 4px 0 24px -4px rgba(0,0,0,0.3);
+  }
+  .glass-panel {
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  }
+  .zoom-control-shadow {
+    box-shadow: 0 2px 12px -2px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+  }
+
+  /* Custom scrollbar for toolbar */
+  .toolbar-scroll {
+    scrollbar-gutter: stable;
+  }
+  .toolbar-scroll::-webkit-scrollbar {
+    width: 10px;
+  }
+  .toolbar-scroll::-webkit-scrollbar-track {
+    background: hsl(230 20% 14%);
+    border-radius: 6px;
+  }
+  .toolbar-scroll::-webkit-scrollbar-thumb {
+    background: hsl(230 18% 42%);
+    border-radius: 6px;
+    border: 1px solid hsl(230 20% 14%);
+    min-height: 48px;
+  }
+  .toolbar-scroll::-webkit-scrollbar-thumb:hover {
+    background: hsl(230 18% 54%);
+  }
+
+  /* Hue slider custom */
+  .hue-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(to right,
+      hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%),
+      hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%)
+    );
+    outline: none;
+  }
+  .hue-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid rgba(0,0,0,0.3);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    cursor: pointer;
+  }
+  .hue-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid rgba(0,0,0,0.3);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    cursor: pointer;
+  }
+
+  /* Opacity slider */
+  .opacity-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, transparent, hsl(var(--primary)));
+    outline: none;
+  }
+  .opacity-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid hsl(var(--primary));
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    cursor: pointer;
+  }
+  .opacity-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid hsl(var(--primary));
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    cursor: pointer;
+  }
+
+  /* Workspace dot pattern */
+  .workspace-dots {
+    background-image: radial-gradient(circle, hsl(var(--workspace-dot)) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
