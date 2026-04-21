@@ -79,6 +79,7 @@ export default function ReferenceImageControls({
   onImageOpacityChange,
   onImageEditModeChange,
   variant = "lateral",
+  onRequestRemove,
 }: ReferenceImageControlsProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [showOpacitySlider, setShowOpacitySlider] = useState(false);
