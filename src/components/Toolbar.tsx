@@ -952,29 +952,6 @@ export default function Toolbar({
           </div>
         )}
 
-        {/* Fix Image Dialog */}
-        {showFixImageDialog && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-in fade-in-0">
-            <div className="bg-background rounded-2xl shadow-2xl border border-border p-6 w-[320px] space-y-4 animate-in zoom-in-95">
-              <h3 className="text-sm font-semibold text-foreground text-center">¿Desea fijar la imagen?</h3>
-              <div className="flex gap-2 justify-center">
-                <button onClick={() => { setShowFixImageDialog(false); setPendingTool(null); }}
-                  className="px-5 py-2 rounded-lg text-xs font-medium bg-secondary text-secondary-foreground hover:bg-muted transition-colors">
-                  No
-                </button>
-                <button onClick={() => {
-                  onImageEditModeChange(false);
-                  if (pendingTool) onToolChange(pendingTool);
-                  setShowFixImageDialog(false);
-                  setPendingTool(null);
-                }}
-                  className="px-5 py-2 rounded-lg text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm">
-                  Sí
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Project name prompt — shown when Saving/Exporting Pieces without a name */}
         {showProjectNamePrompt && (
