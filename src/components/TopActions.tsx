@@ -74,6 +74,8 @@ export default function TopActions({
   colors,
   onColorChange,
   onAddColor,
+  onReplaceColor,
+  onRemoveColor,
   gridWidth,
   gridHeight,
   onGridSizeChange,
