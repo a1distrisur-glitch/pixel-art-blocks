@@ -16,6 +16,8 @@ interface TopActionsProps {
   colors: BrickColor[];
   onColorChange: (hex: string) => void;
   onAddColor: (name: string, value: string) => void;
+  onReplaceColor: (index: number, name: string, value: string) => void;
+  onRemoveColor: (index: number) => void;
   gridWidth: number;
   gridHeight: number;
   onGridSizeChange: (w: number, h: number) => void;
