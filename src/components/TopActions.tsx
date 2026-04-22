@@ -7,6 +7,7 @@ import type { BrickColor } from "@/hooks/useBrickEditor";
 interface TopActionsProps {
   hasBricks: boolean;
   hasImage: boolean;
+  imageEditMode?: boolean;
   onLoadProject: () => void;
   onClear: () => void;
   onSaveProject: () => void;
