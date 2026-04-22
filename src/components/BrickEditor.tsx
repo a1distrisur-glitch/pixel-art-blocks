@@ -177,7 +177,6 @@ export default function BrickEditor() {
       imageVisible={editor.imageVisible}
       imageOpacity={editor.imageOpacity}
       onImageUpload={editor.handleImageUpload}
-      onRemoveImage={editor.removeImage}
       onImageVisibleChange={editor.setImageVisible}
       onImageOpacityChange={editor.setImageOpacity}
       onImageEditModeChange={editor.setImageEditMode}
