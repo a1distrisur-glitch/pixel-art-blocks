@@ -2,10 +2,20 @@ import { FolderOpen, Trash2, FilePlus2, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ColorPickerButton from "@/components/ColorPickerButton";
 import GridSettingsPopover from "@/components/GridSettingsPopover";
+import ReferenceImageTopBarControls from "@/components/ReferenceImageTopBarControls";
 import type { BrickColor } from "@/hooks/useBrickEditor";
 
 interface TopActionsProps {
   hasBricks: boolean;
+  hasImage: boolean;
+  imageEditMode: boolean;
+  imageVisible: boolean;
+  imageOpacity: number;
+  onImageUpload: (file: File) => void;
+  onImageVisibleChange: (v: boolean) => void;
+  onImageOpacityChange: (v: number) => void;
+  onImageEditModeChange: (v: boolean) => void;
+  onRequestRemoveImage: () => void;
   onLoadProject: () => void;
   onClear: () => void;
   onSaveProject: () => void;
@@ -65,6 +75,15 @@ function Btn({ onClick, title, variant = "default", disabled, active, children }
 
 export default function TopActions({
   hasBricks,
+  hasImage,
+  imageEditMode,
+  imageVisible,
+  imageOpacity,
+  onImageUpload,
+  onImageVisibleChange,
+  onImageOpacityChange,
+  onImageEditModeChange,
+  onRequestRemoveImage,
   onLoadProject,
   onClear,
   onSaveProject,
@@ -104,25 +123,19 @@ export default function TopActions({
           <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md object-cover" />
         </button>
       )}
-      {/* Acciones de proyecto (sincronizadas con flex lateral) */}
-      <Btn title="Cargar proyecto" onClick={onLoadProject}>
-        <FolderOpen size={18} />
-      </Btn>
-      <Btn title="Eliminar todo" variant="danger" onClick={onClear}>
-        <Trash2 size={18} />
-      </Btn>
-      <Btn title="Guardar proyecto" onClick={onSaveProject}>
-        <FilePlus2 size={18} />
-      </Btn>
-      <Btn
-        title="Exportar piezas"
-        variant="primary"
-        onClick={onExportPieces}
-        disabled={!hasBricks}
-        active={hasBricks}
-      >
-        <Download size={18} />
-      </Btn>
+      {variant === "floating" && (
+        <ReferenceImageTopBarControls
+          hasImage={hasImage}
+          imageVisible={imageVisible}
+          imageOpacity={imageOpacity}
+          imageEditMode={imageEditMode}
+          onImageUpload={onImageUpload}
+          onImageVisibleChange={onImageVisibleChange}
+          onImageOpacityChange={onImageOpacityChange}
+          onImageEditModeChange={onImageEditModeChange}
+          onRequestRemove={onRequestRemoveImage}
+        />
+      )}
       {variant === "floating" && (
         <ColorPickerButton
           selectedColor={selectedColor}
@@ -145,6 +158,24 @@ export default function TopActions({
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
       />
+      <Btn title="Cargar proyecto" onClick={onLoadProject}>
+        <FolderOpen size={18} />
+      </Btn>
+      <Btn title="Eliminar todo" variant="danger" onClick={onClear}>
+        <Trash2 size={18} />
+      </Btn>
+      <Btn title="Guardar proyecto" onClick={onSaveProject}>
+        <FilePlus2 size={18} />
+      </Btn>
+      <Btn
+        title="Exportar piezas"
+        variant="primary"
+        onClick={onExportPieces}
+        disabled={!hasBricks}
+        active={hasBricks}
+      >
+        <Download size={18} />
+      </Btn>
     </div>
   );
 }
