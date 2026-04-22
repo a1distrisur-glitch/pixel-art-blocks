@@ -11,6 +11,14 @@ interface TopActionsProps {
   hasBricks: boolean;
   hasImage: boolean;
   imageEditMode?: boolean;
+  imageVisible?: boolean;
+  imageOpacity?: number;
+  onImageUpload?: (file: File) => void;
+  onRemoveImage?: () => void;
+  onImageVisibleChange?: (v: boolean) => void;
+  onImageOpacityChange?: (v: number) => void;
+  onImageEditModeChange?: (v: boolean) => void;
+  onRequestRemoveImage?: () => void;
   onLoadProject: () => void;
   onClear: () => void;
   onSaveProject: () => void;
