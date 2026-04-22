@@ -111,6 +111,15 @@ export default function TopActions({
           side="bottom"
         />
       )}
+      <GridSettingsPopover
+        gridWidth={gridWidth}
+        gridHeight={gridHeight}
+        onGridSizeChange={onGridSizeChange}
+        gridVisible={gridVisible}
+        onGridVisibleChange={onGridVisibleChange}
+        cursorTrackerVisible={cursorTrackerVisible}
+        onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
+      />
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
