@@ -79,7 +79,7 @@ export default function GridSettingsPopover({
             className={cn(
               "flex items-center justify-center w-7 h-7 rounded-md transition-colors",
               gridVisible
-                ? "bg-primary/15 text-primary"
+                ? "bg-primary text-primary-foreground"
                 : "text-toolbar-foreground hover:bg-toolbar-hover",
             )}
           >

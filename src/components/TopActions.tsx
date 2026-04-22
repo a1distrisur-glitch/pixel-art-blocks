@@ -41,7 +41,7 @@ function Btn({ onClick, title, variant = "default", disabled, children }: BtnPro
     variant === "danger"
       ? "text-destructive hover:bg-destructive/10"
       : variant === "primary"
-      ? "text-primary hover:bg-primary/10"
+      ? "bg-primary text-primary-foreground hover:bg-primary/90"
       : "text-toolbar-foreground hover:bg-toolbar-hover";
   return (
     <button
