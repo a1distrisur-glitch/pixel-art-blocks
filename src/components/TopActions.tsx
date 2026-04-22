@@ -16,6 +16,8 @@ interface TopActionsProps {
   colors: BrickColor[];
   onColorChange: (hex: string) => void;
   onAddColor: (name: string, value: string) => void;
+  onReplaceColor: (index: number, name: string, value: string) => void;
+  onRemoveColor: (index: number) => void;
   gridWidth: number;
   gridHeight: number;
   onGridSizeChange: (w: number, h: number) => void;
@@ -72,6 +74,8 @@ export default function TopActions({
   colors,
   onColorChange,
   onAddColor,
+  onReplaceColor,
+  onRemoveColor,
   gridWidth,
   gridHeight,
   onGridSizeChange,
@@ -106,6 +110,8 @@ export default function TopActions({
           colors={colors}
           onColorChange={onColorChange}
           onAddColor={onAddColor}
+          onReplaceColor={onReplaceColor}
+          onRemoveColor={onRemoveColor}
           swatchSize={28}
           align="end"
           side="bottom"

@@ -182,6 +182,8 @@ export default function BrickEditor() {
       colors={editor.colors}
       onColorChange={editor.setSelectedColor}
       onAddColor={editor.addColor}
+      onReplaceColor={editor.replaceColor}
+      onRemoveColor={editor.removeColor}
       gridWidth={editor.gridWidth}
       gridHeight={editor.gridHeight}
       onGridSizeChange={editor.updateGridSize}
