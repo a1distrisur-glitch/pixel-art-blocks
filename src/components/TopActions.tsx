@@ -110,6 +110,8 @@ export default function TopActions({
           colors={colors}
           onColorChange={onColorChange}
           onAddColor={onAddColor}
+          onReplaceColor={onReplaceColor}
+          onRemoveColor={onRemoveColor}
           swatchSize={28}
           align="end"
           side="bottom"
