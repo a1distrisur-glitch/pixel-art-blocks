@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import {
   Undo2, Redo2, Menu, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
-  MousePointer2, Bold, Italic, X, Image as ImageIcon,
+  MousePointer2, Bold, Italic, X,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -11,6 +11,7 @@ import { SHAPE_LIST } from "@/lib/shapeRasterizer";
 import ShapeIcon from "@/components/ShapeIcon";
 import ColorPickerButton from "@/components/ColorPickerButton";
 import ReferenceImageControls from "@/components/ReferenceImageControls";
+import ReferenceImageTopBarControls from "@/components/ReferenceImageTopBarControls";
 
 interface MobileToolbarProps {
   tool: EditorTool;
@@ -208,8 +209,18 @@ export default function MobileToolbar({
           </span>
         </button>
 
-        {/* Acciones de proyecto (sincronizadas con flex lateral) entre Logo y Color */}
-        {topActions}
+        <ReferenceImageTopBarControls
+          hasImage={hasImage}
+          imageVisible={imageVisible}
+          imageOpacity={imageOpacity}
+          imageEditMode={imageEditMode}
+          onImageUpload={onImageUpload}
+          onImageVisibleChange={onImageVisibleChange}
+          onImageOpacityChange={onImageOpacityChange}
+          onImageEditModeChange={onImageEditModeChange}
+          onRequestRemove={onRequestRemoveImage}
+          compact
+        />
 
         <ColorPickerButton
           selectedColor={selectedColor}
@@ -221,9 +232,9 @@ export default function MobileToolbar({
           side="bottom"
         />
 
-        {/* Imagen de referencia: ahora vive en TopActions (inyectado vía {topActions}) para evitar duplicado */}
         <TopBtn label="Deshacer" onClick={onUndo} disabled={!canUndo}><Undo2 size={18} /></TopBtn>
         <TopBtn label="Rehacer" onClick={onRedo} disabled={!canRedo}><Redo2 size={18} /></TopBtn>
+        {topActions}
       </header>
 
       {/* Spacer so canvas doesn't sit under the top bar */}
