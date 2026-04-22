@@ -208,6 +208,9 @@ export default function MobileToolbar({
           </span>
         </button>
 
+        {/* Acciones de proyecto (sincronizadas con flex lateral) entre Logo y Color */}
+        {topActions}
+
         <ColorPickerButton
           selectedColor={selectedColor}
           colors={colors}
@@ -221,7 +224,6 @@ export default function MobileToolbar({
         {/* Imagen de referencia: ahora vive en TopActions (inyectado vía {topActions}) para evitar duplicado */}
         <TopBtn label="Deshacer" onClick={onUndo} disabled={!canUndo}><Undo2 size={18} /></TopBtn>
         <TopBtn label="Rehacer" onClick={onRedo} disabled={!canRedo}><Redo2 size={18} /></TopBtn>
-        {topActions}
       </header>
 
       {/* Spacer so canvas doesn't sit under the top bar */}
