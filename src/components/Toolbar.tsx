@@ -322,7 +322,11 @@ export default function Toolbar({
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [showConfirmNewDialog, setShowConfirmNewDialog] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
-  const [showFixImageDialog, setShowFixImageDialog] = useState(false);
+  // Auto-fix image when any other tool/control is selected while in image edit mode.
+  const runOrFix = useCallback((fn: () => void) => {
+    if (imageEditMode) onImageEditModeChange(false);
+    fn();
+  }, [imageEditMode, onImageEditModeChange]);
   const [showLoadDialog, setShowLoadDialog] = useState(false);
   // Removal of reference image is handled by the global dialog in BrickEditor (via onRequestRemove)
   const [showOpacitySlider, setShowOpacitySlider] = useState(false);
@@ -452,19 +456,19 @@ export default function Toolbar({
           {/* Tools (no title) */}
           <section className="border-b border-toolbar-border px-4 pt-3 pb-2 space-y-1.5">
             <div className="flex gap-1 flex-nowrap">
-              <ToolBtn active={tool === "shape"} onClick={() => { if (imageEditMode) { setPendingTool("shape"); setShowFixImageDialog(true); } else onToolChange("shape"); }} tooltip="Dibujar formas" disabled={false} className={`flex-1 justify-center !px-1.5 ${imageEditMode ? "opacity-30" : ""}`}>
+              <ToolBtn active={tool === "shape"} onClick={() => runOrFix(() => onToolChange("shape"))} tooltip="Dibujar formas" disabled={false} className="flex-1 justify-center !px-1.5">
                 <Shapes size={14} />
               </ToolBtn>
-              <ToolBtn active={tool === "text"} onClick={() => { if (imageEditMode) { setPendingTool("text"); setShowFixImageDialog(true); } else onToolChange("text"); }} tooltip="Agregar texto libre" disabled={false} className={`flex-1 justify-center !px-1.5 ${imageEditMode ? "opacity-30" : ""}`}>
+              <ToolBtn active={tool === "text"} onClick={() => runOrFix(() => onToolChange("text"))} tooltip="Agregar texto libre" disabled={false} className="flex-1 justify-center !px-1.5">
                 <Type size={14} />
               </ToolBtn>
-              <ToolBtn active={tool === "pipette"} onClick={() => { if (imageEditMode) { setPendingTool("pipette"); setShowFixImageDialog(true); } else onToolChange("pipette"); }} tooltip="Capturar color de la imagen de referencia" disabled={false} className={`flex-1 justify-center !px-1.5 ${imageEditMode ? "opacity-30" : ""}`}>
+              <ToolBtn active={tool === "pipette"} onClick={() => runOrFix(() => onToolChange("pipette"))} tooltip="Capturar color de la imagen de referencia" disabled={false} className="flex-1 justify-center !px-1.5">
                 <Pipette size={14} />
               </ToolBtn>
-              <ToolBtn active={tool === "move"} onClick={() => { if (imageEditMode) { setPendingTool("move"); setShowFixImageDialog(true); } else onToolChange("move"); }} tooltip="Seleccionar y mover bloques" disabled={false} className={`flex-1 justify-center !px-1.5 ${imageEditMode ? "opacity-30" : ""}`}>
+              <ToolBtn active={tool === "move"} onClick={() => runOrFix(() => onToolChange("move"))} tooltip="Seleccionar y mover bloques" disabled={false} className="flex-1 justify-center !px-1.5">
                 <Move size={14} />
               </ToolBtn>
-              <ToolBtn active={tool === "erase"} danger onClick={() => { if (imageEditMode) { setPendingTool("erase"); setShowFixImageDialog(true); } else onToolChange("erase"); }} tooltip="Borrar bloques" disabled={false} className={`flex-1 justify-center !px-1.5 ${imageEditMode ? "opacity-30" : ""}`}>
+              <ToolBtn active={tool === "erase"} danger onClick={() => runOrFix(() => onToolChange("erase"))} tooltip="Borrar bloques" disabled={false} className="flex-1 justify-center !px-1.5">
                 <Eraser size={14} />
               </ToolBtn>
             </div>
@@ -490,7 +494,7 @@ export default function Toolbar({
                 <ArrowUpDown size={12} />
               </ToolBtn>
               {([3, 2, 1] as BrickSize[]).map((size) => (
-                <ToolBtn key={size} active={selectedSize === size && tool === "place"} onClick={() => { onSizeChange(size); if (imageEditMode) { setPendingTool("place"); setShowFixImageDialog(true); } else onToolChange("place"); }}
+                <ToolBtn key={size} active={selectedSize === size && tool === "place"} onClick={() => runOrFix(() => { onSizeChange(size); onToolChange("place"); })}
                   tooltip={`Bloque 1×${size}`}
                   className="!text-[11px] !px-2 !py-1 flex-1 justify-center">
                   1×{size}
@@ -616,7 +620,7 @@ export default function Toolbar({
                   <TooltipTrigger asChild>
                     <button
                       title={c.name}
-                      onClick={() => { onColorChange(c.value); if (imageEditMode) { setPendingTool("place"); setShowFixImageDialog(true); } else onToolChange("place"); }}
+                      onClick={() => runOrFix(() => { onColorChange(c.value); onToolChange("place"); })}
                       onContextMenu={(e) => { e.preventDefault(); openColorDialog("edit", c.value, i); }}
                       className={`w-[28px] h-[28px] rounded-lg transition-all duration-150 ${
                         selectedColor === c.value
