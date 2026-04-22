@@ -1,5 +1,5 @@
 import { FolderOpen, Trash2, FilePlus2, Download, Image as ImageIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import ColorPickerButton from "@/components/ColorPickerButton";
@@ -109,7 +109,7 @@ export default function TopActions({
   variant = "floating",
   className,
 }: TopActionsProps) {
-  const [refImageOpen, setRefImageOpen] = useState(false);
+  const [_refImageOpen, setRefImageOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const wrapper =
@@ -119,6 +119,17 @@ export default function TopActions({
 
   return (
     <div className={cn(wrapper, className)}>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f && onImageUpload) onImageUpload(f);
+          e.target.value = "";
+        }}
+      />
       {variant === "floating" && (
         <button
           type="button"
@@ -152,6 +163,47 @@ export default function TopActions({
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
       />
+      <Popover open={_refImageOpen} onOpenChange={setRefImageOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-label="Imagen de referencia"
+            title="Imagen de referencia"
+            className={`flex items-center justify-center w-9 h-9 rounded-md transition-colors ${
+              imageEditMode || hasImage
+                ? "bg-primary/15 text-primary"
+                : "text-toolbar-foreground hover:bg-toolbar-hover"
+            }`}
+          >
+            <ImageIcon size={18} />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          side="bottom"
+          align="end"
+          sideOffset={8}
+          className="w-[280px] p-2.5 bg-toolbar border-toolbar-border"
+        >
+          <p className="text-[10px] text-toolbar-foreground mb-1.5 uppercase tracking-wider">
+            Imagen de referencia
+          </p>
+          {onImageUpload && onRemoveImage && onImageVisibleChange && onImageOpacityChange && onImageEditModeChange && onRequestRemoveImage && imageVisible !== undefined && imageOpacity !== undefined && imageEditMode !== undefined && (
+            <ReferenceImageControls
+              hasImage={hasImage}
+              imageVisible={imageVisible}
+              imageOpacity={imageOpacity}
+              imageEditMode={imageEditMode}
+              onImageUpload={(f) => { onImageUpload(f); }}
+              onRemoveImage={onRemoveImage}
+              onImageVisibleChange={onImageVisibleChange}
+              onImageOpacityChange={onImageOpacityChange}
+              onImageEditModeChange={onImageEditModeChange}
+              variant="compact"
+              onRequestRemove={onRequestRemoveImage}
+            />
+          )}
+        </PopoverContent>
+      </Popover>
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
