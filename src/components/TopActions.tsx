@@ -158,7 +158,7 @@ export default function TopActions({
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
       />
-      <Btn title="Cargar proyecto" onClick={onLoadProject}>
+      <Btn title="Cargar proyecto" variant="primary" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
       <Btn title="Eliminar todo" variant="danger" onClick={onClear}>

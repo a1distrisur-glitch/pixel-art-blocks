@@ -168,7 +168,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
   const [selectedColor, setSelectedColor] = useState(DEFAULT_BRICK_COLORS[0].value);
   const [selectedSize, setSelectedSize] = useState<BrickSize>(1);
   const [gridVisible, setGridVisible] = useState(true);
-  const [cursorTrackerVisible, setCursorTrackerVisible] = useState(false);
+  const [cursorTrackerVisible, setCursorTrackerVisible] = useState(true);
   const [orientation, setOrientation] = useState<BrickOrientation>("horizontal");
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
   const [imageOpacity, setImageOpacity] = useState(0.8);

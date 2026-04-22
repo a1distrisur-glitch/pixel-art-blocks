@@ -703,7 +703,7 @@ export default function Toolbar({
         {/* Bottom actions — compact icon grid */}
         <div className="px-3 py-2.5 border-t border-toolbar-border">
           <div className="grid grid-cols-4 gap-1.5">
-            <ActionBtn onClick={onRequestLoadProject ?? (() => { if (hasBricks || hasImage) setShowLoadDialog(true); else onLoadProject(); })} tooltip="Cargar proyecto">
+            <ActionBtn variant="accent" onClick={onRequestLoadProject ?? (() => { if (hasBricks || hasImage) setShowLoadDialog(true); else onLoadProject(); })} tooltip="Cargar proyecto">
               <FolderOpen size={14} />
             </ActionBtn>
             <ActionBtn variant="danger" onClick={onRequestClear ?? (() => setShowClearDialog(true))} tooltip="Eliminar todo">
