@@ -1,4 +1,4 @@
-import { FolderOpen, Trash2, FilePlus2, Download } from "lucide-react";
+import { FolderOpen, Trash2, FilePlus2, Download, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ColorPickerButton from "@/components/ColorPickerButton";
 import GridSettingsPopover from "@/components/GridSettingsPopover";
@@ -68,6 +68,7 @@ function Btn({ onClick, title, variant = "default", disabled, active, children }
 export default function TopActions({
   hasBricks,
   hasImage,
+  imageEditMode,
   onLoadProject,
   onClear,
   onSaveProject,
@@ -129,6 +130,13 @@ export default function TopActions({
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
       />
+      <Btn
+        title="Imagen de referencia"
+        active={hasImage}
+        onClick={() => {}}
+      >
+        <ImageIcon size={18} />
+      </Btn>
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
@@ -138,7 +146,13 @@ export default function TopActions({
       <Btn title="Guardar proyecto" onClick={onSaveProject}>
         <FilePlus2 size={18} />
       </Btn>
-      <Btn title="Exportar piezas" variant="primary" onClick={onExportPieces} disabled={!hasBricks}>
+      <Btn
+        title="Exportar piezas"
+        variant="primary"
+        onClick={onExportPieces}
+        disabled={!hasBricks}
+        active={hasBricks}
+      >
         <Download size={18} />
       </Btn>
     </div>
