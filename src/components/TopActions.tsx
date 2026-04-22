@@ -1,7 +1,10 @@
 import { FolderOpen, Trash2, FilePlus2, Download, Image as ImageIcon } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import ColorPickerButton from "@/components/ColorPickerButton";
 import GridSettingsPopover from "@/components/GridSettingsPopover";
+import ReferenceImageControls from "@/components/ReferenceImageControls";
 import type { BrickColor } from "@/hooks/useBrickEditor";
 
 interface TopActionsProps {
