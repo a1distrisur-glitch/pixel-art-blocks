@@ -84,7 +84,7 @@ export default function ReferenceImageControls({
   onRequestRemove,
 }: ReferenceImageControlsProps) {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [showOpacitySlider, setShowOpacitySlider] = useState(false);
+  const [showOpacitySlider, setShowOpacitySlider] = useState(true);
 
   const iconSize = variant === "compact" ? 14 : 13;
 
