@@ -130,13 +130,6 @@ export default function TopActions({
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
       />
-      <Btn
-        title="Imagen de referencia"
-        active={hasImage}
-        onClick={() => {}}
-      >
-        <ImageIcon size={18} />
-      </Btn>
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
