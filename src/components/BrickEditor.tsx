@@ -172,16 +172,6 @@ export default function BrickEditor() {
   const topActions = (
     <TopActions
       hasBricks={editor.hasBricks}
-      hasImage={!!editor.referenceImage}
-      imageEditMode={editor.imageEditMode}
-      imageVisible={editor.imageVisible}
-      imageOpacity={editor.imageOpacity}
-      onImageUpload={editor.handleImageUpload}
-      onRemoveImage={editor.removeImage}
-      onImageVisibleChange={editor.setImageVisible}
-      onImageOpacityChange={editor.setImageOpacity}
-      onImageEditModeChange={editor.setImageEditMode}
-      onRequestRemoveImage={openRemoveImageDialog}
       onLoadProject={openLoadDialog}
       onClear={openClearDialog}
       onSaveProject={openSaveDialog}
