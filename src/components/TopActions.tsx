@@ -72,6 +72,13 @@ export default function TopActions({
   colors,
   onColorChange,
   onAddColor,
+  gridWidth,
+  gridHeight,
+  onGridSizeChange,
+  gridVisible,
+  onGridVisibleChange,
+  cursorTrackerVisible,
+  onCursorTrackerVisibleChange,
   variant = "floating",
   className,
 }: TopActionsProps) {
