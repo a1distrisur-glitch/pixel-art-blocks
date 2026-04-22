@@ -151,8 +151,8 @@ export default function ColorPickerButton({
         baseColor={editInitial}
         onAccept={handleAccept}
         onCancel={closeDialog}
-        showDelete={dialogMode === "edit" && !!onRemoveColor}
-        onDelete={dialogMode === "edit" ? handleDelete : undefined}
+        onRemove={dialogMode === "edit" && onRemoveColor ? handleDelete : undefined}
+        removeLabel="Eliminar Color"
       />
     </>
   );
