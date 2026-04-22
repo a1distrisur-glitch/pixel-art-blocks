@@ -147,8 +147,12 @@ export default function MobileToolbar({
   const [textOpen, setTextOpen] = useState(false);
   const [refImageOpen, setRefImageOpen] = useState(false);
 
+  const ensureImageFixed = () => {
+    if (imageEditMode) onImageEditModeChange(false);
+  };
+
   const activateTool = (next: EditorTool) => {
-    if (imageEditMode) return;
+    ensureImageFixed();
     onToolChange(next);
   };
 
@@ -167,14 +171,14 @@ export default function MobileToolbar({
   };
 
   const handleSizeSelect = (size: BrickSize) => {
-    if (imageEditMode) return;
+    ensureImageFixed();
     onSizeChange(size);
     onToolChange("place");
     setPaintOpen(false);
   };
 
   const handleOrientationSelect = (o: BrickOrientation) => {
-    if (imageEditMode) return;
+    ensureImageFixed();
     onOrientationChange(o);
   };
 
@@ -225,7 +229,7 @@ export default function MobileToolbar({
         <ColorPickerButton
           selectedColor={selectedColor}
           colors={colors}
-          onColorChange={(hex) => { onColorChange(hex); if (!imageEditMode) onToolChange("place"); }}
+          onColorChange={(hex) => { ensureImageFixed(); onColorChange(hex); onToolChange("place"); }}
           onAddColor={onAddColor}
           swatchSize={28}
           align="end"
@@ -267,7 +271,7 @@ export default function MobileToolbar({
             <div className="flex gap-1">
               <PopBtn
                 active={orientation === "horizontal"}
-                disabled={selectedSize === 1 || imageEditMode}
+                disabled={selectedSize === 1}
                 onClick={() => handleOrientationSelect("horizontal")}
                 label="Orientación horizontal"
               >
@@ -275,7 +279,7 @@ export default function MobileToolbar({
               </PopBtn>
               <PopBtn
                 active={orientation === "vertical"}
-                disabled={selectedSize === 1 || imageEditMode}
+                disabled={selectedSize === 1}
                 onClick={() => handleOrientationSelect("vertical")}
                 label="Orientación vertical"
               >
@@ -285,7 +289,7 @@ export default function MobileToolbar({
                 <PopBtn
                   key={size}
                   active={selectedSize === size && tool === "place"}
-                  disabled={imageEditMode}
+                  disabled={false}
                   onClick={() => handleSizeSelect(size)}
                   label={`Bloque 1×${size}`}
                 >
