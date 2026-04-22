@@ -35,16 +35,18 @@ interface BtnProps {
   title: string;
   variant?: "default" | "danger" | "primary";
   disabled?: boolean;
+  active?: boolean;
   children: React.ReactNode;
 }
 
-function Btn({ onClick, title, variant = "default", disabled, children }: BtnProps) {
-  const styles =
-    variant === "danger"
+function Btn({ onClick, title, variant = "default", disabled, active, children }: BtnProps) {
+  const styles = active
+    ? "bg-primary text-primary-foreground"
+    : variant === "danger"
       ? "text-destructive hover:bg-destructive/10"
       : variant === "primary"
-      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-      : "text-toolbar-foreground hover:bg-toolbar-hover";
+        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+        : "text-toolbar-foreground hover:bg-toolbar-hover";
   return (
     <button
       type="button"
