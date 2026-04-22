@@ -1,4 +1,4 @@
-import { FolderOpen, Trash2, FilePlus2, Download } from "lucide-react";
+import { FolderOpen, Trash2, FilePlus2, Download, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ColorPickerButton from "@/components/ColorPickerButton";
 import GridSettingsPopover from "@/components/GridSettingsPopover";
@@ -7,6 +7,7 @@ import type { BrickColor } from "@/hooks/useBrickEditor";
 interface TopActionsProps {
   hasBricks: boolean;
   hasImage: boolean;
+  imageEditMode?: boolean;
   onLoadProject: () => void;
   onClear: () => void;
   onSaveProject: () => void;
@@ -35,16 +36,18 @@ interface BtnProps {
   title: string;
   variant?: "default" | "danger" | "primary";
   disabled?: boolean;
+  active?: boolean;
   children: React.ReactNode;
 }
 
-function Btn({ onClick, title, variant = "default", disabled, children }: BtnProps) {
-  const styles =
-    variant === "danger"
+function Btn({ onClick, title, variant = "default", disabled, active, children }: BtnProps) {
+  const styles = active
+    ? "bg-primary text-primary-foreground"
+    : variant === "danger"
       ? "text-destructive hover:bg-destructive/10"
       : variant === "primary"
-      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-      : "text-toolbar-foreground hover:bg-toolbar-hover";
+        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+        : "text-toolbar-foreground hover:bg-toolbar-hover";
   return (
     <button
       type="button"
@@ -65,6 +68,7 @@ function Btn({ onClick, title, variant = "default", disabled, children }: BtnPro
 export default function TopActions({
   hasBricks,
   hasImage,
+  imageEditMode,
   onLoadProject,
   onClear,
   onSaveProject,
@@ -126,6 +130,13 @@ export default function TopActions({
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
       />
+      <Btn
+        title="Imagen de referencia"
+        active={hasImage}
+        onClick={() => {}}
+      >
+        <ImageIcon size={18} />
+      </Btn>
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
@@ -135,7 +146,13 @@ export default function TopActions({
       <Btn title="Guardar proyecto" onClick={onSaveProject}>
         <FilePlus2 size={18} />
       </Btn>
-      <Btn title="Exportar piezas" variant="primary" onClick={onExportPieces} disabled={!hasBricks}>
+      <Btn
+        title="Exportar piezas"
+        variant="primary"
+        onClick={onExportPieces}
+        disabled={!hasBricks}
+        active={hasBricks}
+      >
         <Download size={18} />
       </Btn>
     </div>
