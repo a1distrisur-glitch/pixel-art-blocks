@@ -80,6 +80,14 @@ export default function TopActions({
   hasBricks,
   hasImage,
   imageEditMode,
+  imageVisible,
+  imageOpacity,
+  onImageUpload,
+  onRemoveImage,
+  onImageVisibleChange,
+  onImageOpacityChange,
+  onImageEditModeChange,
+  onRequestRemoveImage,
   onLoadProject,
   onClear,
   onSaveProject,
@@ -101,6 +109,9 @@ export default function TopActions({
   variant = "floating",
   className,
 }: TopActionsProps) {
+  const [refImageOpen, setRefImageOpen] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
   const wrapper =
     variant === "floating"
       ? "fixed top-3 right-3 z-30 flex items-center gap-1 px-1.5 py-1 rounded-lg bg-toolbar/95 backdrop-blur border border-toolbar-border toolbar-shadow"
