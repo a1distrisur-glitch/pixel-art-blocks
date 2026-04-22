@@ -1,24 +1,11 @@
-import { FolderOpen, Trash2, FilePlus2, Download, Image as ImageIcon } from "lucide-react";
-import { useState, useRef } from "react";
+import { FolderOpen, Trash2, FilePlus2, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import ColorPickerButton from "@/components/ColorPickerButton";
 import GridSettingsPopover from "@/components/GridSettingsPopover";
-import ReferenceImageControls from "@/components/ReferenceImageControls";
 import type { BrickColor } from "@/hooks/useBrickEditor";
 
 interface TopActionsProps {
   hasBricks: boolean;
-  hasImage: boolean;
-  imageEditMode?: boolean;
-  imageVisible?: boolean;
-  imageOpacity?: number;
-  onImageUpload?: (file: File) => void;
-  onRemoveImage?: () => void;
-  onImageVisibleChange?: (v: boolean) => void;
-  onImageOpacityChange?: (v: number) => void;
-  onImageEditModeChange?: (v: boolean) => void;
-  onRequestRemoveImage?: () => void;
   onLoadProject: () => void;
   onClear: () => void;
   onSaveProject: () => void;
