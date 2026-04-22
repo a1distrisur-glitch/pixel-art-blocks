@@ -137,7 +137,7 @@ export default function ColorPickerButton({
             </button>
           </div>
           {(onReplaceColor || onRemoveColor) && (
-            <p className="mt-2 text-[10px] text-toolbar-foreground/60 text-center">
+            <p className="mt-2 pt-2 border-t border-toolbar-border text-[10px] text-toolbar-foreground text-center">
               Click derecho para Editar / Borrar
             </p>
           )}
