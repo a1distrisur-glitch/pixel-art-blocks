@@ -182,6 +182,13 @@ export default function BrickEditor() {
       colors={editor.colors}
       onColorChange={editor.setSelectedColor}
       onAddColor={editor.addColor}
+      gridWidth={editor.gridWidth}
+      gridHeight={editor.gridHeight}
+      onGridSizeChange={editor.updateGridSize}
+      gridVisible={editor.gridVisible}
+      onGridVisibleChange={editor.setGridVisible}
+      cursorTrackerVisible={editor.cursorTrackerVisible}
+      onCursorTrackerVisibleChange={editor.setCursorTrackerVisible}
       variant={isCompact ? "inline" : "floating"}
     />
   );

@@ -1,6 +1,7 @@
 import { FolderOpen, Trash2, FilePlus2, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ColorPickerButton from "@/components/ColorPickerButton";
+import GridSettingsPopover from "@/components/GridSettingsPopover";
 import type { BrickColor } from "@/hooks/useBrickEditor";
 
 interface TopActionsProps {
@@ -15,6 +16,13 @@ interface TopActionsProps {
   colors: BrickColor[];
   onColorChange: (hex: string) => void;
   onAddColor: (name: string, value: string) => void;
+  gridWidth: number;
+  gridHeight: number;
+  onGridSizeChange: (w: number, h: number) => void;
+  gridVisible: boolean;
+  onGridVisibleChange: (v: boolean) => void;
+  cursorTrackerVisible: boolean;
+  onCursorTrackerVisibleChange: (v: boolean) => void;
   /** Visual variant: "floating" for desktop overlay, "inline" for top bars */
   variant?: "floating" | "inline";
   className?: string;
@@ -64,6 +72,13 @@ export default function TopActions({
   colors,
   onColorChange,
   onAddColor,
+  gridWidth,
+  gridHeight,
+  onGridSizeChange,
+  gridVisible,
+  onGridVisibleChange,
+  cursorTrackerVisible,
+  onCursorTrackerVisibleChange,
   variant = "floating",
   className,
 }: TopActionsProps) {
@@ -96,6 +111,15 @@ export default function TopActions({
           side="bottom"
         />
       )}
+      <GridSettingsPopover
+        gridWidth={gridWidth}
+        gridHeight={gridHeight}
+        onGridSizeChange={onGridSizeChange}
+        gridVisible={gridVisible}
+        onGridVisibleChange={onGridVisibleChange}
+        cursorTrackerVisible={cursorTrackerVisible}
+        onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
+      />
       <Btn title="Cargar proyecto" onClick={onLoadProject}>
         <FolderOpen size={18} />
       </Btn>
