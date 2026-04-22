@@ -10,6 +10,8 @@ interface ColorPickerButtonProps {
   colors: BrickColor[];
   onColorChange: (hex: string) => void;
   onAddColor: (name: string, value: string) => void;
+  onReplaceColor?: (index: number, name: string, value: string) => void;
+  onRemoveColor?: (index: number) => void;
   /** Tamaño del swatch en px (default 28 para flotante desktop, 32 para móvil) */
   swatchSize?: number;
   className?: string;
@@ -23,26 +25,47 @@ export default function ColorPickerButton({
   colors,
   onColorChange,
   onAddColor,
+  onReplaceColor,
+  onRemoveColor,
   swatchSize = 28,
   className,
   align = "end",
   side = "bottom",
 }: ColorPickerButtonProps) {
   const [open, setOpen] = useState(false);
-  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [dialogMode, setDialogMode] = useState<"add" | "edit" | null>(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editInitial, setEditInitial] = useState<string>(selectedColor || "#DC2626");
   // Cerramos el popover cuando se abre el dialog para evitar capas superpuestas
   const wasOpenBeforeDialog = useRef(false);
   useEffect(() => {
-    if (showAddDialog) {
+    if (dialogMode) {
       wasOpenBeforeDialog.current = open;
       setOpen(false);
     }
-  }, [showAddDialog]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dialogMode]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const closeDialog = () => {
+    setDialogMode(null);
+    setEditIndex(null);
+  };
 
   const handleAccept = (hex: string) => {
-    onAddColor(hex, hex);
-    onColorChange(hex);
-    setShowAddDialog(false);
+    if (dialogMode === "edit" && editIndex !== null && onReplaceColor) {
+      onReplaceColor(editIndex, hex, hex);
+      onColorChange(hex);
+    } else {
+      onAddColor(hex, hex);
+      onColorChange(hex);
+    }
+    closeDialog();
+  };
+
+  const handleDelete = () => {
+    if (editIndex !== null && onRemoveColor) {
+      onRemoveColor(editIndex);
+    }
+    closeDialog();
   };
 
   return (
@@ -81,6 +104,13 @@ export default function ColorPickerButton({
                   onColorChange(c.value);
                   setOpen(false);
                 }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  if (!onReplaceColor && !onRemoveColor) return;
+                  setEditIndex(i);
+                  setEditInitial(c.value);
+                  setDialogMode("edit");
+                }}
                 className={cn(
                   "w-7 h-7 rounded-lg transition-all duration-150",
                   selectedColor === c.value
@@ -95,7 +125,10 @@ export default function ColorPickerButton({
             ))}
             <button
               type="button"
-              onClick={() => setShowAddDialog(true)}
+              onClick={() => {
+                setEditInitial(selectedColor || "#DC2626");
+                setDialogMode("add");
+              }}
               className="w-7 h-7 rounded-lg border-2 border-dashed border-toolbar-foreground/40 flex items-center justify-center text-toolbar-foreground/70 hover:border-primary/50 hover:text-primary transition-colors"
               aria-label="Agregar color"
               title="Agregar color"
@@ -103,16 +136,23 @@ export default function ColorPickerButton({
               <Plus size={12} />
             </button>
           </div>
+          {(onReplaceColor || onRemoveColor) && (
+            <p className="mt-2 text-[10px] text-toolbar-foreground/60 text-center">
+              Click derecho para Editar / Borrar
+            </p>
+          )}
         </PopoverContent>
       </Popover>
 
       <BackgroundColorDialog
-        open={showAddDialog}
-        title="Agregar Color"
-        initialColor={selectedColor || "#DC2626"}
-        baseColor={selectedColor || "#DC2626"}
+        open={dialogMode !== null}
+        title={dialogMode === "edit" ? "Editar Color" : "Agregar Color"}
+        initialColor={editInitial}
+        baseColor={editInitial}
         onAccept={handleAccept}
-        onCancel={() => setShowAddDialog(false)}
+        onCancel={closeDialog}
+        showDelete={dialogMode === "edit" && !!onRemoveColor}
+        onDelete={dialogMode === "edit" ? handleDelete : undefined}
       />
     </>
   );
