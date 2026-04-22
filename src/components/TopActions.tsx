@@ -65,16 +65,6 @@ function Btn({ onClick, title, variant = "default", disabled, active, children }
 
 export default function TopActions({
   hasBricks,
-  hasImage,
-  imageEditMode,
-  imageVisible,
-  imageOpacity,
-  onImageUpload,
-  onRemoveImage,
-  onImageVisibleChange,
-  onImageOpacityChange,
-  onImageEditModeChange,
-  onRequestRemoveImage,
   onLoadProject,
   onClear,
   onSaveProject,
@@ -96,9 +86,6 @@ export default function TopActions({
   variant = "floating",
   className,
 }: TopActionsProps) {
-  const [_refImageOpen, setRefImageOpen] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-
   const wrapper =
     variant === "floating"
       ? "fixed top-3 right-3 z-30 flex items-center gap-1 px-1.5 py-1 rounded-lg bg-toolbar/95 backdrop-blur border border-toolbar-border toolbar-shadow"
@@ -106,17 +93,6 @@ export default function TopActions({
 
   return (
     <div className={cn(wrapper, className)}>
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f && onImageUpload) onImageUpload(f);
-          e.target.value = "";
-        }}
-      />
       {variant === "floating" && (
         <button
           type="button"
@@ -128,6 +104,25 @@ export default function TopActions({
           <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md object-cover" />
         </button>
       )}
+      {/* Acciones de proyecto (sincronizadas con flex lateral) */}
+      <Btn title="Cargar proyecto" onClick={onLoadProject}>
+        <FolderOpen size={18} />
+      </Btn>
+      <Btn title="Eliminar todo" variant="danger" onClick={onClear}>
+        <Trash2 size={18} />
+      </Btn>
+      <Btn title="Guardar proyecto" onClick={onSaveProject}>
+        <FilePlus2 size={18} />
+      </Btn>
+      <Btn
+        title="Exportar piezas"
+        variant="primary"
+        onClick={onExportPieces}
+        disabled={!hasBricks}
+        active={hasBricks}
+      >
+        <Download size={18} />
+      </Btn>
       {variant === "floating" && (
         <ColorPickerButton
           selectedColor={selectedColor}
@@ -150,65 +145,6 @@ export default function TopActions({
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
       />
-      <Popover open={_refImageOpen} onOpenChange={setRefImageOpen}>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            aria-label="Imagen de referencia"
-            title="Imagen de referencia"
-            className={`flex items-center justify-center w-9 h-9 rounded-md transition-colors ${
-              imageEditMode || hasImage
-                ? "bg-primary/15 text-primary"
-                : "text-toolbar-foreground hover:bg-toolbar-hover"
-            }`}
-          >
-            <ImageIcon size={18} />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent
-          side="bottom"
-          align="end"
-          sideOffset={8}
-          className="w-[280px] p-2.5 bg-toolbar border-toolbar-border"
-        >
-          <p className="text-[10px] text-toolbar-foreground mb-1.5 uppercase tracking-wider">
-            Imagen de referencia
-          </p>
-          {onImageUpload && onRemoveImage && onImageVisibleChange && onImageOpacityChange && onImageEditModeChange && onRequestRemoveImage && imageVisible !== undefined && imageOpacity !== undefined && imageEditMode !== undefined && (
-            <ReferenceImageControls
-              hasImage={hasImage}
-              imageVisible={imageVisible}
-              imageOpacity={imageOpacity}
-              imageEditMode={imageEditMode}
-              onImageUpload={(f) => { onImageUpload(f); }}
-              onRemoveImage={onRemoveImage}
-              onImageVisibleChange={onImageVisibleChange}
-              onImageOpacityChange={onImageOpacityChange}
-              onImageEditModeChange={onImageEditModeChange}
-              variant="compact"
-              onRequestRemove={onRequestRemoveImage}
-            />
-          )}
-        </PopoverContent>
-      </Popover>
-      <Btn title="Cargar proyecto" onClick={onLoadProject}>
-        <FolderOpen size={18} />
-      </Btn>
-      <Btn title="Eliminar todo" variant="danger" onClick={onClear}>
-        <Trash2 size={18} />
-      </Btn>
-      <Btn title="Guardar proyecto" onClick={onSaveProject}>
-        <FilePlus2 size={18} />
-      </Btn>
-      <Btn
-        title="Exportar piezas"
-        variant="primary"
-        onClick={onExportPieces}
-        disabled={!hasBricks}
-        active={hasBricks}
-      >
-        <Download size={18} />
-      </Btn>
     </div>
   );
 }
