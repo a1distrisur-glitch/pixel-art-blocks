@@ -128,7 +128,7 @@ const inputCls = "w-full h-8 px-2 rounded-md bg-toolbar-section border border-to
 
 export default function MobileToolbar({
   tool, onToolChange, onUndo, onRedo, canUndo, canRedo,
-  selectedColor, onColorChange, colors, onAddColor,
+  selectedColor, onColorChange, colors, onAddColor, onReplaceColor, onRemoveColor,
   selectedSize, onSizeChange, orientation, onOrientationChange,
   shapeType, onShapeTypeChange, shapeFillMode, onShapeFillModeChange,
   pixelText, onPixelTextChange,
