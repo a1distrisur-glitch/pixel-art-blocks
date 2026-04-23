@@ -130,10 +130,21 @@ export default function ColorPickerButton({
                 }}
                 onContextMenu={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   if (!onReplaceColor && !onRemoveColor) return;
                   setEditIndex(i);
                   setEditInitial(c.value);
                   setDialogMode("edit");
+                }}
+                onPointerDown={(e) => {
+                  if (e.button === 2) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!onReplaceColor && !onRemoveColor) return;
+                    setEditIndex(i);
+                    setEditInitial(c.value);
+                    setDialogMode("edit");
+                  }
                 }}
                 onTouchStart={() => startLongPress(i, c.value)}
                 onTouchEnd={cancelLongPress}
