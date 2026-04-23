@@ -54,13 +54,16 @@ export default function ColorPickerButton({
   // - Doble click                        → editar
   // - Click corto                        → seleccionar color
   const longPressTimer = useRef<number | null>(null);
+  const clickTimer = useRef<number | null>(null);
   const gestureTriggered = useRef(false);
   const startPos = useRef<{ x: number; y: number } | null>(null);
-  const lastTapAt = useRef<number>(0);
-  const lastTapIndex = useRef<number>(-1);
 
   const triggerEdit = (i: number, value: string) => {
     if (!canEdit) return;
+    if (clickTimer.current !== null) {
+      window.clearTimeout(clickTimer.current);
+      clickTimer.current = null;
+    }
     gestureTriggered.current = true;
     setEditIndex(i);
     setEditInitial(value);
@@ -106,18 +109,13 @@ export default function ColorPickerButton({
       gestureTriggered.current = false;
       return;
     }
-    // doble tap manual (refuerza dblclick para iOS)
-    const now = Date.now();
-    if (lastTapIndex.current === i && now - lastTapAt.current < 350) {
-      lastTapAt.current = 0;
-      lastTapIndex.current = -1;
-      triggerEdit(i, value);
-      return;
-    }
-    lastTapAt.current = now;
-    lastTapIndex.current = i;
-    onColorChange(value);
-    setOpen(false);
+    // Diferimos selección/cierre por si llega un dblclick (que abrirá editor)
+    if (clickTimer.current !== null) window.clearTimeout(clickTimer.current);
+    clickTimer.current = window.setTimeout(() => {
+      clickTimer.current = null;
+      onColorChange(value);
+      setOpen(false);
+    }, 220);
   };
 
   const handleAccept = (hex: string) => {
