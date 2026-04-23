@@ -52,10 +52,10 @@ export default function GridSettingsPopover({
             <span className="text-[10px] text-toolbar-foreground">H</span>
             <input
               type="number"
-              min={4}
-              max={64}
+              min={1}
+              max={96}
               value={gridWidth}
-              onChange={(e) => onGridSizeChange(parseInt(e.target.value) || 4, gridHeight)}
+              onChange={(e) => onGridSizeChange(parseInt(e.target.value) || 1, gridHeight)}
               className={inputClass}
             />
           </label>
@@ -64,10 +64,10 @@ export default function GridSettingsPopover({
             <span className="text-[10px] text-toolbar-foreground">V</span>
             <input
               type="number"
-              min={4}
-              max={64}
+              min={1}
+              max={96}
               value={gridHeight}
-              onChange={(e) => onGridSizeChange(gridWidth, parseInt(e.target.value) || 4)}
+              onChange={(e) => onGridSizeChange(gridWidth, parseInt(e.target.value) || 1)}
               className={inputClass}
             />
           </label>

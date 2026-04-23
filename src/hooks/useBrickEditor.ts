@@ -365,8 +365,8 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
   }, []);
 
   const updateGridSize = useCallback((w: number, h: number) => {
-    const newW = Math.max(4, Math.min(64, w));
-    const newH = Math.max(4, Math.min(64, h));
+    const newW = Math.max(1, Math.min(96, w));
+    const newH = Math.max(1, Math.min(96, h));
     setGridWidth(newW);
     setGridHeight(newH);
     setBricks((prev) =>
