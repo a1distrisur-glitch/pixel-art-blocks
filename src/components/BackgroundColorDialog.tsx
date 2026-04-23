@@ -120,7 +120,7 @@ export default function BackgroundColorDialog({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-foreground/50 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md rounded-xl border border-border bg-card p-5 shadow-2xl animate-fade-in">
+      <div className="w-full max-w-md rounded-xl border border-toolbar-border bg-toolbar p-5 shadow-2xl animate-fade-in">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-foreground">{title}</h3>
           <button onClick={onCancel}
