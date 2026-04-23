@@ -63,6 +63,8 @@ interface MobileToolbarProps {
   onImageOpacityChange: (v: number) => void;
   onImageEditModeChange: (v: boolean) => void;
   onRequestRemoveImage: () => void;
+  pipettePrefilledColor?: string | null;
+  onPipettePrefilledClear?: () => void;
 }
 
 function TopBtn({
@@ -142,6 +144,7 @@ export default function MobileToolbar({
   onImageUpload, onRemoveImage, onImageVisibleChange,
   onImageOpacityChange, onImageEditModeChange,
   onRequestRemoveImage,
+  pipettePrefilledColor, onPipettePrefilledClear,
 }: MobileToolbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [paintOpen, setPaintOpen] = useState(false);
@@ -238,6 +241,8 @@ export default function MobileToolbar({
           swatchSize={28}
           align="end"
           side="bottom"
+          prefilledColor={pipettePrefilledColor}
+          onPrefilledClear={onPipettePrefilledClear}
         />
 
         <TopBtn label="Deshacer" onClick={onUndo} disabled={!canUndo}><Undo2 size={18} /></TopBtn>

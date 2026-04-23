@@ -169,7 +169,7 @@ export default function BackgroundColorDialog({
                   const nextHsv = hexToHsv(parsed);
                   setHue(nextHsv.h); setSaturation(nextHsv.s); setValue(nextHsv.v);
                 }}
-                className="mt-1 w-full rounded-lg border border-input bg-background px-2 py-1.5 text-[13px] font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                className="mt-1 w-full rounded-lg border border-input bg-background px-2 py-1.5 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
             </div>
           </div>
         </div>

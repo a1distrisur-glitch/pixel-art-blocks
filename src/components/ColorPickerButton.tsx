@@ -18,6 +18,9 @@ interface ColorPickerButtonProps {
   /** Donde abrir el popover */
   align?: "start" | "center" | "end";
   side?: "top" | "right" | "bottom" | "left";
+  /** Si se pasa un HEX (ej. desde la pipeta), abre automáticamente el diálogo "Agregar Color" prellenado */
+  prefilledColor?: string | null;
+  onPrefilledClear?: () => void;
 }
 
 export default function ColorPickerButton({
@@ -31,6 +34,8 @@ export default function ColorPickerButton({
   className,
   align = "end",
   side = "bottom",
+  prefilledColor = null,
+  onPrefilledClear,
 }: ColorPickerButtonProps) {
   const [open, setOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"add" | "edit" | null>(null);
@@ -40,6 +45,16 @@ export default function ColorPickerButton({
   useEffect(() => {
     if (dialogMode) setOpen(false);
   }, [dialogMode]);
+
+  // Auto-abrir el cuadro "Agregar Color" cuando llega un color desde la pipeta
+  useEffect(() => {
+    if (prefilledColor) {
+      setEditInitial(prefilledColor);
+      setEditIndex(null);
+      setDialogMode("add");
+      onPrefilledClear?.();
+    }
+  }, [prefilledColor, onPrefilledClear]);
 
   const closeDialog = () => {
     setDialogMode(null);
