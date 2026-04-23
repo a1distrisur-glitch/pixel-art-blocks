@@ -122,7 +122,7 @@ export default function BackgroundColorDialog({
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-foreground/50 backdrop-blur-sm p-4">
       <div className="w-full max-w-md rounded-xl border border-toolbar-border bg-toolbar p-5 shadow-2xl animate-fade-in">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          <h3 className="text-[15px] font-semibold text-white">{title}</h3>
           <button onClick={onCancel}
             className="p-1 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
             <X size={16} />
@@ -151,15 +151,15 @@ export default function BackgroundColorDialog({
 
           <div className="space-y-3">
             <div>
-              <p className="text-[10px] font-medium text-muted-foreground mb-1">Actual</p>
+              <p className="text-[11px] font-medium text-white mb-1">Actual</p>
               <div className="h-10 rounded-lg border border-input" style={{ backgroundColor: baseColor }} />
             </div>
             <div>
-              <p className="text-[10px] font-medium text-muted-foreground mb-1">Nuevo</p>
+              <p className="text-[11px] font-medium text-white mb-1">Nuevo</p>
               <div className="h-10 rounded-lg border border-input" style={{ backgroundColor: activeHex }} />
             </div>
             <div>
-              <label className="text-[10px] font-medium text-muted-foreground">HEX</label>
+              <label className="text-[11px] font-medium text-white">HEX</label>
               <input type="text" value={hexInput}
                 onChange={(e) => {
                   const raw = e.target.value.toUpperCase();
@@ -169,7 +169,7 @@ export default function BackgroundColorDialog({
                   const nextHsv = hexToHsv(parsed);
                   setHue(nextHsv.h); setSaturation(nextHsv.s); setValue(nextHsv.v);
                 }}
-                className="mt-1 w-full rounded-lg border border-input bg-background px-2 py-1.5 text-xs font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                className="mt-1 w-full rounded-lg border border-input bg-background px-2 py-1.5 text-[13px] font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
             </div>
           </div>
         </div>
