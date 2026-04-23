@@ -37,37 +37,87 @@ export default function ColorPickerButton({
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editInitial, setEditInitial] = useState<string>(selectedColor || "#DC2626");
   // Cerramos el popover cuando se abre el dialog para evitar capas superpuestas
-  const wasOpenBeforeDialog = useRef(false);
   useEffect(() => {
-    if (dialogMode) {
-      wasOpenBeforeDialog.current = open;
-      setOpen(false);
-    }
-  }, [dialogMode]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (dialogMode) setOpen(false);
+  }, [dialogMode]);
 
   const closeDialog = () => {
     setDialogMode(null);
     setEditIndex(null);
   };
 
+  const canEdit = !!(onReplaceColor || onRemoveColor);
+
+  // ───── Gesto unificado (pointer events) ─────
+  // - Long press (>= 400ms, mov < 10px) → editar
+  // - Click derecho (button === 2)       → editar
+  // - Doble click                        → editar
+  // - Click corto                        → seleccionar color
   const longPressTimer = useRef<number | null>(null);
-  const longPressTriggered = useRef(false);
-  const startLongPress = (i: number, value: string) => {
-    longPressTriggered.current = false;
-    if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
-    longPressTimer.current = window.setTimeout(() => {
-      longPressTriggered.current = true;
-      if (!onReplaceColor && !onRemoveColor) return;
-      setEditIndex(i);
-      setEditInitial(value);
-      setDialogMode("edit");
-    }, 500);
+  const gestureTriggered = useRef(false);
+  const startPos = useRef<{ x: number; y: number } | null>(null);
+  const lastTapAt = useRef<number>(0);
+  const lastTapIndex = useRef<number>(-1);
+
+  const triggerEdit = (i: number, value: string) => {
+    if (!canEdit) return;
+    gestureTriggered.current = true;
+    setEditIndex(i);
+    setEditInitial(value);
+    setDialogMode("edit");
   };
-  const cancelLongPress = () => {
-    if (longPressTimer.current) {
+
+  const clearLongPress = () => {
+    if (longPressTimer.current !== null) {
       window.clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
     }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent, i: number, value: string) => {
+    gestureTriggered.current = false;
+    startPos.current = { x: e.clientX, y: e.clientY };
+    if (e.button === 2) {
+      e.preventDefault();
+      e.stopPropagation();
+      triggerEdit(i, value);
+      return;
+    }
+    clearLongPress();
+    longPressTimer.current = window.setTimeout(() => {
+      longPressTimer.current = null;
+      triggerEdit(i, value);
+    }, 400);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!startPos.current || longPressTimer.current === null) return;
+    const dx = e.clientX - startPos.current.x;
+    const dy = e.clientY - startPos.current.y;
+    if (dx * dx + dy * dy > 100) clearLongPress(); // ~10px
+  };
+
+  const handlePointerUp = () => {
+    clearLongPress();
+  };
+
+  const handleClick = (i: number, value: string) => {
+    if (gestureTriggered.current) {
+      gestureTriggered.current = false;
+      return;
+    }
+    // doble tap manual (refuerza dblclick para iOS)
+    const now = Date.now();
+    if (lastTapIndex.current === i && now - lastTapAt.current < 350) {
+      lastTapAt.current = 0;
+      lastTapIndex.current = -1;
+      triggerEdit(i, value);
+      return;
+    }
+    lastTapAt.current = now;
+    lastTapIndex.current = i;
+    onColorChange(value);
+    setOpen(false);
   };
 
   const handleAccept = (hex: string) => {
@@ -113,6 +163,10 @@ export default function ColorPickerButton({
           side={side}
           sideOffset={6}
           className="w-[260px] p-3 bg-toolbar border-toolbar-border z-50"
+          onInteractOutside={(e) => {
+            // Evita que el popover se cierre mientras se abre el dialog de edición
+            if (dialogMode) e.preventDefault();
+          }}
         >
           <div className="grid grid-cols-7 gap-1.5">
             {colors.map((c, i) => (
@@ -120,46 +174,35 @@ export default function ColorPickerButton({
                 key={`${c.value}-${i}`}
                 type="button"
                 title={c.name}
-                onClick={() => {
-                  if (longPressTriggered.current) {
-                    longPressTriggered.current = false;
-                    return;
-                  }
-                  onColorChange(c.value);
-                  setOpen(false);
+                onClick={() => handleClick(i, c.value)}
+                onDoubleClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  triggerEdit(i, c.value);
                 }}
                 onContextMenu={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  if (!onReplaceColor && !onRemoveColor) return;
-                  setEditIndex(i);
-                  setEditInitial(c.value);
-                  setDialogMode("edit");
+                  triggerEdit(i, c.value);
                 }}
-                onPointerDown={(e) => {
-                  if (e.button === 2) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (!onReplaceColor && !onRemoveColor) return;
-                    setEditIndex(i);
-                    setEditInitial(c.value);
-                    setDialogMode("edit");
-                  }
+                onPointerDown={(e) => handlePointerDown(e, i, c.value)}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+                onPointerLeave={handlePointerUp}
+                style={{
+                  backgroundColor: c.value,
+                  boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.2)",
+                  touchAction: "none",
+                  WebkitTouchCallout: "none",
+                  WebkitUserSelect: "none",
                 }}
-                onTouchStart={() => startLongPress(i, c.value)}
-                onTouchEnd={cancelLongPress}
-                onTouchMove={cancelLongPress}
-                onTouchCancel={cancelLongPress}
                 className={cn(
                   "w-7 h-7 rounded-lg transition-all duration-150",
                   selectedColor === c.value
                     ? "ring-2 ring-primary ring-offset-1 ring-offset-toolbar scale-110"
                     : "hover:scale-110 hover:ring-1 hover:ring-toolbar-muted/40",
                 )}
-                style={{
-                  backgroundColor: c.value,
-                  boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.2)",
-                }}
               />
             ))}
             <button
@@ -175,9 +218,9 @@ export default function ColorPickerButton({
               <Plus size={12} />
             </button>
           </div>
-          {(onReplaceColor || onRemoveColor) && (
+          {canEdit && (
             <p className="mt-2 pt-2 border-t border-toolbar-border text-[10px] text-toolbar-foreground text-center">
-              Click derecho para Editar / Borrar
+              Editar/Borrar: doble click, click derecho o mantén pulsado
             </p>
           )}
         </PopoverContent>
