@@ -133,7 +133,7 @@ export default function ProjectActionDialogs({
             <div className="flex gap-2 justify-end flex-nowrap items-center">
               <button type="button" onClick={() => onLoadDialogChange(false)} className={secondaryBtn}>Cancelar</button>
               <button type="button" onClick={() => { onLoadDialogChange(false); ensureProjectName("save", onLoadProject); }} className={primaryBtn}>Guardar</button>
-              <button type="button" onClick={() => { onLoadDialogChange(false); onLoadProject(); }} className={dangerBtn}>Cargar Sin Guardar</button>
+              <button type="button" onClick={() => { onLoadDialogChange(false); onLoadProject(); }} className={`${dangerBtn} whitespace-nowrap`}>Cargar Sin Guardar</button>
             </div>
           </div>
         </div>
