@@ -50,6 +50,26 @@ export default function ColorPickerButton({
     setEditIndex(null);
   };
 
+  const longPressTimer = useRef<number | null>(null);
+  const longPressTriggered = useRef(false);
+  const startLongPress = (i: number, value: string) => {
+    longPressTriggered.current = false;
+    if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
+    longPressTimer.current = window.setTimeout(() => {
+      longPressTriggered.current = true;
+      if (!onReplaceColor && !onRemoveColor) return;
+      setEditIndex(i);
+      setEditInitial(value);
+      setDialogMode("edit");
+    }, 500);
+  };
+  const cancelLongPress = () => {
+    if (longPressTimer.current) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   const handleAccept = (hex: string) => {
     if (dialogMode === "edit" && editIndex !== null && onReplaceColor) {
       onReplaceColor(editIndex, hex, hex);
@@ -101,6 +121,10 @@ export default function ColorPickerButton({
                 type="button"
                 title={c.name}
                 onClick={() => {
+                  if (longPressTriggered.current) {
+                    longPressTriggered.current = false;
+                    return;
+                  }
                   onColorChange(c.value);
                   setOpen(false);
                 }}
@@ -111,6 +135,10 @@ export default function ColorPickerButton({
                   setEditInitial(c.value);
                   setDialogMode("edit");
                 }}
+                onTouchStart={() => startLongPress(i, c.value)}
+                onTouchEnd={cancelLongPress}
+                onTouchMove={cancelLongPress}
+                onTouchCancel={cancelLongPress}
                 className={cn(
                   "w-7 h-7 rounded-lg transition-all duration-150",
                   selectedColor === c.value
