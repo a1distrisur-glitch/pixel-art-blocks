@@ -24,6 +24,8 @@ interface MobileToolbarProps {
   onColorChange: (hex: string) => void;
   colors: BrickColor[];
   onAddColor: (name: string, value: string) => void;
+  onReplaceColor: (index: number, name: string, value: string) => void;
+  onRemoveColor: (index: number) => void;
   selectedSize: BrickSize;
   onSizeChange: (s: BrickSize) => void;
   orientation: BrickOrientation;
@@ -231,6 +233,8 @@ export default function MobileToolbar({
           colors={colors}
           onColorChange={(hex) => { ensureImageFixed(); onColorChange(hex); onToolChange("place"); }}
           onAddColor={onAddColor}
+          onReplaceColor={onReplaceColor}
+          onRemoveColor={onRemoveColor}
           swatchSize={28}
           align="end"
           side="bottom"
