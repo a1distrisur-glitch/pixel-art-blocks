@@ -246,6 +246,8 @@ export default function BrickEditor() {
           onColorChange={editor.setSelectedColor}
           colors={editor.colors}
           onAddColor={editor.addColor}
+          onReplaceColor={editor.replaceColor}
+          onRemoveColor={editor.removeColor}
           selectedSize={editor.selectedSize}
           onSizeChange={editor.setSelectedSize}
           orientation={editor.orientation}
