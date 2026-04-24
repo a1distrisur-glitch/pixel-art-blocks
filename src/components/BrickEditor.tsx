@@ -19,9 +19,23 @@ export default function BrickEditor() {
   const [showPiecesDialog, setShowPiecesDialog] = useState(false);
   const [showExportPngDialog, setShowExportPngDialog] = useState(false);
   const [showRemoveImageDialog, setShowRemoveImageDialog] = useState(false);
+  const [showExitDialog, setShowExitDialog] = useState(false);
+  const [exitMode, setExitMode] = useState(false);
   const clearPipetteColor = useCallback(() => setPipetteColor(null), []);
-  const openWelcomeDialog = useCallback(() => setShowWelcomeDialog(true), []);
-  const closeWelcomeDialog = useCallback(() => setShowWelcomeDialog(false), []);
+  const openWelcomeDialog = useCallback(() => { setExitMode(false); setShowWelcomeDialog(true); }, []);
+  const closeWelcomeDialog = useCallback(() => { setShowWelcomeDialog(false); setExitMode(false); }, []);
+  const openExitDialog = useCallback(() => setShowExitDialog(true), []);
+  const handleExitConfirmed = useCallback(() => {
+    // After "Salir" → show the welcome/logo dialog with a "Continuar" button
+    // that finally exits to a blank page (closing the web tab / mobile webview).
+    setExitMode(true);
+    setShowWelcomeDialog(true);
+  }, []);
+  const performExit = useCallback(() => {
+    setShowWelcomeDialog(false);
+    setExitMode(false);
+    window.location.replace("about:blank");
+  }, []);
   const isCompact = useBreakpoint(1024);
   const handleProjectStart = useCallback((name: string) => {
     editor.setProjectName(name);
