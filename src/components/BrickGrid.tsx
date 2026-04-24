@@ -219,6 +219,8 @@ export default function BrickGrid({
     longPressTimer: number | null;
     longPressTarget: { row: number; col: number } | null;
     initialTouchClient: { x: number; y: number } | null;
+    lastPaintedCell: { row: number; col: number } | null;
+    painting: boolean;
   }>({
     mode: "none",
     startDist: 0,
@@ -230,7 +232,12 @@ export default function BrickGrid({
     longPressTimer: null,
     longPressTarget: null,
     initialTouchClient: null,
+    lastPaintedCell: null,
+    painting: false,
   });
+
+  // Tools that support continuous touch painting (mirror desktop click-drag behaviour)
+  const isPaintableTool = (t: EditorTool) => t === "place" || t === "erase";
 
   const distance = (a: { clientX: number; clientY: number }, b: { clientX: number; clientY: number }) =>
     Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
@@ -282,9 +289,17 @@ export default function BrickGrid({
       touchStateRef.current.startTime = performance.now();
       touchStateRef.current.moved = false;
       touchStateRef.current.initialTouchClient = { x: t[0].clientX, y: t[0].clientY };
-      // Long-press to erase: only when not in image edit mode and not already erasing
+      touchStateRef.current.lastPaintedCell = null;
+      touchStateRef.current.painting = false;
       const target = cellFromClientPoint(t[0].clientX, t[0].clientY);
-      if (target && !imageEditMode) {
+      // Tap-to-place: immediately place a brick on the touched cell (mirrors mouse-down)
+      if (target && !imageEditMode && !isPanning && isPaintableTool(tool)) {
+        onCellClick(target.row, target.col);
+        touchStateRef.current.lastPaintedCell = target;
+        touchStateRef.current.painting = true;
+      }
+      // Long-press to erase: only when not in image edit mode and not already erasing
+      if (target && !imageEditMode && tool !== "erase") {
         const occupant = getCellOccupant(target.row, target.col);
         if (occupant) {
           touchStateRef.current.longPressTarget = target;
@@ -292,7 +307,6 @@ export default function BrickGrid({
             // Trigger erase: temporarily switch tool, place, restore
             const prevTool = tool;
             onToolChange("erase");
-            // Use a microtask to ensure onCellClick reads latest tool
             setTimeout(() => {
               onCellClick(target.row, target.col);
               onToolChange(prevTool);
@@ -302,7 +316,7 @@ export default function BrickGrid({
         }
       }
     }
-  }, [zoom, pan, cancelLongPress, cellFromClientPoint, imageEditMode, getCellOccupant, tool, onToolChange, onCellClick]);
+  }, [zoom, pan, cancelLongPress, cellFromClientPoint, imageEditMode, getCellOccupant, tool, onToolChange, onCellClick, isPanning]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     const t = e.touches;
@@ -330,8 +344,18 @@ export default function BrickGrid({
           cancelLongPress();
         }
       }
+      // Continuous paint while finger is held and dragged across cells (mirrors mouse drag)
+      if (touchStateRef.current.painting && isPaintableTool(tool) && !imageEditMode) {
+        const cell = cellFromClientPoint(t[0].clientX, t[0].clientY);
+        const last = touchStateRef.current.lastPaintedCell;
+        if (cell && (!last || last.row !== cell.row || last.col !== cell.col)) {
+          e.preventDefault();
+          onCellClick(cell.row, cell.col);
+          touchStateRef.current.lastPaintedCell = cell;
+        }
+      }
     }
-  }, [cancelLongPress]);
+  }, [cancelLongPress, tool, imageEditMode, cellFromClientPoint, onCellClick]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     const elapsed = performance.now() - touchStateRef.current.startTime;
@@ -345,6 +369,8 @@ export default function BrickGrid({
     if (e.touches.length === 0) {
       touchStateRef.current.mode = "none";
       touchStateRef.current.initialTouchClient = null;
+      touchStateRef.current.lastPaintedCell = null;
+      touchStateRef.current.painting = false;
     }
   }, [cancelLongPress, onUndo]);
   // ──────────────────────────────────────────────────────────────────────────────
