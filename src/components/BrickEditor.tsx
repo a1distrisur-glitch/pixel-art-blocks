@@ -1,7 +1,6 @@
 // Brick Editor v2
 import { useEffect, useState, useCallback } from "react";
 import { useBrickEditor } from "@/hooks/useBrickEditor";
-import Toolbar from "@/components/Toolbar";
 import BrickGrid from "@/components/BrickGrid";
 import MobileToolbar from "@/components/MobileToolbar";
 import TopActions from "@/components/TopActions";
@@ -57,77 +56,6 @@ export default function BrickEditor() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [editor.undo, editor.redo]);
-
-  const toolbarEl = (
-    <Toolbar
-        selectedColor={editor.selectedColor}
-        onColorChange={editor.setSelectedColor}
-        selectedSize={editor.selectedSize}
-        onSizeChange={editor.setSelectedSize}
-        orientation={editor.orientation}
-        onOrientationChange={editor.setOrientation}
-        tool={editor.tool}
-        onToolChange={editor.setTool}
-        gridWidth={editor.gridWidth}
-        gridHeight={editor.gridHeight}
-        onGridSizeChange={editor.updateGridSize}
-        onClear={editor.clearAll}
-        onImageUpload={editor.handleImageUpload}
-        hasImage={!!editor.referenceImage}
-        onRemoveImage={editor.removeImage}
-        imageOpacity={editor.imageOpacity}
-        onImageOpacityChange={editor.setImageOpacity}
-        imageVisible={editor.imageVisible}
-        onImageVisibleChange={editor.setImageVisible}
-        imageEditMode={editor.imageEditMode}
-        onImageEditModeChange={editor.setImageEditMode}
-        hasBricks={editor.hasBricks}
-        onNewProject={editor.newProject}
-        onExport={editor.exportAsPng}
-        onExportPieceList={editor.exportPieceList}
-        onSaveProject={editor.saveProject}
-        onLoadProject={editor.loadProject}
-        colors={editor.colors}
-        onAddColor={editor.addColor}
-        onReplaceColor={editor.replaceColor}
-        onRemoveColor={editor.removeColor}
-        onUndo={editor.undo}
-        onRedo={editor.redo}
-        canUndo={editor.canUndo}
-        canRedo={editor.canRedo}
-        gridVisible={editor.gridVisible}
-        onGridVisibleChange={editor.setGridVisible}
-        cursorTrackerVisible={editor.cursorTrackerVisible}
-        onCursorTrackerVisibleChange={editor.setCursorTrackerVisible}
-        pixelText={editor.pixelText}
-        onPixelTextChange={editor.setPixelText}
-        textFontSize={editor.textFontSize}
-        onTextFontSizeChange={editor.setTextFontSize}
-        textFontFamily={editor.textFontFamily}
-        onTextFontFamilyChange={editor.setTextFontFamily}
-        textBold={editor.textBold}
-        onTextBoldChange={editor.setTextBold}
-        textItalic={editor.textItalic}
-        onTextItalicChange={editor.setTextItalic}
-        textOverlays={editor.textOverlays}
-        onRemoveTextOverlay={editor.removeTextOverlay}
-        pipettePrefilledColor={pipetteColor}
-        onPipettePrefilledClear={clearPipetteColor}
-        shapeType={editor.shapeType}
-        onShapeTypeChange={editor.setShapeType}
-        shapeFillMode={editor.shapeFillMode}
-        onShapeFillModeChange={editor.setShapeFillMode}
-        projectStarted={editor.projectStarted}
-        onProjectStart={handleProjectStart}
-        projectName={editor.projectName}
-        onOpenWelcome={openWelcomeDialog}
-        onRequestLoadProject={openLoadDialog}
-        onRequestClear={openClearDialog}
-        onRequestSaveProject={openSaveDialog}
-        onRequestExportPieces={openPiecesDialog}
-        onRequestRemoveImage={openRemoveImageDialog}
-    />
-  );
 
   const grid = (
     <BrickGrid
@@ -268,7 +196,6 @@ export default function BrickEditor() {
           onTextItalicChange={editor.setTextItalic}
           textOverlays={editor.textOverlays}
           onRemoveTextOverlay={editor.removeTextOverlay}
-          fullToolbar={toolbarEl}
           imageEditMode={editor.imageEditMode}
           projectName={editor.projectName}
           onOpenWelcome={openWelcomeDialog}
