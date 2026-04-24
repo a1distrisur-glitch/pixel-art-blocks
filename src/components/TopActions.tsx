@@ -133,6 +133,7 @@ export default function TopActions({
         onLoadProject={onLoadProject}
         onSaveProject={onSaveProject}
         onExportPieces={onExportPieces}
+        onExit={onExit}
       />
     </div>
   );
