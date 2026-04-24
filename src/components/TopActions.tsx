@@ -1,4 +1,3 @@
-import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ColorPickerButton from "@/components/ColorPickerButton";
 import GridSettingsPopover from "@/components/GridSettingsPopover";
@@ -159,9 +158,6 @@ export default function TopActions({
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
       />
-      <Btn title="Eliminar todo" variant="danger" onClick={onClear}>
-        <Trash2 size={18} />
-      </Btn>
       <ProjectMenuButton
         hasBricks={hasBricks}
         onLoadProject={onLoadProject}
