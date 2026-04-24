@@ -237,7 +237,7 @@ export default function BrickGrid({
   });
 
   // Tools that support continuous touch painting (mirror desktop click-drag behaviour)
-  const isPaintableTool = (t: EditorTool) => t === "brick" || t === "erase";
+  const isPaintableTool = (t: EditorTool) => t === "place" || t === "erase";
 
   const distance = (a: { clientX: number; clientY: number }, b: { clientX: number; clientY: number }) =>
     Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
