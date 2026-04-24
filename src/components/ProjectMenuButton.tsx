@@ -91,6 +91,12 @@ export default function ProjectMenuButton({
             active={hasBricks}
             icon={<Download size={16} />}
           />
+          <Item
+            title="Salir"
+            label="Salir"
+            onClick={onExit}
+            icon={<LogOut size={16} />}
+          />
         </div>
       </PopoverContent>
     </Popover>
