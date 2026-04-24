@@ -71,7 +71,6 @@ export default function ProjectMenuButton({
           <Item
             title="Cargar proyecto"
             label="Cargar proyecto"
-            variant="primary"
             onClick={onLoadProject}
             icon={<FolderOpen size={16} />}
           />
