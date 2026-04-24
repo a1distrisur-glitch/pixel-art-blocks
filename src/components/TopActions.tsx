@@ -20,6 +20,7 @@ interface TopActionsProps {
   onClear: () => void;
   onSaveProject: () => void;
   onExportPieces: () => void;
+  onExit: () => void;
   onOpenWelcome: () => void;
   selectedColor: string;
   colors: BrickColor[];
