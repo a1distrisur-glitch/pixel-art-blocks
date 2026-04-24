@@ -20,6 +20,7 @@ interface TopActionsProps {
   onClear: () => void;
   onSaveProject: () => void;
   onExportPieces: () => void;
+  onExit: () => void;
   onOpenWelcome: () => void;
   selectedColor: string;
   colors: BrickColor[];
@@ -56,6 +57,7 @@ export default function TopActions({
   onClear,
   onSaveProject,
   onExportPieces,
+  onExit,
   onOpenWelcome,
   selectedColor,
   colors,
@@ -131,6 +133,7 @@ export default function TopActions({
         onLoadProject={onLoadProject}
         onSaveProject={onSaveProject}
         onExportPieces={onExportPieces}
+        onExit={onExit}
       />
     </div>
   );

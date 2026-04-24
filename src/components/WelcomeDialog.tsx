@@ -4,9 +4,11 @@ import welcomeImg from "@/assets/welcome.gif";
 interface WelcomeDialogProps {
   open: boolean;
   onClose: () => void;
+  onContinue?: () => void;
+  continueLabel?: string;
 }
 
-export default function WelcomeDialog({ open, onClose }: WelcomeDialogProps) {
+export default function WelcomeDialog({ open, onClose, onContinue, continueLabel }: WelcomeDialogProps) {
   if (!open) return null;
 
   return (
@@ -44,10 +46,10 @@ export default function WelcomeDialog({ open, onClose }: WelcomeDialogProps) {
         </a>
         <button
           autoFocus
-          onClick={onClose}
+          onClick={onContinue ?? onClose}
           className="mt-1 px-6 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
         >
-          Continuar
+          {continueLabel ?? "Continuar"}
         </button>
       </div>
     </div>
