@@ -17,6 +17,8 @@ interface ProjectActionDialogsProps {
   onExportPngDialogChange: (open: boolean) => void;
   showRemoveImageDialog: boolean;
   onRemoveImageDialogChange: (open: boolean) => void;
+  showExitDialog: boolean;
+  onExitDialogChange: (open: boolean) => void;
   hasImage: boolean;
   projectName: string;
   onProjectStart: (name: string) => void;
@@ -27,6 +29,7 @@ interface ProjectActionDialogsProps {
   onExportPieceList: (nameOverride?: string) => void;
   onExport: (includeRefImage?: boolean) => void;
   onRemoveImage: () => void;
+  onExit: () => void;
 }
 
 const panelClass = "bg-toolbar text-toolbar-foreground rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4 animate-fade-in border border-toolbar-border";
