@@ -49,6 +49,7 @@ export default function ProjectMenuButton({
   onLoadProject,
   onSaveProject,
   onExportPieces,
+  onExit,
 }: ProjectMenuButtonProps) {
   return (
     <Popover>
