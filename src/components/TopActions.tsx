@@ -39,39 +39,7 @@ interface TopActionsProps {
   className?: string;
 }
 
-interface BtnProps {
-  onClick: () => void;
-  title: string;
-  variant?: "default" | "danger" | "primary";
-  disabled?: boolean;
-  active?: boolean;
-  children: React.ReactNode;
-}
 
-function Btn({ onClick, title, variant = "default", disabled, active, children }: BtnProps) {
-  const styles = active
-    ? "bg-primary text-primary-foreground"
-    : variant === "danger"
-      ? "text-destructive hover:bg-destructive/10"
-      : variant === "primary"
-        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-        : "text-toolbar-foreground hover:bg-toolbar-hover";
-  return (
-    <button
-      type="button"
-      aria-label={title}
-      title={title}
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        "flex items-center justify-center w-9 h-9 rounded-md transition-colors disabled:opacity-30 disabled:pointer-events-none",
-        styles,
-      )}
-    >
-      {children}
-    </button>
-  );
-}
 
 export default function TopActions({
   hasBricks,
