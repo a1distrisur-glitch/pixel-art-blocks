@@ -198,6 +198,40 @@ export default function ProjectActionDialogs({
         </div>
       )}
 
+      {showExitDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm">
+          <div
+            className="bg-toolbar-section rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4 animate-fade-in border border-toolbar-border"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="exit-dialog-title"
+          >
+            <h3 id="exit-dialog-title" className="text-base font-semibold text-white mb-2 text-center">
+              ¿Salir de la aplicación?
+            </h3>
+            <p className="text-sm text-white/90 mb-5 text-center">
+              Se cerrará el editor. Los cambios no guardados se perderán.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <button
+                type="button"
+                onClick={() => onExitDialogChange(false)}
+                className="px-4 py-2 rounded-lg text-sm font-semibold bg-toolbar text-white hover:bg-toolbar-hover transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => { onExitDialogChange(false); onExit(); }}
+                className="px-4 py-2 rounded-lg text-sm font-semibold bg-destructive text-white hover:bg-destructive/90 transition-colors"
+              >
+                Salir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showProjectNamePrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm">
           <div className={panelClass} role="dialog" aria-modal="true" aria-labelledby="project-name-dialog-title">
