@@ -74,6 +74,7 @@ export default function ReferenceImageTopBarControls({
   className,
 }: ReferenceImageTopBarControlsProps) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [opacityOpen, setOpacityOpen] = useState(false);
   const iconSize = compact ? 14 : 16;
 
   return (
