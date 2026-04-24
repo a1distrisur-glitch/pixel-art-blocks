@@ -612,40 +612,6 @@ export default function Toolbar({
           </section>
 
 
-          {/* Colors */}
-          <section className="border-b border-toolbar-border px-4 py-3 space-y-2">
-            <div className="grid grid-cols-7 gap-1.5">
-              {colors.map((c, i) => (
-                <Tooltip key={`${c.value}-${i}`}>
-                  <TooltipTrigger asChild>
-                    <button
-                      title={c.name}
-                      onClick={() => runOrFix(() => { onColorChange(c.value); onToolChange("place"); })}
-                      onContextMenu={(e) => { e.preventDefault(); openColorDialog("edit", c.value, i); }}
-                      className={`w-[28px] h-[28px] rounded-lg transition-all duration-150 ${
-                        selectedColor === c.value
-                          ? "ring-2 ring-primary ring-offset-1 ring-offset-toolbar scale-110"
-                          : "hover:scale-110 hover:ring-1 hover:ring-toolbar-muted/40"
-                      }`}
-                      style={{
-                        backgroundColor: c.value,
-                        boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.2)",
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs">{c.name}</TooltipContent>
-                </Tooltip>
-              ))}
-              {/* Add color button inline */}
-              <button
-                onClick={() => openColorDialog("add", selectedColor || "#DC2626")}
-                className="w-[28px] h-[28px] rounded-lg border-2 border-dashed border-toolbar-foreground/40 flex items-center justify-center text-toolbar-foreground/70 hover:border-primary/50 hover:text-primary transition-colors"
-              >
-               <Plus size={12} />
-              </button>
-            </div>
-          </section>
-
           {/* Reference Image — its own section (below Colors) */}
           <section className="border-b border-toolbar-border last:border-b-0 px-4 py-3">
             <ReferenceImageControls
