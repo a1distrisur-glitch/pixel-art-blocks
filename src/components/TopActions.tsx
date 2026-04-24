@@ -57,6 +57,7 @@ export default function TopActions({
   onClear,
   onSaveProject,
   onExportPieces,
+  onExit,
   onOpenWelcome,
   selectedColor,
   colors,
