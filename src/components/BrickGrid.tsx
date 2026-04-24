@@ -219,6 +219,8 @@ export default function BrickGrid({
     longPressTimer: number | null;
     longPressTarget: { row: number; col: number } | null;
     initialTouchClient: { x: number; y: number } | null;
+    lastPaintedCell: { row: number; col: number } | null;
+    painting: boolean;
   }>({
     mode: "none",
     startDist: 0,
@@ -230,7 +232,12 @@ export default function BrickGrid({
     longPressTimer: null,
     longPressTarget: null,
     initialTouchClient: null,
+    lastPaintedCell: null,
+    painting: false,
   });
+
+  // Tools that support continuous touch painting (mirror desktop click-drag behaviour)
+  const isPaintableTool = (t: EditorTool) => t === "brick" || t === "erase";
 
   const distance = (a: { clientX: number; clientY: number }, b: { clientX: number; clientY: number }) =>
     Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
