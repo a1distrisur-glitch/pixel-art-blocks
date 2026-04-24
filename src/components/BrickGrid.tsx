@@ -344,8 +344,18 @@ export default function BrickGrid({
           cancelLongPress();
         }
       }
+      // Continuous paint while finger is held and dragged across cells (mirrors mouse drag)
+      if (touchStateRef.current.painting && isPaintableTool(tool) && !imageEditMode) {
+        const cell = cellFromClientPoint(t[0].clientX, t[0].clientY);
+        const last = touchStateRef.current.lastPaintedCell;
+        if (cell && (!last || last.row !== cell.row || last.col !== cell.col)) {
+          e.preventDefault();
+          onCellClick(cell.row, cell.col);
+          touchStateRef.current.lastPaintedCell = cell;
+        }
+      }
     }
-  }, [cancelLongPress]);
+  }, [cancelLongPress, tool, imageEditMode, cellFromClientPoint, onCellClick]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     const elapsed = performance.now() - touchStateRef.current.startTime;
@@ -359,6 +369,8 @@ export default function BrickGrid({
     if (e.touches.length === 0) {
       touchStateRef.current.mode = "none";
       touchStateRef.current.initialTouchClient = null;
+      touchStateRef.current.lastPaintedCell = null;
+      touchStateRef.current.painting = false;
     }
   }, [cancelLongPress, onUndo]);
   // ──────────────────────────────────────────────────────────────────────────────
