@@ -127,6 +127,7 @@ export default function BrickEditor() {
       onClear={openClearDialog}
       onSaveProject={openSaveDialog}
       onExportPieces={openPiecesDialog}
+      onExit={openExitDialog}
       onOpenWelcome={openWelcomeDialog}
       selectedColor={editor.selectedColor}
       colors={editor.colors}
@@ -171,6 +172,9 @@ export default function BrickEditor() {
       onExportPieceList={editor.exportPieceList}
       onExport={editor.exportAsPng}
       onRemoveImage={editor.removeImage}
+      showExitDialog={showExitDialog}
+      onExitDialogChange={setShowExitDialog}
+      onExit={handleExitConfirmed}
     />
   );
 
