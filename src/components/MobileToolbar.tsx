@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import {
   Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
-  MousePointer2, Bold, Italic, X,
+  MousePointer2, Bold, Italic, X, Trash2,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, ShapeType, ShapeFillMode } from "@/hooks/useBrickEditor";
@@ -61,6 +61,7 @@ interface MobileToolbarProps {
   onImageOpacityChange: (v: number) => void;
   onImageEditModeChange: (v: boolean) => void;
   onRequestRemoveImage: () => void;
+  onClear: () => void;
   pipettePrefilledColor?: string | null;
   onPipettePrefilledClear?: () => void;
 }
@@ -84,19 +85,20 @@ function TopBtn({
 function BottomTool({
   active, danger, onClick, label, children,
 }: { active?: boolean; danger?: boolean; onClick: () => void; label: string; children: ReactNode }) {
+  const cls = active
+    ? danger
+      ? "bg-destructive text-destructive-foreground"
+      : "bg-primary text-primary-foreground"
+    : danger
+      ? "text-destructive hover:bg-destructive/10"
+      : "text-toolbar-foreground hover:bg-toolbar-hover";
   return (
     <button
       type="button"
       aria-label={label}
       title={label}
       onClick={onClick}
-      className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
-        active
-          ? danger
-            ? "bg-destructive text-destructive-foreground"
-            : "bg-primary text-primary-foreground"
-          : "text-toolbar-foreground hover:bg-toolbar-hover"
-      }`}
+      className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${cls}`}
     >
       {children}
     </button>
@@ -142,6 +144,7 @@ export default function MobileToolbar({
   onImageUpload, onRemoveImage, onImageVisibleChange,
   onImageOpacityChange, onImageEditModeChange,
   onRequestRemoveImage,
+  onClear,
   pipettePrefilledColor, onPipettePrefilledClear,
 }: MobileToolbarProps) {
   const [paintOpen, setPaintOpen] = useState(false);
@@ -477,6 +480,10 @@ export default function MobileToolbar({
 
         <BottomTool active={tool === "pipette"} onClick={guarded("pipette")} label="Pipeta">
           <Pipette size={18} />
+        </BottomTool>
+
+        <BottomTool danger onClick={onClear} label="Eliminar todo">
+          <Trash2 size={18} />
         </BottomTool>
 
       </nav>

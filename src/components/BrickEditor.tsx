@@ -209,6 +209,7 @@ export default function BrickEditor() {
           onImageOpacityChange={editor.setImageOpacity}
           onImageEditModeChange={editor.setImageEditMode}
           onRequestRemoveImage={openRemoveImageDialog}
+          onClear={openClearDialog}
           pipettePrefilledColor={pipetteColor}
           onPipettePrefilledClear={clearPipetteColor}
       />
