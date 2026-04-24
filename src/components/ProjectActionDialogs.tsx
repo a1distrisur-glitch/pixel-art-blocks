@@ -55,6 +55,8 @@ export default function ProjectActionDialogs({
   onExportPngDialogChange,
   showRemoveImageDialog,
   onRemoveImageDialogChange,
+  showExitDialog,
+  onExitDialogChange,
   hasImage,
   projectName,
   onProjectStart,
@@ -65,6 +67,7 @@ export default function ProjectActionDialogs({
   onExportPieceList,
   onExport,
   onRemoveImage,
+  onExit,
 }: ProjectActionDialogsProps) {
   const [showProjectNamePrompt, setShowProjectNamePrompt] = useState(false);
   const [projectNamePromptAction, setProjectNamePromptAction] = useState<ProjectNameAction | null>(null);
