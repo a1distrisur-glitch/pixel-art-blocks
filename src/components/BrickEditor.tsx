@@ -209,7 +209,8 @@ export default function BrickEditor() {
           onImageOpacityChange={editor.setImageOpacity}
           onImageEditModeChange={editor.setImageEditMode}
           onRequestRemoveImage={openRemoveImageDialog}
-          pipettePrefilledColor={pipetteColor}
+          onClear={openClearDialog}
+          pipettePrefilledColor={pipeteColorPlaceholder ?? pipetteColor}
           onPipettePrefilledClear={clearPipetteColor}
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>

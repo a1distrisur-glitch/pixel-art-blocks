@@ -85,19 +85,20 @@ function TopBtn({
 function BottomTool({
   active, danger, onClick, label, children,
 }: { active?: boolean; danger?: boolean; onClick: () => void; label: string; children: ReactNode }) {
+  const cls = active
+    ? danger
+      ? "bg-destructive text-destructive-foreground"
+      : "bg-primary text-primary-foreground"
+    : danger
+      ? "text-destructive hover:bg-destructive/10"
+      : "text-toolbar-foreground hover:bg-toolbar-hover";
   return (
     <button
       type="button"
       aria-label={label}
       title={label}
       onClick={onClick}
-      className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
-        active
-          ? danger
-            ? "bg-destructive text-destructive-foreground"
-            : "bg-primary text-primary-foreground"
-          : "text-toolbar-foreground hover:bg-toolbar-hover"
-      }`}
+      className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${cls}`}
     >
       {children}
     </button>
