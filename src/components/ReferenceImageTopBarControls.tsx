@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Eye, EyeOff, Image as ImageIcon, Move, SlidersHorizontal, Trash2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -74,6 +74,7 @@ export default function ReferenceImageTopBarControls({
   className,
 }: ReferenceImageTopBarControlsProps) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [opacityOpen, setOpacityOpen] = useState(false);
   const iconSize = compact ? 14 : 16;
 
   return (
@@ -119,7 +120,7 @@ export default function ReferenceImageTopBarControls({
         <Move size={iconSize} />
       </IconControlButton>
 
-      <Popover>
+      <Popover open={opacityOpen} onOpenChange={setOpacityOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"
@@ -127,8 +128,11 @@ export default function ReferenceImageTopBarControls({
             title="Opacidad de imagen de referencia"
             disabled={!hasImage}
             className={cn(
-              "shrink-0 rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30 bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover",
+              "shrink-0 rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30",
               compact ? "h-8 w-8" : "h-9 w-9",
+              opacityOpen
+                ? "bg-primary text-primary-foreground"
+                : "bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover",
             )}
           >
             <span className="flex items-center justify-center">
