@@ -1,8 +1,9 @@
-import { FolderOpen, Trash2, FilePlus2, Download } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ColorPickerButton from "@/components/ColorPickerButton";
 import GridSettingsPopover from "@/components/GridSettingsPopover";
 import ReferenceImageTopBarControls from "@/components/ReferenceImageTopBarControls";
+import ProjectMenuButton from "@/components/ProjectMenuButton";
 import type { BrickColor } from "@/hooks/useBrickEditor";
 
 interface TopActionsProps {
@@ -158,24 +159,15 @@ export default function TopActions({
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
       />
-      <Btn title="Cargar proyecto" variant="primary" onClick={onLoadProject}>
-        <FolderOpen size={18} />
-      </Btn>
       <Btn title="Eliminar todo" variant="danger" onClick={onClear}>
         <Trash2 size={18} />
       </Btn>
-      <Btn title="Guardar proyecto" onClick={onSaveProject}>
-        <FilePlus2 size={18} />
-      </Btn>
-      <Btn
-        title="Exportar piezas"
-        variant="primary"
-        onClick={onExportPieces}
-        disabled={!hasBricks}
-        active={hasBricks}
-      >
-        <Download size={18} />
-      </Btn>
+      <ProjectMenuButton
+        hasBricks={hasBricks}
+        onLoadProject={onLoadProject}
+        onSaveProject={onSaveProject}
+        onExportPieces={onExportPieces}
+      />
     </div>
   );
 }
