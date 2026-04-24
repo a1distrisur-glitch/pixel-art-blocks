@@ -294,7 +294,6 @@ export default function BrickEditor() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
-      {toolbarEl}
       <div className="flex-1 min-w-0 relative">
         {grid}
         {topActions}
