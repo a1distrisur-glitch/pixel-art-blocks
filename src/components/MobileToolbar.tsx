@@ -1,10 +1,9 @@
 import { ReactNode, useState } from "react";
 import {
-  Undo2, Redo2, Menu, Eraser, Move, Type,
+  Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
   MousePointer2, Bold, Italic, X,
 } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, ShapeType, ShapeFillMode } from "@/hooks/useBrickEditor";
 import { SHAPE_LIST } from "@/lib/shapeRasterizer";
@@ -48,7 +47,6 @@ interface MobileToolbarProps {
   onTextItalicChange: (v: boolean) => void;
   textOverlays: TextOverlay[];
   onRemoveTextOverlay: (id: string) => void;
-  fullToolbar: ReactNode;
   imageEditMode: boolean;
   projectName: string;
   onOpenWelcome: () => void;
@@ -139,14 +137,13 @@ export default function MobileToolbar({
   textBold, onTextBoldChange,
   textItalic, onTextItalicChange,
   textOverlays, onRemoveTextOverlay,
-  fullToolbar, imageEditMode, projectName, onOpenWelcome, topActions,
+  imageEditMode, projectName, onOpenWelcome, topActions,
   hasImage, imageVisible, imageOpacity,
   onImageUpload, onRemoveImage, onImageVisibleChange,
   onImageOpacityChange, onImageEditModeChange,
   onRequestRemoveImage,
   pipettePrefilledColor, onPipettePrefilledClear,
 }: MobileToolbarProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [paintOpen, setPaintOpen] = useState(false);
   const [shapeOpen, setShapeOpen] = useState(false);
   const [textOpen, setTextOpen] = useState(false);
@@ -191,21 +188,6 @@ export default function MobileToolbar({
     <>
       {/* Top compact bar */}
       <header className="fixed top-0 inset-x-0 z-30 flex items-center gap-1.5 px-2 h-12 bg-toolbar border-b border-toolbar-border toolbar-shadow">
-        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-          <SheetTrigger asChild>
-            <button
-              type="button"
-              aria-label="Abrir menú completo"
-              className="flex items-center justify-center w-10 h-10 rounded-lg text-toolbar-foreground hover:bg-toolbar-hover transition-colors"
-            >
-              <Menu size={20} />
-            </button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-[280px] bg-toolbar border-toolbar-border">
-            <div className="h-full overflow-hidden">{fullToolbar}</div>
-          </SheetContent>
-        </Sheet>
-
         <button
           type="button"
           onClick={onOpenWelcome}
