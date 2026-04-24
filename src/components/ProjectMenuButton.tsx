@@ -1,4 +1,4 @@
-import { Menu, FolderOpen, FilePlus2, Download } from "lucide-react";
+import { Menu, FolderOpen, FilePlus2, Download, LogOut } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
@@ -7,6 +7,7 @@ interface ProjectMenuButtonProps {
   onLoadProject: () => void;
   onSaveProject: () => void;
   onExportPieces: () => void;
+  onExit: () => void;
 }
 
 interface ItemProps {
