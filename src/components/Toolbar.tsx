@@ -629,41 +629,6 @@ export default function Toolbar({
             />
           </section>
 
-          {/* Grid Size — single line, no title */}
-          <section className="border-b border-toolbar-border px-4 py-2.5">
-            <div className="flex items-center gap-1.5">
-              <label className="flex items-center gap-1 shrink-0">
-                <span className="text-[10px] text-toolbar-foreground">H</span>
-                <input type="number" min={4} max={64} value={gridWidth}
-                  onChange={(e) => onGridSizeChange(parseInt(e.target.value) || 4, gridHeight)}
-                  className={`${inputClass} !w-[42px] !px-1`} />
-              </label>
-              <span className="text-toolbar-foreground text-[10px]">×</span>
-              <label className="flex items-center gap-1 shrink-0">
-                <span className="text-[10px] text-toolbar-foreground">V</span>
-                <input type="number" min={4} max={64} value={gridHeight}
-                  onChange={(e) => onGridSizeChange(gridWidth, parseInt(e.target.value) || 4)}
-                  className={`${inputClass} !w-[42px] !px-1`} />
-              </label>
-              <ToolBtn
-                active={gridVisible}
-                onClick={() => onGridVisibleChange(!gridVisible)}
-                tooltip={gridVisible ? "Ocultar cuadrícula" : "Mostrar cuadrícula"}
-                className="ml-auto !px-1.5"
-              >
-                {gridVisible ? <Eye size={13} /> : <EyeOff size={13} />}
-              </ToolBtn>
-              <ToolBtn
-                active={cursorTrackerVisible}
-                onClick={() => onCursorTrackerVisibleChange(!cursorTrackerVisible)}
-                tooltip={cursorTrackerVisible ? "Ocultar posición del cursor" : "Mostrar posición del cursor"}
-                className="!px-1.5"
-              >
-                <Crosshair size={13} />
-              </ToolBtn>
-            </div>
-          </section>
-
         </div>
 
         {/* Bottom actions — compact icon grid */}
