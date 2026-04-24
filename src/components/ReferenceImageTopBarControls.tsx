@@ -102,11 +102,11 @@ export default function ReferenceImageTopBarControls({
       <IconControlButton
         label={imageVisible ? "Ocultar imagen de referencia" : "Mostrar imagen de referencia"}
         onClick={() => onImageVisibleChange(!imageVisible)}
-        active={hasImage && imageVisible}
+        active={hasImage && !imageVisible}
         disabled={!hasImage}
         compact={compact}
       >
-        <Eye size={iconSize} />
+        {imageVisible ? <EyeOff size={iconSize} /> : <Eye size={iconSize} />}
       </IconControlButton>
 
       <IconControlButton
