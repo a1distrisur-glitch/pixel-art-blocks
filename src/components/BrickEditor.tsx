@@ -232,7 +232,11 @@ export default function BrickEditor() {
           onPipettePrefilledClear={clearPipetteColor}
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
-        <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
+        <WelcomeDialog
+          open={showWelcomeDialog}
+          onClose={closeWelcomeDialog}
+          onContinue={exitMode ? performExit : undefined}
+        />
         {projectActionDialogs}
       </div>
     );
@@ -244,7 +248,11 @@ export default function BrickEditor() {
         {grid}
         {topActions}
       </div>
-      <WelcomeDialog open={showWelcomeDialog} onClose={closeWelcomeDialog} />
+      <WelcomeDialog
+        open={showWelcomeDialog}
+        onClose={closeWelcomeDialog}
+        onContinue={exitMode ? performExit : undefined}
+      />
       {projectActionDialogs}
     </div>
   );
