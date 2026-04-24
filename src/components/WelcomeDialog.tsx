@@ -4,9 +4,11 @@ import welcomeImg from "@/assets/welcome.gif";
 interface WelcomeDialogProps {
   open: boolean;
   onClose: () => void;
+  onContinue?: () => void;
+  continueLabel?: string;
 }
 
-export default function WelcomeDialog({ open, onClose }: WelcomeDialogProps) {
+export default function WelcomeDialog({ open, onClose, onContinue, continueLabel }: WelcomeDialogProps) {
   if (!open) return null;
 
   return (
