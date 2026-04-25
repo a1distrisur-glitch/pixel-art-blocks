@@ -1,4 +1,4 @@
-import { Menu, FolderOpen, FilePlus2, Download } from "lucide-react";
+import { Menu, FolderOpen, FilePlus2, Download, LogOut } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
@@ -7,6 +7,7 @@ interface ProjectMenuButtonProps {
   onLoadProject: () => void;
   onSaveProject: () => void;
   onExportPieces: () => void;
+  onExit: () => void;
 }
 
 interface ItemProps {
@@ -48,6 +49,7 @@ export default function ProjectMenuButton({
   onLoadProject,
   onSaveProject,
   onExportPieces,
+  onExit,
 }: ProjectMenuButtonProps) {
   return (
     <Popover>
@@ -71,7 +73,6 @@ export default function ProjectMenuButton({
           <Item
             title="Cargar proyecto"
             label="Cargar proyecto"
-            variant="primary"
             onClick={onLoadProject}
             icon={<FolderOpen size={16} />}
           />
@@ -89,6 +90,12 @@ export default function ProjectMenuButton({
             disabled={!hasBricks}
             active={hasBricks}
             icon={<Download size={16} />}
+          />
+          <Item
+            title="Salir"
+            label="Salir"
+            onClick={onExit}
+            icon={<LogOut size={16} />}
           />
         </div>
       </PopoverContent>

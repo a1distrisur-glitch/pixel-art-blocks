@@ -4,7 +4,7 @@ import ReferenceImageOverlay from "@/components/ReferenceImageOverlay";
 import TextOverlayLayer from "@/components/TextOverlayLayer";
 import ShapeOverlayLayer from "@/components/ShapeOverlayLayer";
 import BackgroundColorDialog from "@/components/BackgroundColorDialog";
-import { rasterizeShape } from "@/lib/shapeRasterizer";
+import { rasterizeShape, renderShapeSVGPath } from "@/lib/shapeRasterizer";
 import { ArrowRightLeft, ArrowUpDown, Check, Eraser, Move } from "lucide-react";
 
 interface BrickGridProps {
@@ -219,6 +219,8 @@ export default function BrickGrid({
     longPressTimer: number | null;
     longPressTarget: { row: number; col: number } | null;
     initialTouchClient: { x: number; y: number } | null;
+    lastPaintedCell: { row: number; col: number } | null;
+    painting: boolean;
   }>({
     mode: "none",
     startDist: 0,
@@ -230,7 +232,12 @@ export default function BrickGrid({
     longPressTimer: null,
     longPressTarget: null,
     initialTouchClient: null,
+    lastPaintedCell: null,
+    painting: false,
   });
+
+  // Tools that support continuous touch painting (mirror desktop click-drag behaviour)
+  const isPaintableTool = (t: EditorTool) => t === "place" || t === "erase";
 
   const distance = (a: { clientX: number; clientY: number }, b: { clientX: number; clientY: number }) =>
     Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
@@ -282,9 +289,17 @@ export default function BrickGrid({
       touchStateRef.current.startTime = performance.now();
       touchStateRef.current.moved = false;
       touchStateRef.current.initialTouchClient = { x: t[0].clientX, y: t[0].clientY };
-      // Long-press to erase: only when not in image edit mode and not already erasing
+      touchStateRef.current.lastPaintedCell = null;
+      touchStateRef.current.painting = false;
       const target = cellFromClientPoint(t[0].clientX, t[0].clientY);
-      if (target && !imageEditMode) {
+      // Tap-to-place: immediately place a brick on the touched cell (mirrors mouse-down)
+      if (target && !imageEditMode && !isPanning && isPaintableTool(tool)) {
+        onCellClick(target.row, target.col);
+        touchStateRef.current.lastPaintedCell = target;
+        touchStateRef.current.painting = true;
+      }
+      // Long-press to erase: only when not in image edit mode and not already erasing
+      if (target && !imageEditMode && tool !== "erase") {
         const occupant = getCellOccupant(target.row, target.col);
         if (occupant) {
           touchStateRef.current.longPressTarget = target;
@@ -292,7 +307,6 @@ export default function BrickGrid({
             // Trigger erase: temporarily switch tool, place, restore
             const prevTool = tool;
             onToolChange("erase");
-            // Use a microtask to ensure onCellClick reads latest tool
             setTimeout(() => {
               onCellClick(target.row, target.col);
               onToolChange(prevTool);
@@ -302,7 +316,7 @@ export default function BrickGrid({
         }
       }
     }
-  }, [zoom, pan, cancelLongPress, cellFromClientPoint, imageEditMode, getCellOccupant, tool, onToolChange, onCellClick]);
+  }, [zoom, pan, cancelLongPress, cellFromClientPoint, imageEditMode, getCellOccupant, tool, onToolChange, onCellClick, isPanning]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     const t = e.touches;
@@ -330,8 +344,18 @@ export default function BrickGrid({
           cancelLongPress();
         }
       }
+      // Continuous paint while finger is held and dragged across cells (mirrors mouse drag)
+      if (touchStateRef.current.painting && isPaintableTool(tool) && !imageEditMode) {
+        const cell = cellFromClientPoint(t[0].clientX, t[0].clientY);
+        const last = touchStateRef.current.lastPaintedCell;
+        if (cell && (!last || last.row !== cell.row || last.col !== cell.col)) {
+          e.preventDefault();
+          onCellClick(cell.row, cell.col);
+          touchStateRef.current.lastPaintedCell = cell;
+        }
+      }
     }
-  }, [cancelLongPress]);
+  }, [cancelLongPress, tool, imageEditMode, cellFromClientPoint, onCellClick]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     const elapsed = performance.now() - touchStateRef.current.startTime;
@@ -345,6 +369,8 @@ export default function BrickGrid({
     if (e.touches.length === 0) {
       touchStateRef.current.mode = "none";
       touchStateRef.current.initialTouchClient = null;
+      touchStateRef.current.lastPaintedCell = null;
+      touchStateRef.current.painting = false;
     }
   }, [cancelLongPress, onUndo]);
   // ──────────────────────────────────────────────────────────────────────────────
@@ -592,32 +618,26 @@ export default function BrickGrid({
     );
   }, [tool, getSelectionRect]);
 
-  // Shape tool: ghost preview (real rasterized shape, cell by cell)
+  // Shape tool: ghost preview as a thin vector outline of the exact shape
   const shapePreview = useMemo(() => {
     if (tool !== "shape" || !isDrawingShape || !shapeStart || !shapeEnd) return null;
-    const cells = rasterizeShape(shapeType, shapeFillMode, shapeStart.row, shapeStart.col, shapeEnd.row, shapeEnd.col);
     const r1 = Math.min(shapeStart.row, shapeEnd.row);
     const c1 = Math.min(shapeStart.col, shapeEnd.col);
     const r2 = Math.max(shapeStart.row, shapeEnd.row);
     const c2 = Math.max(shapeStart.col, shapeEnd.col);
+    const x = c1 * CELL_SIZE;
+    const y = r1 * CELL_SIZE;
+    const w = Math.max((c2 - c1 + 1) * CELL_SIZE, CELL_SIZE);
+    const h = Math.max((r2 - r1 + 1) * CELL_SIZE, CELL_SIZE);
+    const { path } = renderShapeSVGPath(shapeType, shapeFillMode, x, y, w, h);
     return (
       <g pointerEvents="none">
-        {cells.map((cell, i) => {
-          if (cell.row < 0 || cell.col < 0 || cell.row >= height || cell.col >= width) return null;
-          return (
-            <rect key={`shape-ghost-${i}`}
-              x={cell.col * CELL_SIZE + 1} y={cell.row * CELL_SIZE + 1}
-              width={CELL_SIZE - 2} height={CELL_SIZE - 2} rx={2}
-              fill="none" stroke={selectedColor} strokeWidth={1.25} opacity={0.85} />
-          );
-        })}
-        <rect x={c1 * CELL_SIZE} y={r1 * CELL_SIZE}
-          width={Math.max((c2 - c1 + 1) * CELL_SIZE, CELL_SIZE)}
-          height={Math.max((r2 - r1 + 1) * CELL_SIZE, CELL_SIZE)}
+        <path d={path} fill="none" stroke={selectedColor} strokeWidth={1.5} opacity={0.9} strokeLinejoin="round" strokeLinecap="round" />
+        <rect x={x} y={y} width={w} height={h}
           fill="none" stroke={selectedColor} strokeWidth={1} strokeDasharray="3 3" opacity={0.4} rx={2} />
       </g>
     );
-  }, [tool, isDrawingShape, shapeStart, shapeEnd, selectedColor, shapeType, shapeFillMode, width, height]);
+  }, [tool, isDrawingShape, shapeStart, shapeEnd, selectedColor, shapeType, shapeFillMode]);
 
   // Move tool: highlight selected bricks
   const selectedBrickHighlights = useMemo(() => {

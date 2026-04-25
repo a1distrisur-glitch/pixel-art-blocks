@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import {
   Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
-  MousePointer2, Bold, Italic, X,
+  MousePointer2, Bold, Italic, X, Trash2, Plus,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, ShapeType, ShapeFillMode } from "@/hooks/useBrickEditor";
@@ -61,6 +61,7 @@ interface MobileToolbarProps {
   onImageOpacityChange: (v: number) => void;
   onImageEditModeChange: (v: boolean) => void;
   onRequestRemoveImage: () => void;
+  onClear: () => void;
   pipettePrefilledColor?: string | null;
   onPipettePrefilledClear?: () => void;
 }
@@ -84,19 +85,20 @@ function TopBtn({
 function BottomTool({
   active, danger, onClick, label, children,
 }: { active?: boolean; danger?: boolean; onClick: () => void; label: string; children: ReactNode }) {
+  const cls = active
+    ? danger
+      ? "bg-destructive text-destructive-foreground"
+      : "bg-primary text-primary-foreground"
+    : danger
+      ? "bg-destructive/20 text-toolbar-foreground hover:bg-destructive/30"
+      : "text-toolbar-foreground hover:bg-toolbar-hover";
   return (
     <button
       type="button"
       aria-label={label}
       title={label}
       onClick={onClick}
-      className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
-        active
-          ? danger
-            ? "bg-destructive text-destructive-foreground"
-            : "bg-primary text-primary-foreground"
-          : "text-toolbar-foreground hover:bg-toolbar-hover"
-      }`}
+      className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${cls}`}
     >
       {children}
     </button>
@@ -142,6 +144,7 @@ export default function MobileToolbar({
   onImageUpload, onRemoveImage, onImageVisibleChange,
   onImageOpacityChange, onImageEditModeChange,
   onRequestRemoveImage,
+  onClear,
   pipettePrefilledColor, onPipettePrefilledClear,
 }: MobileToolbarProps) {
   const [paintOpen, setPaintOpen] = useState(false);
@@ -165,7 +168,12 @@ export default function MobileToolbar({
 
   const handleTextOpenChange = (open: boolean) => {
     setTextOpen(open);
-    if (open) activateTool("text");
+    if (open) {
+      activateTool("text");
+    } else {
+      // When closing the text popover, revert to brick tool to avoid accidental text placement
+      onToolChange("place");
+    }
   };
 
   const guarded = (next: EditorTool) => () => {
@@ -332,6 +340,7 @@ export default function MobileToolbar({
                     onClick={() => {
                       activateTool("shape");
                       onShapeTypeChange(s.type);
+                      setShapeOpen(false);
                     }}
                     className={`flex items-center justify-center w-full h-8 rounded-md text-xs transition-all ${
                       shapeType === s.type
@@ -389,16 +398,29 @@ export default function MobileToolbar({
             sideOffset={8}
             className="w-[280px] p-2.5 bg-toolbar border-toolbar-border space-y-2"
           >
-            <input
-              type="text"
-              value={pixelText}
-               onChange={(e) => {
-                 activateTool("text");
-                 onPixelTextChange(e.target.value);
-               }}
-              placeholder="Escribe tu texto…"
-              className={inputCls}
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={pixelText}
+                 onChange={(e) => {
+                   activateTool("text");
+                   onPixelTextChange(e.target.value);
+                 }}
+                placeholder="Escribe tu texto…"
+                className={`${inputCls} ${pixelText ? "pr-7" : ""}`}
+              />
+              {pixelText && (
+                <button
+                  type="button"
+                  aria-label="Borrar texto"
+                  title="Borrar texto"
+                  onClick={() => onPixelTextChange("")}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 rounded-sm text-toolbar-foreground/70 hover:text-toolbar-foreground hover:bg-toolbar-hover transition-colors"
+                >
+                  <X size={12} />
+                </button>
+              )}
+            </div>
             <div className="flex gap-2">
               <label className="flex-1">
                 <span className="text-[10px] text-toolbar-foreground">Tamaño</span>
@@ -434,23 +456,33 @@ export default function MobileToolbar({
                 </select>
               </label>
             </div>
-            <div className="flex gap-1">
-               <PopBtn active={textBold} onClick={() => {
-                 activateTool("text");
-                 onTextBoldChange(!textBold);
-               }} label="Negrita" className="!flex-none !w-10">
-                <Bold size={14} />
-              </PopBtn>
-               <PopBtn active={textItalic} onClick={() => {
-                 activateTool("text");
-                 onTextItalicChange(!textItalic);
-               }} label="Cursiva" className="!flex-none !w-10">
-                <Italic size={14} />
-              </PopBtn>
-            </div>
-            <p className="text-[9px] text-toolbar-foreground/70 flex items-center gap-1">
-              <MousePointer2 size={9} /> Clic en la grilla para colocar
-            </p>
+             <div className="flex items-center gap-1">
+                <PopBtn active={textBold} onClick={() => {
+                  activateTool("text");
+                  onTextBoldChange(!textBold);
+                }} label="Negrita" className="!flex-none !w-10">
+                 <Bold size={14} />
+               </PopBtn>
+                <PopBtn active={textItalic} onClick={() => {
+                  activateTool("text");
+                  onTextItalicChange(!textItalic);
+                }} label="Cursiva" className="!flex-none !w-10">
+                 <Italic size={14} />
+               </PopBtn>
+               <button
+                 type="button"
+                 aria-label="Colocar texto"
+                 title="Colocar texto"
+                 onClick={() => {
+                   activateTool("text");
+                   setTextOpen(false);
+                 }}
+                 className="flex items-center justify-center gap-1 h-8 px-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0 text-xs font-medium"
+               >
+                 <Plus size={14} />
+                 <span>Colocar</span>
+               </button>
+             </div>
             {textOverlays && textOverlays.length > 0 && (
               <div className="pt-1 border-t border-toolbar-border">
                 <p className="text-[10px] text-toolbar-foreground mb-1">Textos ({textOverlays.length})</p>
@@ -477,6 +509,10 @@ export default function MobileToolbar({
 
         <BottomTool active={tool === "pipette"} onClick={guarded("pipette")} label="Pipeta">
           <Pipette size={18} />
+        </BottomTool>
+
+        <BottomTool danger onClick={onClear} label="Eliminar todo">
+          <Trash2 size={18} />
         </BottomTool>
 
       </nav>
