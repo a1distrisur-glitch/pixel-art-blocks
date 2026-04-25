@@ -120,7 +120,7 @@ export default function ReferenceImageControls({
             onClick={() => hasImage && onImageVisibleChange(!imageVisible)}
             tooltip={imageVisible ? "Ocultar imagen" : "Mostrar imagen"}
           >
-            {!imageVisible ? <EyeOff size={iconSize} /> : <Eye size={iconSize} />}
+            <EyeOff size={iconSize} />
           </CtrlBtn>
           <CtrlBtn
             active={imageEditMode}

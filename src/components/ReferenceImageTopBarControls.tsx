@@ -107,7 +107,7 @@ export default function ReferenceImageTopBarControls({
         disabled={!hasImage}
         compact={compact}
       >
-        {!imageVisible ? <EyeOff size={iconSize} /> : <Eye size={iconSize} />}
+        <EyeOff size={iconSize} />
       </IconControlButton>
 
       <IconControlButton
