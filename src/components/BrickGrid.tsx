@@ -4,7 +4,7 @@ import ReferenceImageOverlay from "@/components/ReferenceImageOverlay";
 import TextOverlayLayer from "@/components/TextOverlayLayer";
 import ShapeOverlayLayer from "@/components/ShapeOverlayLayer";
 import BackgroundColorDialog from "@/components/BackgroundColorDialog";
-import { rasterizeShape } from "@/lib/shapeRasterizer";
+import { rasterizeShape, renderShapeSVGPath } from "@/lib/shapeRasterizer";
 import { ArrowRightLeft, ArrowUpDown, Check, Eraser, Move } from "lucide-react";
 
 interface BrickGridProps {
