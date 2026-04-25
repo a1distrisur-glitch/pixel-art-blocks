@@ -21,6 +21,8 @@ interface ColorPickerButtonProps {
   /** Si se pasa un HEX (ej. desde la pipeta), abre automáticamente el diálogo "Agregar Color" prellenado */
   prefilledColor?: string | null;
   onPrefilledClear?: () => void;
+  /** Si true, el botón se expande para llenar el contenedor flex (h-12, flex-1) */
+  expand?: boolean;
 }
 
 export default function ColorPickerButton({
@@ -36,6 +38,7 @@ export default function ColorPickerButton({
   side = "bottom",
   prefilledColor = null,
   onPrefilledClear,
+  expand = false,
 }: ColorPickerButtonProps) {
   const [open, setOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"add" | "edit" | null>(null);
@@ -161,14 +164,24 @@ export default function ColorPickerButton({
             title="Color seleccionado"
             className={cn(
               "flex items-center justify-center rounded-md ring-1 ring-toolbar-border hover:ring-primary/50 transition-all",
+              expand && "flex-1 min-w-0 h-12",
               className,
             )}
-            style={{
-              width: swatchSize,
-              height: swatchSize,
-              backgroundColor: selectedColor,
-              boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.2)",
-            }}
+            style={
+              expand
+                ? {
+                    backgroundColor: selectedColor,
+                    boxShadow:
+                      "inset 0 -1px 2px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.2)",
+                  }
+                : {
+                    width: swatchSize,
+                    height: swatchSize,
+                    backgroundColor: selectedColor,
+                    boxShadow:
+                      "inset 0 -1px 2px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.2)",
+                  }
+            }
           />
         </PopoverTrigger>
         <PopoverContent

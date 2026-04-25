@@ -9,6 +9,7 @@ interface ProjectMenuButtonProps {
   onExportPieces: () => void;
   onExit: () => void;
   onOpenWelcome?: () => void;
+  triggerClassName?: string;
 }
 
 interface ItemProps {
@@ -52,6 +53,7 @@ export default function ProjectMenuButton({
   onExportPieces,
   onExit,
   onOpenWelcome,
+  triggerClassName,
 }: ProjectMenuButtonProps) {
   return (
     <Popover>
@@ -60,7 +62,10 @@ export default function ProjectMenuButton({
           type="button"
           aria-label="Menú de proyecto"
           title="Proyecto"
-          className="flex items-center justify-center w-9 h-9 rounded-md text-toolbar-foreground hover:bg-toolbar-hover transition-colors"
+          className={cn(
+            "flex items-center justify-center w-9 h-9 rounded-md text-toolbar-foreground hover:bg-toolbar-hover transition-colors",
+            triggerClassName,
+          )}
         >
           <Menu size={18} />
         </button>
