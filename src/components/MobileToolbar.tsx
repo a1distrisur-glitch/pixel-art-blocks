@@ -398,16 +398,29 @@ export default function MobileToolbar({
             sideOffset={8}
             className="w-[280px] p-2.5 bg-toolbar border-toolbar-border space-y-2"
           >
-            <input
-              type="text"
-              value={pixelText}
-               onChange={(e) => {
-                 activateTool("text");
-                 onPixelTextChange(e.target.value);
-               }}
-              placeholder="Escribe tu texto…"
-              className={inputCls}
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={pixelText}
+                 onChange={(e) => {
+                   activateTool("text");
+                   onPixelTextChange(e.target.value);
+                 }}
+                placeholder="Escribe tu texto…"
+                className={`${inputCls} ${pixelText ? "pr-7" : ""}`}
+              />
+              {pixelText && (
+                <button
+                  type="button"
+                  aria-label="Borrar texto"
+                  title="Borrar texto"
+                  onClick={() => onPixelTextChange("")}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 rounded-sm text-toolbar-foreground/70 hover:text-toolbar-foreground hover:bg-toolbar-hover transition-colors"
+                >
+                  <X size={12} />
+                </button>
+              )}
+            </div>
             <div className="flex gap-2">
               <label className="flex-1">
                 <span className="text-[10px] text-toolbar-foreground">Tamaño</span>
