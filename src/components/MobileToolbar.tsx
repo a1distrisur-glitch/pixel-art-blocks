@@ -428,13 +428,27 @@ export default function MobileToolbar({
                 <span className="text-[10px] text-toolbar-foreground">Tamaño</span>
                 <input
                   type="number"
-                  min={8}
-                  max={120}
-                  value={textFontSize}
-                   onChange={(e) => {
-                     activateTool("text");
-                     onTextFontSizeChange(parseInt(e.target.value) || 16);
-                   }}
+                  min={1}
+                  max={96}
+                  value={fontSizeText}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === "") {
+                      setFontSizeText("");
+                      return;
+                    }
+                    const n = parseInt(raw, 10);
+                    if (Number.isNaN(n)) return;
+                    const c = Math.max(1, Math.min(96, n));
+                    setFontSizeText(String(c));
+                    activateTool("text");
+                    if (c !== textFontSize) onTextFontSizeChange(c);
+                  }}
+                  onBlur={() => {
+                    if (fontSizeText === "" || Number.isNaN(parseInt(fontSizeText, 10))) {
+                      setFontSizeText(String(textFontSize));
+                    }
+                  }}
                   className={`${inputCls} mt-0.5`}
                 />
               </label>
