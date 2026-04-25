@@ -75,7 +75,7 @@ function TopBtn({
       aria-label={label}
       onClick={onClick}
       disabled={disabled}
-      className="flex items-center justify-center w-10 h-10 rounded-lg text-toolbar-foreground bg-toolbar-section hover:bg-toolbar-hover disabled:opacity-30 disabled:pointer-events-none transition-colors"
+      className="flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg text-toolbar-foreground bg-toolbar-section hover:bg-toolbar-hover disabled:opacity-30 disabled:pointer-events-none transition-colors"
     >
       {children}
     </button>
@@ -197,9 +197,7 @@ export default function MobileToolbar({
   return (
     <>
       {/* Top compact bar */}
-      <header className="fixed top-0 inset-x-0 z-30 flex items-center gap-1.5 px-2 h-12 bg-toolbar border-b border-toolbar-border toolbar-shadow">
-        <div className="flex-1 min-w-0" />
-
+      <header className="fixed top-0 inset-x-0 z-30 flex items-stretch gap-0.5 px-1.5 pt-1 pb-1 bg-toolbar border-b border-toolbar-border toolbar-shadow">
         <ReferenceImageTopBarControls
           hasImage={hasImage}
           imageVisible={imageVisible}
@@ -211,6 +209,7 @@ export default function MobileToolbar({
           onImageEditModeChange={onImageEditModeChange}
           onRequestRemove={onRequestRemoveImage}
           compact
+          expand
         />
 
         <ColorPickerButton
@@ -221,6 +220,7 @@ export default function MobileToolbar({
           onReplaceColor={onReplaceColor}
           onRemoveColor={onRemoveColor}
           swatchSize={28}
+          expand
           align="end"
           side="bottom"
           prefilledColor={pipettePrefilledColor}
@@ -233,7 +233,7 @@ export default function MobileToolbar({
       </header>
 
       {/* Spacer so canvas doesn't sit under the top bar */}
-      <div aria-hidden className="h-12 shrink-0" />
+      <div aria-hidden className="h-14 shrink-0" />
 
       {/* Bottom tools bar */}
       <nav className="fixed bottom-0 inset-x-0 z-30 flex items-stretch gap-0.5 px-1.5 pt-1 pb-[max(env(safe-area-inset-bottom),6px)] bg-toolbar border-t border-toolbar-border toolbar-shadow">
