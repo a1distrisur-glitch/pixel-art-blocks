@@ -14,6 +14,7 @@ interface ReferenceImageTopBarControlsProps {
   onImageEditModeChange: (value: boolean) => void;
   onRequestRemove: () => void;
   compact?: boolean;
+  expand?: boolean;
   className?: string;
 }
 
@@ -25,6 +26,7 @@ interface IconControlButtonProps {
   danger?: boolean;
   disabled?: boolean;
   compact?: boolean;
+  expand?: boolean;
 }
 
 function IconControlButton({
@@ -35,6 +37,7 @@ function IconControlButton({
   danger,
   disabled,
   compact,
+  expand,
 }: IconControlButtonProps) {
   return (
     <button
@@ -44,8 +47,8 @@ function IconControlButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "shrink-0 rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30",
-        compact ? "h-8 w-8" : "h-9 w-9",
+        "rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30",
+        expand ? "flex-1 min-w-0 h-12" : cn("shrink-0", compact ? "h-8 w-8" : "h-9 w-9"),
         active
           ? danger
             ? "bg-destructive text-destructive-foreground"
@@ -71,6 +74,7 @@ export default function ReferenceImageTopBarControls({
   onImageEditModeChange,
   onRequestRemove,
   compact = false,
+  expand = false,
   className,
 }: ReferenceImageTopBarControlsProps) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -78,7 +82,7 @@ export default function ReferenceImageTopBarControls({
   const iconSize = compact ? 14 : 16;
 
   return (
-    <div className={cn("flex items-center gap-1 shrink-0", className)}>
+    <div className={cn("flex items-stretch gap-0.5", expand ? "flex-1 min-w-0 contents" : "shrink-0", className)}>
       <input
         ref={fileRef}
         type="file"
@@ -96,6 +100,7 @@ export default function ReferenceImageTopBarControls({
         onClick={() => fileRef.current?.click()}
         active={hasImage}
         compact={compact}
+        expand={expand}
       >
         <ImageIcon size={iconSize} />
       </IconControlButton>
@@ -106,6 +111,7 @@ export default function ReferenceImageTopBarControls({
         active={hasImage && !imageVisible}
         disabled={!hasImage}
         compact={compact}
+        expand={expand}
       >
         <EyeOff size={iconSize} />
       </IconControlButton>
@@ -116,6 +122,7 @@ export default function ReferenceImageTopBarControls({
         active={imageEditMode}
         disabled={!hasImage}
         compact={compact}
+        expand={expand}
       >
         <Move size={iconSize} />
       </IconControlButton>
@@ -128,8 +135,8 @@ export default function ReferenceImageTopBarControls({
             title="Opacidad de imagen de referencia"
             disabled={!hasImage}
             className={cn(
-              "shrink-0 rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30",
-              compact ? "h-8 w-8" : "h-9 w-9",
+              "rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30",
+              expand ? "flex-1 min-w-0 h-12" : cn("shrink-0", compact ? "h-8 w-8" : "h-9 w-9"),
               opacityOpen
                 ? "bg-primary text-primary-foreground"
                 : "bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover",
@@ -162,6 +169,7 @@ export default function ReferenceImageTopBarControls({
         danger
         disabled={!hasImage}
         compact={compact}
+        expand={expand}
       >
         <Trash2 size={iconSize} />
       </IconControlButton>
