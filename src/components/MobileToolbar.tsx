@@ -90,7 +90,7 @@ function BottomTool({
       ? "bg-destructive text-destructive-foreground"
       : "bg-primary text-primary-foreground"
     : danger
-      ? "text-destructive hover:bg-destructive/10"
+      ? "bg-destructive/20 text-toolbar-foreground hover:bg-destructive/30"
       : "text-toolbar-foreground hover:bg-toolbar-hover";
   return (
     <button
