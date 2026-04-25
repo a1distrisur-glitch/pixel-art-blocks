@@ -8,6 +8,7 @@ interface ProjectMenuButtonProps {
   onSaveProject: () => void;
   onExportPieces: () => void;
   onExit: () => void;
+  onOpenWelcome?: () => void;
 }
 
 interface ItemProps {
@@ -50,6 +51,7 @@ export default function ProjectMenuButton({
   onSaveProject,
   onExportPieces,
   onExit,
+  onOpenWelcome,
 }: ProjectMenuButtonProps) {
   return (
     <Popover>
@@ -91,6 +93,14 @@ export default function ProjectMenuButton({
             active={hasBricks}
             icon={<Download size={16} />}
           />
+          {onOpenWelcome && (
+            <Item
+              title="PixCool Art"
+              label="PixCool Art"
+              onClick={onOpenWelcome}
+              icon={<img src="/icon-192.png" alt="" className="w-4 h-4 rounded-sm object-cover" />}
+            />
+          )}
           <Item
             title="Salir"
             label="Salir"
