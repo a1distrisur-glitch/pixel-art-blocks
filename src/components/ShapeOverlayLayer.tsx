@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ShapeOverlay, EditorTool } from "@/hooks/useBrickEditor";
 import { X } from "lucide-react";
-import { ShapeType, ShapeFillMode } from "@/lib/shapeRasterizer";
+import { ShapeType, ShapeFillMode, renderShapeSVGPath } from "@/lib/shapeRasterizer";
 
 interface ShapeOverlayLayerProps {
   overlays: ShapeOverlay[];
