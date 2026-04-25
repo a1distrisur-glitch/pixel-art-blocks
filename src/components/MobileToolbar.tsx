@@ -335,6 +335,7 @@ export default function MobileToolbar({
                     onClick={() => {
                       activateTool("shape");
                       onShapeTypeChange(s.type);
+                      setShapeOpen(false);
                     }}
                     className={`flex items-center justify-center w-full h-8 rounded-md text-xs transition-all ${
                       shapeType === s.type
