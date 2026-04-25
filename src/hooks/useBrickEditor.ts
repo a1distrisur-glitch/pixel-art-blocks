@@ -246,6 +246,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
           italic: textItalic,
         };
         setTextOverlays((prev) => [...prev, newOverlay]);
+        setTool("place");
         return;
       }
       if (!canPlace(row, col, selectedSize, orientation)) return;
