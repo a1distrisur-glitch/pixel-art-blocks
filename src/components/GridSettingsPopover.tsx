@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Grid3x3, Eye, EyeOff, Crosshair } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,49 @@ export default function GridSettingsPopover({
 }: GridSettingsPopoverProps) {
   const inputClass =
     "h-7 w-[52px] px-1 rounded-md border border-toolbar-border bg-toolbar text-toolbar-foreground text-[11px] text-center outline-none focus:ring-1 focus:ring-primary";
+
+  const [wText, setWText] = useState<string>(String(gridWidth));
+  const [hText, setHText] = useState<string>(String(gridHeight));
+
+  useEffect(() => setWText(String(gridWidth)), [gridWidth]);
+  useEffect(() => setHText(String(gridHeight)), [gridHeight]);
+
+  const clamp = (n: number) => Math.max(1, Math.min(96, n));
+
+  const handleWChange = (raw: string) => {
+    if (raw === "") {
+      setWText("");
+      return;
+    }
+    const n = parseInt(raw, 10);
+    if (Number.isNaN(n)) return;
+    const c = clamp(n);
+    setWText(String(c));
+    if (c !== gridWidth) onGridSizeChange(c, gridHeight);
+  };
+
+  const handleHChange = (raw: string) => {
+    if (raw === "") {
+      setHText("");
+      return;
+    }
+    const n = parseInt(raw, 10);
+    if (Number.isNaN(n)) return;
+    const c = clamp(n);
+    setHText(String(c));
+    if (c !== gridHeight) onGridSizeChange(gridWidth, c);
+  };
+
+  const handleWBlur = () => {
+    if (wText === "" || Number.isNaN(parseInt(wText, 10))) {
+      setWText(String(gridWidth));
+    }
+  };
+  const handleHBlur = () => {
+    if (hText === "" || Number.isNaN(parseInt(hText, 10))) {
+      setHText(String(gridHeight));
+    }
+  };
 
   return (
     <Popover>
@@ -54,8 +98,9 @@ export default function GridSettingsPopover({
               type="number"
               min={1}
               max={96}
-              value={gridWidth}
-              onChange={(e) => onGridSizeChange(parseInt(e.target.value) || 1, gridHeight)}
+              value={wText}
+              onChange={(e) => handleWChange(e.target.value)}
+              onBlur={handleWBlur}
               className={inputClass}
             />
           </label>
@@ -66,8 +111,9 @@ export default function GridSettingsPopover({
               type="number"
               min={1}
               max={96}
-              value={gridHeight}
-              onChange={(e) => onGridSizeChange(gridWidth, parseInt(e.target.value) || 1)}
+              value={hText}
+              onChange={(e) => handleHChange(e.target.value)}
+              onBlur={handleHBlur}
               className={inputClass}
             />
           </label>
