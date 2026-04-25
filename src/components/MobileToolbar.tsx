@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
@@ -151,6 +151,8 @@ export default function MobileToolbar({
   const [shapeOpen, setShapeOpen] = useState(false);
   const [textOpen, setTextOpen] = useState(false);
   const [refImageOpen, setRefImageOpen] = useState(false);
+  const [fontSizeText, setFontSizeText] = useState<string>(String(textFontSize));
+  useEffect(() => setFontSizeText(String(textFontSize)), [textFontSize]);
 
   const ensureImageFixed = () => {
     if (imageEditMode) onImageEditModeChange(false);
