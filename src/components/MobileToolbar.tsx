@@ -168,7 +168,12 @@ export default function MobileToolbar({
 
   const handleTextOpenChange = (open: boolean) => {
     setTextOpen(open);
-    if (open) activateTool("text");
+    if (open) {
+      activateTool("text");
+    } else {
+      // When closing the text popover, revert to brick tool to avoid accidental text placement
+      onToolChange("place");
+    }
   };
 
   const guarded = (next: EditorTool) => () => {
