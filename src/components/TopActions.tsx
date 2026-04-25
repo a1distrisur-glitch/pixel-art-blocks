@@ -83,17 +83,6 @@ export default function TopActions({
   return (
     <div className={cn(wrapper, className)}>
       {variant === "floating" && (
-        <button
-          type="button"
-          aria-label="Abrir bienvenida"
-          title="Abrir bienvenida"
-          onClick={onOpenWelcome}
-          className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-toolbar-hover transition-colors"
-        >
-          <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md object-cover" />
-        </button>
-      )}
-      {variant === "floating" && (
         <ReferenceImageTopBarControls
           hasImage={hasImage}
           imageVisible={imageVisible}
@@ -134,6 +123,7 @@ export default function TopActions({
         onSaveProject={onSaveProject}
         onExportPieces={onExportPieces}
         onExit={onExit}
+        onOpenWelcome={onOpenWelcome}
       />
     </div>
   );
