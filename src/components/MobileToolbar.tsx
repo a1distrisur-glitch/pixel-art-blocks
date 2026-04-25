@@ -438,37 +438,35 @@ export default function MobileToolbar({
                 </select>
               </label>
             </div>
-            <div className="flex gap-1">
-               <PopBtn active={textBold} onClick={() => {
-                 activateTool("text");
-                 onTextBoldChange(!textBold);
-               }} label="Negrita" className="!flex-none !w-10">
-                <Bold size={14} />
-              </PopBtn>
-               <PopBtn active={textItalic} onClick={() => {
-                 activateTool("text");
-                 onTextItalicChange(!textItalic);
-               }} label="Cursiva" className="!flex-none !w-10">
-                <Italic size={14} />
-              </PopBtn>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label="Colocar texto"
-                title="Colocar texto"
-                onClick={() => {
+             <div className="flex items-center gap-1">
+                <PopBtn active={textBold} onClick={() => {
                   activateTool("text");
-                  setTextOpen(false);
-                }}
-                className="flex items-center justify-center h-8 w-8 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0"
-              >
-                <Plus size={14} />
-              </button>
-              <p className="text-[9px] text-toolbar-foreground/70 flex items-center gap-1 flex-1">
-                <MousePointer2 size={9} /> Clic en la grilla para colocar
-              </p>
-            </div>
+                  onTextBoldChange(!textBold);
+                }} label="Negrita" className="!flex-none !w-10">
+                 <Bold size={14} />
+               </PopBtn>
+                <PopBtn active={textItalic} onClick={() => {
+                  activateTool("text");
+                  onTextItalicChange(!textItalic);
+                }} label="Cursiva" className="!flex-none !w-10">
+                 <Italic size={14} />
+               </PopBtn>
+               <button
+                 type="button"
+                 aria-label="Colocar texto"
+                 title="Colocar texto"
+                 onClick={() => {
+                   activateTool("text");
+                   setTextOpen(false);
+                 }}
+                 className="flex items-center justify-center h-8 w-10 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0"
+               >
+                 <Plus size={14} />
+               </button>
+             </div>
+             <p className="text-[9px] text-toolbar-foreground/70 flex items-center gap-1">
+               <MousePointer2 size={9} /> Clic en la grilla para colocar
+             </p>
             {textOverlays && textOverlays.length > 0 && (
               <div className="pt-1 border-t border-toolbar-border">
                 <p className="text-[10px] text-toolbar-foreground mb-1">Textos ({textOverlays.length})</p>
