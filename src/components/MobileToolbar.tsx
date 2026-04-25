@@ -1,8 +1,8 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
-  MousePointer2, Bold, Italic, X, Trash2, Plus,
+  MousePointer2, Bold, Italic, X, Trash2, Plus, LogOut,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, ShapeType, ShapeFillMode } from "@/hooks/useBrickEditor";
@@ -151,6 +151,8 @@ export default function MobileToolbar({
   const [shapeOpen, setShapeOpen] = useState(false);
   const [textOpen, setTextOpen] = useState(false);
   const [refImageOpen, setRefImageOpen] = useState(false);
+  const [fontSizeText, setFontSizeText] = useState<string>(String(textFontSize));
+  useEffect(() => setFontSizeText(String(textFontSize)), [textFontSize]);
 
   const ensureImageFixed = () => {
     if (imageEditMode) onImageEditModeChange(false);
@@ -426,13 +428,27 @@ export default function MobileToolbar({
                 <span className="text-[10px] text-toolbar-foreground">Tamaño</span>
                 <input
                   type="number"
-                  min={8}
-                  max={120}
-                  value={textFontSize}
-                   onChange={(e) => {
-                     activateTool("text");
-                     onTextFontSizeChange(parseInt(e.target.value) || 16);
-                   }}
+                  min={1}
+                  max={96}
+                  value={fontSizeText}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === "") {
+                      setFontSizeText("");
+                      return;
+                    }
+                    const n = parseInt(raw, 10);
+                    if (Number.isNaN(n)) return;
+                    const c = Math.max(1, Math.min(96, n));
+                    setFontSizeText(String(c));
+                    activateTool("text");
+                    if (c !== textFontSize) onTextFontSizeChange(c);
+                  }}
+                  onBlur={() => {
+                    if (fontSizeText === "" || Number.isNaN(parseInt(fontSizeText, 10))) {
+                      setFontSizeText(String(textFontSize));
+                    }
+                  }}
                   className={`${inputCls} mt-0.5`}
                 />
               </label>
@@ -481,6 +497,19 @@ export default function MobileToolbar({
                >
                  <Plus size={14} />
                  <span>Colocar</span>
+               </button>
+               <button
+                 type="button"
+                 aria-label="Salir del modo texto"
+                 title="Salir"
+                 onClick={() => {
+                   onToolChange("place");
+                   setTextOpen(false);
+                 }}
+                 className="flex items-center justify-center gap-1 h-8 px-2 rounded-md bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover transition-colors shrink-0 text-xs font-medium border border-toolbar-border"
+               >
+                 <LogOut size={14} />
+                 <span>Salir</span>
                </button>
              </div>
             {textOverlays && textOverlays.length > 0 && (
