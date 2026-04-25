@@ -618,32 +618,26 @@ export default function BrickGrid({
     );
   }, [tool, getSelectionRect]);
 
-  // Shape tool: ghost preview (real rasterized shape, cell by cell)
+  // Shape tool: ghost preview as a thin vector outline of the exact shape
   const shapePreview = useMemo(() => {
     if (tool !== "shape" || !isDrawingShape || !shapeStart || !shapeEnd) return null;
-    const cells = rasterizeShape(shapeType, shapeFillMode, shapeStart.row, shapeStart.col, shapeEnd.row, shapeEnd.col);
     const r1 = Math.min(shapeStart.row, shapeEnd.row);
     const c1 = Math.min(shapeStart.col, shapeEnd.col);
     const r2 = Math.max(shapeStart.row, shapeEnd.row);
     const c2 = Math.max(shapeStart.col, shapeEnd.col);
+    const x = c1 * CELL_SIZE;
+    const y = r1 * CELL_SIZE;
+    const w = Math.max((c2 - c1 + 1) * CELL_SIZE, CELL_SIZE);
+    const h = Math.max((r2 - r1 + 1) * CELL_SIZE, CELL_SIZE);
+    const { path } = renderShapeSVGPath(shapeType, shapeFillMode, x, y, w, h);
     return (
       <g pointerEvents="none">
-        {cells.map((cell, i) => {
-          if (cell.row < 0 || cell.col < 0 || cell.row >= height || cell.col >= width) return null;
-          return (
-            <rect key={`shape-ghost-${i}`}
-              x={cell.col * CELL_SIZE + 1} y={cell.row * CELL_SIZE + 1}
-              width={CELL_SIZE - 2} height={CELL_SIZE - 2} rx={2}
-              fill="none" stroke={selectedColor} strokeWidth={1.25} opacity={0.85} />
-          );
-        })}
-        <rect x={c1 * CELL_SIZE} y={r1 * CELL_SIZE}
-          width={Math.max((c2 - c1 + 1) * CELL_SIZE, CELL_SIZE)}
-          height={Math.max((r2 - r1 + 1) * CELL_SIZE, CELL_SIZE)}
+        <path d={path} fill="none" stroke={selectedColor} strokeWidth={1.5} opacity={0.9} strokeLinejoin="round" strokeLinecap="round" />
+        <rect x={x} y={y} width={w} height={h}
           fill="none" stroke={selectedColor} strokeWidth={1} strokeDasharray="3 3" opacity={0.4} rx={2} />
       </g>
     );
-  }, [tool, isDrawingShape, shapeStart, shapeEnd, selectedColor, shapeType, shapeFillMode, width, height]);
+  }, [tool, isDrawingShape, shapeStart, shapeEnd, selectedColor, shapeType, shapeFillMode]);
 
   // Move tool: highlight selected bricks
   const selectedBrickHighlights = useMemo(() => {
