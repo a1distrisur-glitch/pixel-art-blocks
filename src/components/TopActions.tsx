@@ -78,7 +78,7 @@ export default function TopActions({
   const wrapper =
     variant === "floating"
       ? "fixed top-3 right-3 z-30 flex items-center gap-1 px-1.5 py-1 rounded-lg bg-toolbar/95 backdrop-blur border border-toolbar-border toolbar-shadow"
-      : "flex items-center gap-0.5";
+      : "contents";
 
   return (
     <div className={cn(wrapper, className)}>
@@ -116,6 +116,7 @@ export default function TopActions({
         onGridVisibleChange={onGridVisibleChange}
         cursorTrackerVisible={cursorTrackerVisible}
         onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
+        buttonClassName={variant === "inline" ? "!w-auto !h-12 flex-1 min-w-0" : undefined}
       />
       <ProjectMenuButton
         hasBricks={hasBricks}
@@ -124,6 +125,7 @@ export default function TopActions({
         onExportPieces={onExportPieces}
         onExit={onExit}
         onOpenWelcome={onOpenWelcome}
+        triggerClassName={variant === "inline" ? "!w-auto !h-12 flex-1 min-w-0" : undefined}
       />
     </div>
   );
