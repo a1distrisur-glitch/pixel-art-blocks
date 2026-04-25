@@ -115,11 +115,12 @@ export default function ReferenceImageControls({
             <Trash2 size={iconSize} />
           </CtrlBtn>
           <CtrlBtn
+            active={hasImage && !imageVisible}
             disabled={!hasImage}
             onClick={() => hasImage && onImageVisibleChange(!imageVisible)}
             tooltip={imageVisible ? "Ocultar imagen" : "Mostrar imagen"}
           >
-            {imageVisible ? <EyeOff size={iconSize} /> : <Eye size={iconSize} />}
+            {!imageVisible ? <EyeOff size={iconSize} /> : <Eye size={iconSize} />}
           </CtrlBtn>
           <CtrlBtn
             active={imageEditMode}
