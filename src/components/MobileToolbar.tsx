@@ -498,6 +498,19 @@ export default function MobileToolbar({
                  <Plus size={14} />
                  <span>Colocar</span>
                </button>
+               <button
+                 type="button"
+                 aria-label="Salir del modo texto"
+                 title="Salir"
+                 onClick={() => {
+                   onToolChange("place");
+                   setTextOpen(false);
+                 }}
+                 className="flex items-center justify-center gap-1 h-8 px-2 rounded-md bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover transition-colors shrink-0 text-xs font-medium border border-toolbar-border"
+               >
+                 <LogOut size={14} />
+                 <span>Salir</span>
+               </button>
              </div>
             {textOverlays && textOverlays.length > 0 && (
               <div className="pt-1 border-t border-toolbar-border">
