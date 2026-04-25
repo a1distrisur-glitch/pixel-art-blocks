@@ -246,7 +246,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
           italic: textItalic,
         };
         setTextOverlays((prev) => [...prev, newOverlay]);
-        setTool("place");
+        // Keep tool as 'text' so user can place multiple texts; reverts to 'place' when popover closes
         return;
       }
       if (!canPlace(row, col, selectedSize, orientation)) return;
