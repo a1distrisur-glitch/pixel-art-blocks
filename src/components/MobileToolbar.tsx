@@ -493,7 +493,7 @@ export default function MobileToolbar({
                    activateTool("text");
                    setTextOpen(false);
                  }}
-                 className="flex items-center justify-center gap-1 h-8 px-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0 text-xs font-medium"
+                className="flex items-center justify-center gap-1 flex-1 h-8 px-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-xs font-medium"
                >
                  <Plus size={14} />
                  <span>Colocar</span>
@@ -506,7 +506,7 @@ export default function MobileToolbar({
                    onToolChange("place");
                    setTextOpen(false);
                  }}
-                 className="flex items-center justify-center gap-1 h-8 px-2 rounded-md bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover transition-colors shrink-0 text-xs font-medium border border-toolbar-border"
+                className="flex items-center justify-center gap-1 flex-1 h-8 px-2 rounded-md bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover transition-colors text-xs font-medium border border-toolbar-border"
                >
                  <LogOut size={14} />
                  <span>Salir</span>
