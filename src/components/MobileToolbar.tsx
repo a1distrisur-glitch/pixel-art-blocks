@@ -464,14 +464,12 @@ export default function MobileToolbar({
                    activateTool("text");
                    setTextOpen(false);
                  }}
-                 className="flex items-center justify-center h-8 w-10 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0"
+                 className="flex items-center justify-center gap-1 h-8 px-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0 text-xs font-medium"
                >
                  <Plus size={14} />
+                 <span>Colocar</span>
                </button>
              </div>
-             <p className="text-[9px] text-toolbar-foreground/70 flex items-center gap-1">
-               <MousePointer2 size={9} /> Clic en la grilla para colocar
-             </p>
             {textOverlays && textOverlays.length > 0 && (
               <div className="pt-1 border-t border-toolbar-border">
                 <p className="text-[10px] text-toolbar-foreground mb-1">Textos ({textOverlays.length})</p>
