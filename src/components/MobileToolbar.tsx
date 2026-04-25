@@ -372,8 +372,8 @@ export default function MobileToolbar({
                 </PopBtn>
               </div>
             </div>
-            <p className="text-[9px] text-toolbar-foreground/70 flex items-center gap-1">
-              <MousePointer2 size={9} /> Arrastra en la grilla para dibujar
+            <p className="text-[18px] text-toolbar-foreground/70 flex items-center gap-1">
+              <MousePointer2 size={18} /> Arrastra en la grilla para dibujar
             </p>
           </PopoverContent>
         </Popover>
