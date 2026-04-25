@@ -198,17 +198,7 @@ export default function MobileToolbar({
     <>
       {/* Top compact bar */}
       <header className="fixed top-0 inset-x-0 z-30 flex items-center gap-1.5 px-2 h-12 bg-toolbar border-b border-toolbar-border toolbar-shadow">
-        <button
-          type="button"
-          onClick={onOpenWelcome}
-          className="flex items-center gap-1.5 min-w-0 flex-1 hover:opacity-80 transition-opacity cursor-pointer"
-          aria-label="Abrir bienvenida"
-        >
-          <img src="/icon-192.png" alt="PixCool Art" className="w-6 h-6 rounded-md shrink-0" />
-          <span className="text-xs font-semibold text-toolbar-foreground truncate">
-            {projectName?.trim() || "PixCool Art"}
-          </span>
-        </button>
+        <div className="flex-1 min-w-0" />
 
         <ReferenceImageTopBarControls
           hasImage={hasImage}
