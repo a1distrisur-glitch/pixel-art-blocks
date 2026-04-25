@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Trash2, Eye, EyeOff, Move, SlidersHorizontal, Image as ImageIcon } from "lucide-react";
+import { Trash2, EyeOff, Move, SlidersHorizontal, Image as ImageIcon } from "lucide-react";
 // NOTE: el diálogo de confirmación de eliminación es global y vive en ProjectActionDialogs.
 // Este componente sólo dispara onRequestRemove; nunca renderiza su propio modal.
 import {
@@ -120,7 +120,7 @@ export default function ReferenceImageControls({
             onClick={() => hasImage && onImageVisibleChange(!imageVisible)}
             tooltip={imageVisible ? "Ocultar imagen" : "Mostrar imagen"}
           >
-            {!imageVisible ? <EyeOff size={iconSize} /> : <Eye size={iconSize} />}
+            <EyeOff size={iconSize} />
           </CtrlBtn>
           <CtrlBtn
             active={imageEditMode}

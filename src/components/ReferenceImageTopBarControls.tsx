@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Eye, EyeOff, Image as ImageIcon, Move, SlidersHorizontal, Trash2 } from "lucide-react";
+import { EyeOff, Image as ImageIcon, Move, SlidersHorizontal, Trash2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
@@ -107,7 +107,7 @@ export default function ReferenceImageTopBarControls({
         disabled={!hasImage}
         compact={compact}
       >
-        {!imageVisible ? <EyeOff size={iconSize} /> : <Eye size={iconSize} />}
+        <EyeOff size={iconSize} />
       </IconControlButton>
 
       <IconControlButton
