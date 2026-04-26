@@ -249,6 +249,39 @@ export default function ColorPickerButton({
               Editar/Borrar: doble click, click derecho o mantén pulsado
             </p>
           )}
+          <div className="mt-2 pt-2 border-t border-toolbar-border space-y-1">
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                window.dispatchEvent(new CustomEvent("pixcool:bg-open-workspace"));
+              }}
+              className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-xs rounded-sm text-toolbar-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            >
+              <span>Color de fondo</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                window.dispatchEvent(new CustomEvent("pixcool:bg-open-grid"));
+              }}
+              className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-xs rounded-sm text-toolbar-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            >
+              <span>Color área cuadriculada</span>
+            </button>
+            <div className="-mx-1 my-1 h-px bg-toolbar-border" />
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                window.dispatchEvent(new CustomEvent("pixcool:bg-reset"));
+              }}
+              className="w-full flex items-center px-2 py-1.5 text-xs rounded-sm text-toolbar-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            >
+              Restablecer colores
+            </button>
+          </div>
         </PopoverContent>
       </Popover>
 
