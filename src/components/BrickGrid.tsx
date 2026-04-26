@@ -141,20 +141,6 @@ export default function BrickGrid({
   }, [contextMenu]);
 
   // Reposition workspace menu so it stays inside the workspace bounds
-  useEffect(() => {
-    if (!workspaceMenu || !workspaceMenuRef.current || !containerRef.current) return;
-    const menu = workspaceMenuRef.current;
-    const container = containerRef.current;
-    const margin = 6;
-    const maxX = container.clientWidth - menu.offsetWidth - margin;
-    const maxY = container.clientHeight - menu.offsetHeight - margin;
-    const nextX = Math.max(margin, Math.min(workspaceMenu.x, maxX));
-    const nextY = Math.max(margin, Math.min(workspaceMenu.y, maxY));
-    if (nextX !== workspaceMenu.x || nextY !== workspaceMenu.y) {
-      setWorkspaceMenu({ x: nextX, y: nextY });
-    }
-  }, [workspaceMenu]);
-
   const gridW = width * CELL_SIZE;
   const gridH = height * CELL_SIZE;
 
@@ -816,14 +802,6 @@ export default function BrickGrid({
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
         onMouseLeave={() => { setHoverCell(null); setIsMouseDown(false); setIsPanning(false); setIsSelecting(false); setIsDrawingShape(false); }}
-        onContextMenu={(e) => {
-          // Only handle when right-click happens on the workspace itself (not on grid/SVG/overlays)
-          if ((e.target as HTMLElement).closest("svg") || (e.target as HTMLElement).closest("[data-zoombar]")) return;
-          e.preventDefault();
-          e.stopPropagation();
-          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-          setWorkspaceMenu({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-        }}
       >
 
       {/* Outer wrapper occupies the *scaled* dimensions so flex centering works correctly */}
