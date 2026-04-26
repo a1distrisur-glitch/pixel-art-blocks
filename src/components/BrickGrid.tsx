@@ -779,7 +779,7 @@ export default function BrickGrid({
       )}
 
       {/* Cursor position tracker — sits right below the zoom bar */}
-      {cursorTrackerVisible && (
+      {cursorTrackerVisible && !zoomBarHidden && (
         <div
           className="absolute z-20 bg-toolbar/95 glass-panel border border-toolbar-border rounded-lg px-2 py-1 zoom-control-shadow text-[11px] font-mono text-toolbar-foreground pointer-events-none select-none"
           style={{ left: zoomBarPos.x, top: zoomBarPos.y + 36 }}
