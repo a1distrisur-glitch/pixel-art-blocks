@@ -973,38 +973,6 @@ export default function BrickGrid({
           </button>
         </div>
       )}
-      {/* Workspace right-click menu (outside grid): background colors */}
-      {workspaceMenu && (
-        <div
-          ref={workspaceMenuRef}
-          className="absolute z-50 rounded-md border border-zinc-700 bg-zinc-900 text-zinc-100 shadow-2xl p-1 animate-fade-in dark"
-          style={{ left: workspaceMenu.x, top: workspaceMenu.y, minWidth: 200 }}
-          onMouseDown={(e) => e.stopPropagation()}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <button
-            className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-sm hover:bg-zinc-800 hover:text-white transition-colors"
-            onClick={() => { setBgDialog("workspace"); closeWorkspaceMenu(); }}
-          >
-            <span>Color de fondo</span>
-            <span className="inline-block w-4 h-4 rounded-sm border border-zinc-600" style={{ background: workspaceBg ?? "hsl(var(--workspace))" }} />
-          </button>
-          <button
-            className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-sm hover:bg-zinc-800 hover:text-white transition-colors"
-            onClick={() => { setBgDialog("grid"); closeWorkspaceMenu(); }}
-          >
-            <span>Color área cuadriculada</span>
-            <span className="inline-block w-4 h-4 rounded-sm border border-zinc-600" style={{ background: gridBg ?? "hsl(var(--card))" }} />
-          </button>
-          <div className="-mx-1 my-1 h-px bg-zinc-700" />
-          <button
-            className="w-full flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-zinc-800 hover:text-white transition-colors"
-            onClick={() => { setWorkspaceBg(null); setGridBg(null); closeWorkspaceMenu(); }}
-          >
-            Restablecer colores
-          </button>
-        </div>
-      )}
       <BackgroundColorDialog
         open={bgDialog === "workspace"}
         title="Color de fondo"
