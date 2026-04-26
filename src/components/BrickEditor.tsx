@@ -34,7 +34,20 @@ export default function BrickEditor() {
   const performExit = useCallback(() => {
     setShowWelcomeDialog(false);
     setExitMode(false);
-    window.location.replace("about:blank");
+    // En app nativa (Capacitor) cerramos la app; en navegador vamos a about:blank
+    void (async () => {
+      try {
+        const { Capacitor } = await import("@capacitor/core");
+        if (Capacitor.isNativePlatform()) {
+          const { App } = await import("@capacitor/app");
+          await App.exitApp();
+          return;
+        }
+      } catch {
+        // Capacitor no disponible → fallback navegador
+      }
+      window.location.replace("about:blank");
+    })();
   }, []);
   const isCompact = useBreakpoint(1024);
   const handleProjectStart = useCallback((name: string) => {
