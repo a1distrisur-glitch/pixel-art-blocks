@@ -102,6 +102,21 @@ export default function BrickGrid({
   const [workspaceBg, setWorkspaceBg] = useState<string | null>(DEFAULT_WORKSPACE_BG);
   const [gridBg, setGridBg] = useState<string | null>(null);
   const [bgDialog, setBgDialog] = useState<null | "workspace" | "grid">(null);
+  // Expose background-color actions globally so the ColorPickerButton popover
+  // can trigger the same dialogs/reset as the workspace right-click menu.
+  useEffect(() => {
+    const openWorkspace = () => setBgDialog("workspace");
+    const openGrid = () => setBgDialog("grid");
+    const reset = () => { setWorkspaceBg(null); setGridBg(null); };
+    window.addEventListener("pixcool:bg-open-workspace", openWorkspace as EventListener);
+    window.addEventListener("pixcool:bg-open-grid", openGrid as EventListener);
+    window.addEventListener("pixcool:bg-reset", reset as EventListener);
+    return () => {
+      window.removeEventListener("pixcool:bg-open-workspace", openWorkspace as EventListener);
+      window.removeEventListener("pixcool:bg-open-grid", openGrid as EventListener);
+      window.removeEventListener("pixcool:bg-reset", reset as EventListener);
+    };
+  }, []);
   useEffect(() => {
     if (!contextMenu && !workspaceMenu) return;
     const onDown = () => { setContextMenu(null); setWorkspaceMenu(null); };
