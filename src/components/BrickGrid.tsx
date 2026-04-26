@@ -92,10 +92,6 @@ export default function BrickGrid({
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const closeContextMenu = useCallback(() => setContextMenu(null), []);
-  // Workspace context menu (right-click on outer area) for changing background colors
-  const [workspaceMenu, setWorkspaceMenu] = useState<{ x: number; y: number } | null>(null);
-  const workspaceMenuRef = useRef<HTMLDivElement>(null);
-  const closeWorkspaceMenu = useCallback(() => setWorkspaceMenu(null), []);
   // Custom backgrounds (null = use theme defaults)
   // Default workspace background
   const DEFAULT_WORKSPACE_BG = "#26293A";
@@ -118,16 +114,16 @@ export default function BrickGrid({
     };
   }, []);
   useEffect(() => {
-    if (!contextMenu && !workspaceMenu) return;
-    const onDown = () => { setContextMenu(null); setWorkspaceMenu(null); };
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setContextMenu(null); setWorkspaceMenu(null); } };
+    if (!contextMenu) return;
+    const onDown = () => { setContextMenu(null); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setContextMenu(null); } };
     window.addEventListener("mousedown", onDown);
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("mousedown", onDown);
       window.removeEventListener("keydown", onKey);
     };
-  }, [contextMenu, workspaceMenu]);
+  }, [contextMenu]);
 
   // Reposition context menu so it stays inside the workspace bounds
   useEffect(() => {
