@@ -92,10 +92,6 @@ export default function BrickGrid({
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const closeContextMenu = useCallback(() => setContextMenu(null), []);
-  // Workspace context menu (right-click on outer area) for changing background colors
-  const [workspaceMenu, setWorkspaceMenu] = useState<{ x: number; y: number } | null>(null);
-  const workspaceMenuRef = useRef<HTMLDivElement>(null);
-  const closeWorkspaceMenu = useCallback(() => setWorkspaceMenu(null), []);
   // Custom backgrounds (null = use theme defaults)
   // Default workspace background
   const DEFAULT_WORKSPACE_BG = "#26293A";
@@ -118,16 +114,16 @@ export default function BrickGrid({
     };
   }, []);
   useEffect(() => {
-    if (!contextMenu && !workspaceMenu) return;
-    const onDown = () => { setContextMenu(null); setWorkspaceMenu(null); };
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setContextMenu(null); setWorkspaceMenu(null); } };
+    if (!contextMenu) return;
+    const onDown = () => { setContextMenu(null); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setContextMenu(null); } };
     window.addEventListener("mousedown", onDown);
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("mousedown", onDown);
       window.removeEventListener("keydown", onKey);
     };
-  }, [contextMenu, workspaceMenu]);
+  }, [contextMenu]);
 
   // Reposition context menu so it stays inside the workspace bounds
   useEffect(() => {
@@ -145,20 +141,6 @@ export default function BrickGrid({
   }, [contextMenu]);
 
   // Reposition workspace menu so it stays inside the workspace bounds
-  useEffect(() => {
-    if (!workspaceMenu || !workspaceMenuRef.current || !containerRef.current) return;
-    const menu = workspaceMenuRef.current;
-    const container = containerRef.current;
-    const margin = 6;
-    const maxX = container.clientWidth - menu.offsetWidth - margin;
-    const maxY = container.clientHeight - menu.offsetHeight - margin;
-    const nextX = Math.max(margin, Math.min(workspaceMenu.x, maxX));
-    const nextY = Math.max(margin, Math.min(workspaceMenu.y, maxY));
-    if (nextX !== workspaceMenu.x || nextY !== workspaceMenu.y) {
-      setWorkspaceMenu({ x: nextX, y: nextY });
-    }
-  }, [workspaceMenu]);
-
   const gridW = width * CELL_SIZE;
   const gridH = height * CELL_SIZE;
 
@@ -820,14 +802,6 @@ export default function BrickGrid({
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
         onMouseLeave={() => { setHoverCell(null); setIsMouseDown(false); setIsPanning(false); setIsSelecting(false); setIsDrawingShape(false); }}
-        onContextMenu={(e) => {
-          // Only handle when right-click happens on the workspace itself (not on grid/SVG/overlays)
-          if ((e.target as HTMLElement).closest("svg") || (e.target as HTMLElement).closest("[data-zoombar]")) return;
-          e.preventDefault();
-          e.stopPropagation();
-          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-          setWorkspaceMenu({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-        }}
       >
 
       {/* Outer wrapper occupies the *scaled* dimensions so flex centering works correctly */}
@@ -996,38 +970,6 @@ export default function BrickGrid({
           >
             <span className="flex items-center gap-2"><Move className="h-3.5 w-3.5" />Mover</span>
             {tool === "move" && <Check className="h-3.5 w-3.5" />}
-          </button>
-        </div>
-      )}
-      {/* Workspace right-click menu (outside grid): background colors */}
-      {workspaceMenu && (
-        <div
-          ref={workspaceMenuRef}
-          className="absolute z-50 rounded-md border border-zinc-700 bg-zinc-900 text-zinc-100 shadow-2xl p-1 animate-fade-in dark"
-          style={{ left: workspaceMenu.x, top: workspaceMenu.y, minWidth: 200 }}
-          onMouseDown={(e) => e.stopPropagation()}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <button
-            className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-sm hover:bg-zinc-800 hover:text-white transition-colors"
-            onClick={() => { setBgDialog("workspace"); closeWorkspaceMenu(); }}
-          >
-            <span>Color de fondo</span>
-            <span className="inline-block w-4 h-4 rounded-sm border border-zinc-600" style={{ background: workspaceBg ?? "hsl(var(--workspace))" }} />
-          </button>
-          <button
-            className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-sm rounded-sm hover:bg-zinc-800 hover:text-white transition-colors"
-            onClick={() => { setBgDialog("grid"); closeWorkspaceMenu(); }}
-          >
-            <span>Color área cuadriculada</span>
-            <span className="inline-block w-4 h-4 rounded-sm border border-zinc-600" style={{ background: gridBg ?? "hsl(var(--card))" }} />
-          </button>
-          <div className="-mx-1 my-1 h-px bg-zinc-700" />
-          <button
-            className="w-full flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-zinc-800 hover:text-white transition-colors"
-            onClick={() => { setWorkspaceBg(null); setGridBg(null); closeWorkspaceMenu(); }}
-          >
-            Restablecer colores
           </button>
         </div>
       )}
