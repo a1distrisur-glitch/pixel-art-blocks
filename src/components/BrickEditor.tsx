@@ -4,6 +4,7 @@ import { useBrickEditor } from "@/hooks/useBrickEditor";
 import BrickGrid from "@/components/BrickGrid";
 import MobileToolbar from "@/components/MobileToolbar";
 import TopActions from "@/components/TopActions";
+import GridSettingsPopover from "@/components/GridSettingsPopover";
 import WelcomeDialog from "@/components/WelcomeDialog";
 import ProjectActionDialogs from "@/components/ProjectActionDialogs";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
