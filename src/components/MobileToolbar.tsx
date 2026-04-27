@@ -143,24 +143,33 @@ interface MobileToolbarProps {
   gridSettingsSlot?: ReactNode;
 }
 
+function TopBtn({
   onClick, disabled, label, children,
 }: { onClick: () => void; disabled?: boolean; label: string; children: ReactNode }) {
+  const { open, setOpen, handlers } = useTouchTooltip();
   return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      disabled={disabled}
-      className="flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg text-toolbar-foreground bg-toolbar-section hover:bg-toolbar-hover disabled:opacity-30 disabled:pointer-events-none transition-colors"
-    >
-      {children}
-    </button>
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          onClick={onClick}
+          disabled={disabled}
+          {...handlers}
+          className="flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg text-toolbar-foreground bg-toolbar-section hover:bg-toolbar-hover disabled:opacity-30 disabled:pointer-events-none transition-colors"
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" className="text-xs">{label}</TooltipContent>
+    </Tooltip>
   );
 }
 
 function BottomTool({
   active, danger, onClick, label, children,
 }: { active?: boolean; danger?: boolean; onClick: () => void; label: string; children: ReactNode }) {
+  const { open, setOpen, handlers } = useTouchTooltip();
   const cls = active
     ? danger
       ? "bg-destructive text-destructive-foreground"
@@ -169,36 +178,47 @@ function BottomTool({
       ? "bg-destructive/20 text-toolbar-foreground hover:bg-destructive/30"
       : "text-toolbar-foreground hover:bg-toolbar-hover";
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={onClick}
-      className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${cls}`}
-    >
-      {children}
-    </button>
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          onClick={onClick}
+          {...handlers}
+          className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${cls}`}
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="text-xs">{label}</TooltipContent>
+    </Tooltip>
   );
 }
 
 function PopBtn({
   active, disabled, onClick, label, children, className,
 }: { active?: boolean; disabled?: boolean; onClick: () => void; label: string; children: ReactNode; className?: string }) {
+  const { open, setOpen, handlers } = useTouchTooltip();
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={onClick}
-      disabled={disabled}
-      className={`flex items-center justify-center flex-1 h-9 rounded-md text-xs font-medium transition-colors disabled:opacity-30 disabled:pointer-events-none ${
-        active
-          ? "bg-primary text-primary-foreground"
-          : "bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover"
-      } ${className ?? ""}`}
-    >
-      {children}
-    </button>
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          onClick={onClick}
+          disabled={disabled}
+          {...handlers}
+          className={`flex items-center justify-center flex-1 h-9 rounded-md text-xs font-medium transition-colors disabled:opacity-30 disabled:pointer-events-none ${
+            active
+              ? "bg-primary text-primary-foreground"
+              : "bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover"
+          } ${className ?? ""}`}
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="text-xs">{label}</TooltipContent>
+    </Tooltip>
   );
 }
 
