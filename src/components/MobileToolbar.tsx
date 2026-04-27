@@ -64,6 +64,7 @@ interface MobileToolbarProps {
   onClear: () => void;
   pipettePrefilledColor?: string | null;
   onPipettePrefilledClear?: () => void;
+  gridSettingsSlot?: ReactNode;
 }
 
 function TopBtn({
@@ -146,6 +147,7 @@ export default function MobileToolbar({
   onRequestRemoveImage,
   onClear,
   pipettePrefilledColor, onPipettePrefilledClear,
+  gridSettingsSlot,
 }: MobileToolbarProps) {
   const [paintOpen, setPaintOpen] = useState(false);
   const [shapeOpen, setShapeOpen] = useState(false);
@@ -533,6 +535,8 @@ export default function MobileToolbar({
         <BottomTool danger onClick={onClear} label="Eliminar todo">
           <Trash2 size={18} />
         </BottomTool>
+
+        {gridSettingsSlot}
 
       </nav>
     </>
