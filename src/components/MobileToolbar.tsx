@@ -634,6 +634,6 @@ export default function MobileToolbar({
         {gridSettingsSlot}
 
       </nav>
-    </>
+    </TooltipProvider>
   );
 }
