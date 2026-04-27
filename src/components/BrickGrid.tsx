@@ -976,7 +976,7 @@ export default function BrickGrid({
       <BackgroundColorDialog
         open={bgDialog === "workspace"}
         title="Color de fondo"
-        initialColor={workspaceBg ?? "#1a1a1a"}
+        initialColor={workspaceBg ?? "#26293A"}
         baseColor={workspaceBg ?? "hsl(var(--workspace))"}
         onAccept={(hex) => { setWorkspaceBg(hex); setBgDialog(null); }}
         onCancel={() => setBgDialog(null)}
