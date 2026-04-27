@@ -1,10 +1,89 @@
-import { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import {
   Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
   MousePointer2, Bold, Italic, X, Trash2, Plus, LogOut,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+/**
+ * useTouchTooltip
+ * Returns state + handlers to attach directly to a button to provide:
+ *  - Hover tooltip on mouse devices (delegated to Radix)
+ *  - Tap corto (<500ms): tooltip aparece y se oculta solo a 1.5s; click se ejecuta normal
+ *  - Long-press (>=500ms): tooltip aparece al cumplir el umbral y CANCELA el click
+ */
+function useTouchTooltip() {
+  const [open, setOpen] = useState(false);
+  const longPressTimer = useRef<number | null>(null);
+  const autoHideTimer = useRef<number | null>(null);
+  const longPressFired = useRef(false);
+
+  const clearTimers = () => {
+    if (longPressTimer.current !== null) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    if (autoHideTimer.current !== null) {
+      window.clearTimeout(autoHideTimer.current);
+      autoHideTimer.current = null;
+    }
+  };
+
+  useEffect(() => () => clearTimers(), []);
+
+  const handlers = {
+    onPointerDown: (e: React.PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      longPressFired.current = false;
+      clearTimers();
+      longPressTimer.current = window.setTimeout(() => {
+        longPressFired.current = true;
+        setOpen(true);
+      }, 500);
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      if (longPressFired.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (autoHideTimer.current !== null) window.clearTimeout(autoHideTimer.current);
+        autoHideTimer.current = window.setTimeout(() => setOpen(false), 600);
+      } else {
+        if (longPressTimer.current !== null) {
+          window.clearTimeout(longPressTimer.current);
+          longPressTimer.current = null;
+        }
+        setOpen(true);
+        if (autoHideTimer.current !== null) window.clearTimeout(autoHideTimer.current);
+        autoHideTimer.current = window.setTimeout(() => setOpen(false), 1500);
+      }
+    },
+    onPointerCancel: (e: React.PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      clearTimers();
+      setOpen(false);
+      longPressFired.current = false;
+    },
+    onPointerLeave: (e: React.PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      clearTimers();
+      setOpen(false);
+      longPressFired.current = false;
+    },
+    onClickCapture: (e: React.MouseEvent) => {
+      if (longPressFired.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        longPressFired.current = false;
+      }
+    },
+  };
+
+  return { open, setOpen, handlers };
+}
+
 import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, ShapeType, ShapeFillMode } from "@/hooks/useBrickEditor";
 import { SHAPE_LIST } from "@/lib/shapeRasterizer";
 import ShapeIcon from "@/components/ShapeIcon";
@@ -29,12 +108,10 @@ interface MobileToolbarProps {
   onSizeChange: (s: BrickSize) => void;
   orientation: BrickOrientation;
   onOrientationChange: (o: BrickOrientation) => void;
-  // Shape props
   shapeType: ShapeType;
   onShapeTypeChange: (s: ShapeType) => void;
   shapeFillMode: ShapeFillMode;
   onShapeFillModeChange: (m: ShapeFillMode) => void;
-  // Text props
   pixelText: string;
   onPixelTextChange: (v: string) => void;
   textFontSize: number;
@@ -51,7 +128,6 @@ interface MobileToolbarProps {
   projectName: string;
   onOpenWelcome: () => void;
   topActions?: ReactNode;
-  // Reference image
   hasImage: boolean;
   imageVisible: boolean;
   imageOpacity: number;
@@ -70,22 +146,30 @@ interface MobileToolbarProps {
 function TopBtn({
   onClick, disabled, label, children,
 }: { onClick: () => void; disabled?: boolean; label: string; children: ReactNode }) {
+  const { open, setOpen, handlers } = useTouchTooltip();
   return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      disabled={disabled}
-      className="flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg text-toolbar-foreground bg-toolbar-section hover:bg-toolbar-hover disabled:opacity-30 disabled:pointer-events-none transition-colors"
-    >
-      {children}
-    </button>
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          onClick={onClick}
+          disabled={disabled}
+          {...handlers}
+          className="flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg text-toolbar-foreground bg-toolbar-section hover:bg-toolbar-hover disabled:opacity-30 disabled:pointer-events-none transition-colors"
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" className="text-xs">{label}</TooltipContent>
+    </Tooltip>
   );
 }
 
 function BottomTool({
   active, danger, onClick, label, children,
 }: { active?: boolean; danger?: boolean; onClick: () => void; label: string; children: ReactNode }) {
+  const { open, setOpen, handlers } = useTouchTooltip();
   const cls = active
     ? danger
       ? "bg-destructive text-destructive-foreground"
@@ -94,40 +178,90 @@ function BottomTool({
       ? "bg-destructive/20 text-toolbar-foreground hover:bg-destructive/30"
       : "text-toolbar-foreground hover:bg-toolbar-hover";
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={onClick}
-      className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${cls}`}
-    >
-      {children}
-    </button>
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          onClick={onClick}
+          {...handlers}
+          className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${cls}`}
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="text-xs">{label}</TooltipContent>
+    </Tooltip>
   );
 }
 
 function PopBtn({
   active, disabled, onClick, label, children, className,
 }: { active?: boolean; disabled?: boolean; onClick: () => void; label: string; children: ReactNode; className?: string }) {
+  const { open, setOpen, handlers } = useTouchTooltip();
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={onClick}
-      disabled={disabled}
-      className={`flex items-center justify-center flex-1 h-9 rounded-md text-xs font-medium transition-colors disabled:opacity-30 disabled:pointer-events-none ${
-        active
-          ? "bg-primary text-primary-foreground"
-          : "bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover"
-      } ${className ?? ""}`}
-    >
-      {children}
-    </button>
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          onClick={onClick}
+          disabled={disabled}
+          {...handlers}
+          className={`flex items-center justify-center flex-1 h-9 rounded-md text-xs font-medium transition-colors disabled:opacity-30 disabled:pointer-events-none ${
+            active
+              ? "bg-primary text-primary-foreground"
+              : "bg-toolbar-section text-toolbar-foreground hover:bg-toolbar-hover"
+          } ${className ?? ""}`}
+        >
+          {children}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="text-xs">{label}</TooltipContent>
+    </Tooltip>
   );
 }
 
+/**
+ * PopTriggerBtn — botón que actúa como PopoverTrigger (asChild) Y muestra tooltip.
+ * Long-press: muestra tooltip y CANCELA el click (no abre el popover).
+ * Tap corto: abre el popover y muestra el tooltip ~1.5s.
+ */
+const PopTriggerBtn = React.forwardRef<HTMLButtonElement, {
+  active: boolean;
+  label: string;
+  className?: string;
+  children: ReactNode;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>>(
+  ({ active, label, className, children, ...rest }, ref) => {
+    const { open, setOpen, handlers } = useTouchTooltip();
+    return (
+      <Tooltip open={open} onOpenChange={setOpen}>
+        <TooltipTrigger asChild>
+          <button
+            ref={ref}
+            type="button"
+            aria-label={label}
+            {...rest}
+            {...handlers}
+            className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
+              active
+                ? "bg-primary text-primary-foreground"
+                : "text-toolbar-foreground hover:bg-toolbar-hover"
+            } ${className ?? ""}`}
+          >
+            {children}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">{label}</TooltipContent>
+      </Tooltip>
+    );
+  }
+);
+PopTriggerBtn.displayName = "PopTriggerBtn";
+
 const inputCls = "w-full h-8 px-2 rounded-md bg-toolbar-section border border-toolbar-border text-xs text-toolbar-foreground placeholder:text-toolbar-muted focus:outline-none focus:ring-1 focus:ring-primary";
+
 
 export default function MobileToolbar({
   tool, onToolChange, onUndo, onRedo, canUndo, canRedo,
@@ -197,7 +331,7 @@ export default function MobileToolbar({
   };
 
   return (
-    <>
+    <TooltipProvider delayDuration={300}>
       {/* Top compact bar */}
       <header className="fixed top-0 inset-x-0 z-30 flex items-stretch gap-0.5 px-1.5 pt-1 pb-1 bg-toolbar border-b border-toolbar-border toolbar-shadow">
         <ReferenceImageTopBarControls
@@ -242,18 +376,9 @@ export default function MobileToolbar({
         {/* Pintar */}
         <Popover open={paintOpen} onOpenChange={setPaintOpen}>
           <PopoverTrigger asChild>
-            <button
-              type="button"
-              aria-label="Pintar"
-              title="Pintar"
-              className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
-                tool === "place"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-toolbar-foreground hover:bg-toolbar-hover"
-              }`}
-            >
+            <PopTriggerBtn active={tool === "place"} label="Pintar">
               <Paintbrush size={18} />
-            </button>
+            </PopTriggerBtn>
           </PopoverTrigger>
           <PopoverContent
             side="top"
@@ -303,18 +428,9 @@ export default function MobileToolbar({
         {/* Formas */}
         <Popover open={shapeOpen} onOpenChange={handleShapeOpenChange}>
           <PopoverTrigger asChild>
-            <button
-              type="button"
-              aria-label="Formas"
-              title="Formas"
-              className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
-                tool === "shape"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-toolbar-foreground hover:bg-toolbar-hover"
-              }`}
-            >
+            <PopTriggerBtn active={tool === "shape"} label="Formas">
               <Shapes size={18} />
-            </button>
+            </PopTriggerBtn>
           </PopoverTrigger>
           <PopoverContent
             side="top"
@@ -373,18 +489,9 @@ export default function MobileToolbar({
         {/* Texto */}
         <Popover open={textOpen} onOpenChange={handleTextOpenChange}>
           <PopoverTrigger asChild>
-            <button
-              type="button"
-              aria-label="Texto"
-              title="Texto"
-              className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
-                tool === "text"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-toolbar-foreground hover:bg-toolbar-hover"
-              }`}
-            >
+            <PopTriggerBtn active={tool === "text"} label="Texto">
               <Type size={18} />
-            </button>
+            </PopTriggerBtn>
           </PopoverTrigger>
           <PopoverContent
             side="top"
@@ -539,6 +646,6 @@ export default function MobileToolbar({
         {gridSettingsSlot}
 
       </nav>
-    </>
+    </TooltipProvider>
   );
 }
