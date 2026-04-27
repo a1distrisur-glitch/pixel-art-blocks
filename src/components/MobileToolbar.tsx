@@ -489,18 +489,9 @@ export default function MobileToolbar({
         {/* Texto */}
         <Popover open={textOpen} onOpenChange={handleTextOpenChange}>
           <PopoverTrigger asChild>
-            <button
-              type="button"
-              aria-label="Texto"
-              title="Texto"
-              className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
-                tool === "text"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-toolbar-foreground hover:bg-toolbar-hover"
-              }`}
-            >
+            <PopTriggerBtn active={tool === "text"} label="Texto">
               <Type size={18} />
-            </button>
+            </PopTriggerBtn>
           </PopoverTrigger>
           <PopoverContent
             side="top"
