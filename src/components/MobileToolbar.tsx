@@ -222,7 +222,46 @@ function PopBtn({
   );
 }
 
+/**
+ * PopTriggerBtn — botón que actúa como PopoverTrigger (asChild) Y muestra tooltip.
+ * Long-press: muestra tooltip y CANCELA el click (no abre el popover).
+ * Tap corto: abre el popover y muestra el tooltip ~1.5s.
+ */
+const PopTriggerBtn = React.forwardRef<HTMLButtonElement, {
+  active: boolean;
+  label: string;
+  className?: string;
+  children: ReactNode;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>>(
+  ({ active, label, className, children, ...rest }, ref) => {
+    const { open, setOpen, handlers } = useTouchTooltip();
+    return (
+      <Tooltip open={open} onOpenChange={setOpen}>
+        <TooltipTrigger asChild>
+          <button
+            ref={ref}
+            type="button"
+            aria-label={label}
+            {...rest}
+            {...handlers}
+            className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
+              active
+                ? "bg-primary text-primary-foreground"
+                : "text-toolbar-foreground hover:bg-toolbar-hover"
+            } ${className ?? ""}`}
+          >
+            {children}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">{label}</TooltipContent>
+      </Tooltip>
+    );
+  }
+);
+PopTriggerBtn.displayName = "PopTriggerBtn";
+
 const inputCls = "w-full h-8 px-2 rounded-md bg-toolbar-section border border-toolbar-border text-xs text-toolbar-foreground placeholder:text-toolbar-muted focus:outline-none focus:ring-1 focus:ring-primary";
+
 
 export default function MobileToolbar({
   tool, onToolChange, onUndo, onRedo, canUndo, canRedo,
