@@ -93,9 +93,9 @@ export default function BrickGrid({
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const closeContextMenu = useCallback(() => setContextMenu(null), []);
   // Custom backgrounds (null = use theme defaults)
-  // Default workspace background
-  const DEFAULT_WORKSPACE_BG = "#CED2D6";
-  const [workspaceBg, setWorkspaceBg] = useState<string | null>(DEFAULT_WORKSPACE_BG);
+  const DEFAULT_WORKSPACE_BG = "hsl(var(--workspace))";
+  const DEFAULT_GRID_BG = "hsl(var(--grid-background))";
+  const [workspaceBg, setWorkspaceBg] = useState<string | null>(null);
   const [gridBg, setGridBg] = useState<string | null>(null);
   const [bgDialog, setBgDialog] = useState<null | "workspace" | "grid">(null);
   // Expose background-color actions globally so the ColorPickerButton popover
@@ -853,7 +853,7 @@ export default function BrickGrid({
         <div className="absolute" style={{ left: RULER_SIZE, top: RULER_SIZE, width: gridW, height: gridH }}>
           {/* Grid shadow */}
           <div className="absolute -inset-1 rounded-lg" style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)" }} />
-          <div className="absolute inset-0 rounded-sm" style={{ background: gridBg ?? "hsl(var(--card))" }} />
+          <div className="absolute inset-0 rounded-sm" style={{ background: gridBg ?? DEFAULT_GRID_BG }} />
           {/* Lower image layers (previously loaded). Locked & non-interactive. */}
           {extraImages.map((layer, i) => (
             <div
@@ -985,8 +985,8 @@ export default function BrickGrid({
       <BackgroundColorDialog
         open={bgDialog === "grid"}
         title="Color área cuadriculada"
-        initialColor={gridBg ?? "#ffffff"}
-        baseColor={gridBg ?? "hsl(var(--card))"}
+        initialColor={gridBg ?? "#CED2D6"}
+        baseColor={gridBg ?? DEFAULT_GRID_BG}
         onAccept={(hex) => { setGridBg(hex); setBgDialog(null); }}
         onCancel={() => setBgDialog(null)}
         onRemove={() => { setGridBg(null); setBgDialog(null); }}
