@@ -246,6 +246,18 @@ export default function BrickEditor() {
           onPipettePrefilledClear={clearPipetteColor}
       />
         <main className="flex-1 min-h-0 min-w-0 flex bg-workspace">{grid}</main>
+        <div className="fixed left-1/2 -translate-x-1/2 z-30 px-1 py-1 rounded-lg bg-toolbar/95 backdrop-blur border border-toolbar-border toolbar-shadow"
+             style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 56px)" }}>
+          <GridSettingsPopover
+            gridWidth={editor.gridWidth}
+            gridHeight={editor.gridHeight}
+            onGridSizeChange={editor.updateGridSize}
+            gridVisible={editor.gridVisible}
+            onGridVisibleChange={editor.setGridVisible}
+            cursorTrackerVisible={editor.cursorTrackerVisible}
+            onCursorTrackerVisibleChange={editor.setCursorTrackerVisible}
+          />
+        </div>
         <WelcomeDialog
           open={showWelcomeDialog}
           onClose={closeWelcomeDialog}
@@ -261,6 +273,17 @@ export default function BrickEditor() {
       <div className="flex-1 min-w-0 relative">
         {grid}
         {topActions}
+        <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-30 px-1 py-1 rounded-lg bg-toolbar/95 backdrop-blur border border-toolbar-border toolbar-shadow">
+          <GridSettingsPopover
+            gridWidth={editor.gridWidth}
+            gridHeight={editor.gridHeight}
+            onGridSizeChange={editor.updateGridSize}
+            gridVisible={editor.gridVisible}
+            onGridVisibleChange={editor.setGridVisible}
+            cursorTrackerVisible={editor.cursorTrackerVisible}
+            onCursorTrackerVisibleChange={editor.setCursorTrackerVisible}
+          />
+        </div>
       </div>
       <WelcomeDialog
         open={showWelcomeDialog}
