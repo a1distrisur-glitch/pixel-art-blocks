@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
 import ColorPickerButton from "@/components/ColorPickerButton";
-import GridSettingsPopover from "@/components/GridSettingsPopover";
 import ReferenceImageTopBarControls from "@/components/ReferenceImageTopBarControls";
 import ProjectMenuButton from "@/components/ProjectMenuButton";
 import type { BrickColor } from "@/hooks/useBrickEditor";
@@ -108,16 +107,6 @@ export default function TopActions({
           side="bottom"
         />
       )}
-      <GridSettingsPopover
-        gridWidth={gridWidth}
-        gridHeight={gridHeight}
-        onGridSizeChange={onGridSizeChange}
-        gridVisible={gridVisible}
-        onGridVisibleChange={onGridVisibleChange}
-        cursorTrackerVisible={cursorTrackerVisible}
-        onCursorTrackerVisibleChange={onCursorTrackerVisibleChange}
-        buttonClassName={variant === "inline" ? "!w-auto !h-12 flex-1 min-w-0" : undefined}
-      />
       <ProjectMenuButton
         hasBricks={hasBricks}
         onLoadProject={onLoadProject}
