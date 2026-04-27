@@ -94,7 +94,7 @@ export default function BrickGrid({
   const closeContextMenu = useCallback(() => setContextMenu(null), []);
   // Custom backgrounds (null = use theme defaults)
   // Default workspace background
-  const DEFAULT_WORKSPACE_BG = "#26293A";
+  const DEFAULT_WORKSPACE_BG = "#CED2D6";
   const [workspaceBg, setWorkspaceBg] = useState<string | null>(DEFAULT_WORKSPACE_BG);
   const [gridBg, setGridBg] = useState<string | null>(null);
   const [bgDialog, setBgDialog] = useState<null | "workspace" | "grid">(null);
