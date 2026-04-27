@@ -376,18 +376,9 @@ export default function MobileToolbar({
         {/* Pintar */}
         <Popover open={paintOpen} onOpenChange={setPaintOpen}>
           <PopoverTrigger asChild>
-            <button
-              type="button"
-              aria-label="Pintar"
-              title="Pintar"
-              className={`flex items-center justify-center flex-1 min-w-0 h-12 rounded-lg transition-colors ${
-                tool === "place"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-toolbar-foreground hover:bg-toolbar-hover"
-              }`}
-            >
+            <PopTriggerBtn active={tool === "place"} label="Pintar">
               <Paintbrush size={18} />
-            </button>
+            </PopTriggerBtn>
           </PopoverTrigger>
           <PopoverContent
             side="top"
