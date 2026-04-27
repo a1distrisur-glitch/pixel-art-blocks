@@ -536,6 +536,8 @@ export default function MobileToolbar({
           <Trash2 size={18} />
         </BottomTool>
 
+        {gridSettingsSlot}
+
       </nav>
     </>
   );
