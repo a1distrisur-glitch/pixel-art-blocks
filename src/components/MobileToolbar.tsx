@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import {
   Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
