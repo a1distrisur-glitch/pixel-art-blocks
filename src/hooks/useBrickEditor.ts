@@ -165,7 +165,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
   const canUndo = undoStack.current.length > 0;
   const canRedo = redoStack.current.length > 0;
   const [colors, setColors] = useState<BrickColor[]>(DEFAULT_BRICK_COLORS);
-  const [selectedColor, setSelectedColor] = useState(DEFAULT_BRICK_COLORS[0].value);
+  const [selectedColor, setSelectedColor] = useState("#7C3AED");
   const [selectedSize, setSelectedSize] = useState<BrickSize>(1);
   const [gridVisible, setGridVisible] = useState(true);
   const [cursorTrackerVisible, setCursorTrackerVisible] = useState(true);
@@ -420,7 +420,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
     setGridWidth(initialWidth);
     setGridHeight(initialHeight);
     setColors(DEFAULT_BRICK_COLORS);
-    setSelectedColor(DEFAULT_BRICK_COLORS[0].value);
+    setSelectedColor("#7C3AED");
     setSelectedSize(1);
     setOrientation("horizontal");
     setTool("place");

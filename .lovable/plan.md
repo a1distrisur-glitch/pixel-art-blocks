@@ -1,32 +1,31 @@
+## Cambio: Color por defecto violeta en el botón Color del flex superior
 
+### Resumen
+Cambiar el color seleccionado por defecto de Rojo (`#DC2626`) a Violeta (`#7C3AED`), tanto al iniciar la app como al reiniciar la paleta o crear un nuevo proyecto. La paleta mantiene su orden actual.
 
-# Guardar regla crítica en memoria del proyecto
+### Cambios técnicos
 
-Voy a registrar como **regla permanente (constraint)** que el flex lateral (`Toolbar.tsx` de escritorio) y sus conexiones con los demás controles son **intocables** salvo petición explícita tuya. Cualquier cambio futuro que pueda afectar al flex lateral deberá ser notificado con claridad antes de ejecutarse.
+**Archivo: `src/hooks/useBrickEditor.ts`**
 
-## Cambios
+1. **Línea 168** — Estado inicial de `selectedColor`:
+   ```ts
+   // Antes:
+   const [selectedColor, setSelectedColor] = useState(DEFAULT_BRICK_COLORS[0].value);
+   // Después:
+   const [selectedColor, setSelectedColor] = useState("#7C3AED");
+   ```
+   Se usa el HEX directo del Violeta ya existente en `DEFAULT_BRICK_COLORS` (índice 12) para no depender del orden de la paleta.
 
-### 1. Crear `mem://constraints/flex-lateral-sagrado.md`
-Memoria de tipo `constraint` con el contenido:
+2. **Línea 423** — Reset de paleta / nuevo proyecto:
+   ```ts
+   // Antes:
+   setSelectedColor(DEFAULT_BRICK_COLORS[0].value);
+   // Después:
+   setSelectedColor("#7C3AED");
+   ```
 
-- **Regla:** No modificar `src/components/Toolbar.tsx` (flex lateral de escritorio) ni sus conexiones (props, handlers, cableado con `useBrickEditor`, `BrickEditor.tsx`, `ReferenceImageControls`, diálogos) sin instrucción explícita del usuario.
-- **Si una tarea pudiera afectar al flex lateral indirectamente:** detenerse, avisar con claridad notoria, y pedir aprobación antes de tocarlo.
-- **Por qué:** El usuario considera esta sección y su cableado críticos y estables; cambios no autorizados rompen la confianza y la fiabilidad.
-
-### 2. Crear `mem://index.md`
-Índice de memoria con sección **Core** (siempre aplicada) que incluye la regla resumida en una línea, más una referencia al archivo de constraint:
-
-```text
-# Project Memory
-
-## Core
-NO modificar Toolbar.tsx (flex lateral) ni sus conexiones sin pedirme permiso explícito. Si una tarea lo afecta indirectamente, AVISAR con claridad notoria antes de tocarlo.
-
-## Memories
-- [Flex lateral sagrado](mem://constraints/flex-lateral-sagrado.md) — Toolbar.tsx y su cableado son intocables sin autorización explícita
-```
-
-## Resultado
-
-A partir de aprobar este plan, en cada turno futuro aplicaré la regla automáticamente: ningún cambio tocará `Toolbar.tsx` ni su cableado (props desde `BrickEditor.tsx`, conexión con `ReferenceImageControls`, handlers del hook) sin que tú lo indiques expresamente, y cualquier tarea que pudiera rozarlo se detendrá para avisarte primero.
-
+### Resultado esperado
+- Al cargar el editor, el botón Color del flex superior muestra Violeta (`#7C3AED`) como color activo.
+- Al reiniciar la paleta o crear un proyecto nuevo, vuelve a Violeta en lugar de Rojo.
+- La paleta `DEFAULT_BRICK_COLORS` conserva su orden actual (Violeta sigue en el índice 12).
+- Sin cambios en otros archivos.
