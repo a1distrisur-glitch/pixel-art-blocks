@@ -8,23 +8,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
- * MobileTooltip
- * Wraps a button (or any focusable element) with a Radix Tooltip that activates on:
- *  - Hover (delay 300ms) — desktop/mouse
- *  - Tap corto (<500ms) — shows tooltip ~1.5s and lets the click execute
- *  - Long-press (>=500ms) — shows tooltip while held and CANCELS the click
- *
- * The wrapper element itself catches pointer events; the inner trigger keeps its onClick.
+ * useTouchTooltip
+ * Returns state + handlers to attach directly to a button to provide:
+ *  - Hover tooltip on mouse devices (delegated to Radix)
+ *  - Tap corto (<500ms): tooltip aparece y se oculta solo a 1.5s; click se ejecuta normal
+ *  - Long-press (>=500ms): tooltip aparece al cumplir el umbral y CANCELA el click
  */
-function MobileTooltip({
-  label,
-  side = "top",
-  children,
-}: {
-  label: string;
-  side?: "top" | "bottom" | "left" | "right";
-  children: ReactNode;
-}) {
+function useTouchTooltip() {
   const [open, setOpen] = useState(false);
   const longPressTimer = useRef<number | null>(null);
   const autoHideTimer = useRef<number | null>(null);
@@ -43,133 +33,55 @@ function MobileTooltip({
 
   useEffect(() => () => clearTimers(), []);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (e.pointerType === "mouse") return; // hover handles mouse
-    longPressFired.current = false;
-    clearTimers();
-    longPressTimer.current = window.setTimeout(() => {
-      longPressFired.current = true;
-      setOpen(true);
-    }, 500);
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (e.pointerType === "mouse") return;
-    if (longPressFired.current) {
-      // Cancel the click that would fire on the inner button
-      e.preventDefault();
-      e.stopPropagation();
-      // Keep tooltip visible briefly, then hide
-      if (autoHideTimer.current !== null) window.clearTimeout(autoHideTimer.current);
-      autoHideTimer.current = window.setTimeout(() => setOpen(false), 600);
-    } else {
-      // Short tap: clear long-press timer, show tooltip briefly, allow click
-      if (longPressTimer.current !== null) {
-        window.clearTimeout(longPressTimer.current);
-        longPressTimer.current = null;
-      }
-      setOpen(true);
-      if (autoHideTimer.current !== null) window.clearTimeout(autoHideTimer.current);
-      autoHideTimer.current = window.setTimeout(() => setOpen(false), 1500);
-    }
-  };
-
-  const handlePointerCancel = (e: React.PointerEvent) => {
-    if (e.pointerType === "mouse") return;
-    clearTimers();
-    setOpen(false);
-    longPressFired.current = false;
-  };
-
-  const handleClickCapture = (e: React.MouseEvent) => {
-    // If a long-press happened, swallow the synthetic click as well
-    if (longPressFired.current) {
-      e.preventDefault();
-      e.stopPropagation();
+  const handlers = {
+    onPointerDown: (e: React.PointerEvent) => {
+      if (e.pointerType === "mouse") return;
       longPressFired.current = false;
-    }
+      clearTimers();
+      longPressTimer.current = window.setTimeout(() => {
+        longPressFired.current = true;
+        setOpen(true);
+      }, 500);
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      if (longPressFired.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (autoHideTimer.current !== null) window.clearTimeout(autoHideTimer.current);
+        autoHideTimer.current = window.setTimeout(() => setOpen(false), 600);
+      } else {
+        if (longPressTimer.current !== null) {
+          window.clearTimeout(longPressTimer.current);
+          longPressTimer.current = null;
+        }
+        setOpen(true);
+        if (autoHideTimer.current !== null) window.clearTimeout(autoHideTimer.current);
+        autoHideTimer.current = window.setTimeout(() => setOpen(false), 1500);
+      }
+    },
+    onPointerCancel: (e: React.PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      clearTimers();
+      setOpen(false);
+      longPressFired.current = false;
+    },
+    onPointerLeave: (e: React.PointerEvent) => {
+      if (e.pointerType === "mouse") return;
+      clearTimers();
+      setOpen(false);
+      longPressFired.current = false;
+    },
+    onClickCapture: (e: React.MouseEvent) => {
+      if (longPressFired.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        longPressFired.current = false;
+      }
+    },
   };
 
-  return (
-    <Tooltip open={open} onOpenChange={setOpen}>
-      <TooltipTrigger asChild>
-        <span
-          className="contents"
-          onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerCancel}
-          onPointerLeave={handlePointerCancel}
-          onClickCapture={handleClickCapture}
-        >
-          {children}
-        </span>
-      </TooltipTrigger>
-      <TooltipContent side={side} className="text-xs">
-        {label}
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, ShapeType, ShapeFillMode } from "@/hooks/useBrickEditor";
-import { SHAPE_LIST } from "@/lib/shapeRasterizer";
-import ShapeIcon from "@/components/ShapeIcon";
-import ColorPickerButton from "@/components/ColorPickerButton";
-import ReferenceImageControls from "@/components/ReferenceImageControls";
-import ReferenceImageTopBarControls from "@/components/ReferenceImageTopBarControls";
-
-interface MobileToolbarProps {
-  tool: EditorTool;
-  onToolChange: (t: EditorTool) => void;
-  onUndo: () => void;
-  onRedo: () => void;
-  canUndo: boolean;
-  canRedo: boolean;
-  selectedColor: string;
-  onColorChange: (hex: string) => void;
-  colors: BrickColor[];
-  onAddColor: (name: string, value: string) => void;
-  onReplaceColor: (index: number, name: string, value: string) => void;
-  onRemoveColor: (index: number) => void;
-  selectedSize: BrickSize;
-  onSizeChange: (s: BrickSize) => void;
-  orientation: BrickOrientation;
-  onOrientationChange: (o: BrickOrientation) => void;
-  // Shape props
-  shapeType: ShapeType;
-  onShapeTypeChange: (s: ShapeType) => void;
-  shapeFillMode: ShapeFillMode;
-  onShapeFillModeChange: (m: ShapeFillMode) => void;
-  // Text props
-  pixelText: string;
-  onPixelTextChange: (v: string) => void;
-  textFontSize: number;
-  onTextFontSizeChange: (v: number) => void;
-  textFontFamily: string;
-  onTextFontFamilyChange: (v: string) => void;
-  textBold: boolean;
-  onTextBoldChange: (v: boolean) => void;
-  textItalic: boolean;
-  onTextItalicChange: (v: boolean) => void;
-  textOverlays: TextOverlay[];
-  onRemoveTextOverlay: (id: string) => void;
-  imageEditMode: boolean;
-  projectName: string;
-  onOpenWelcome: () => void;
-  topActions?: ReactNode;
-  // Reference image
-  hasImage: boolean;
-  imageVisible: boolean;
-  imageOpacity: number;
-  onImageUpload: (file: File) => void;
-  onRemoveImage: () => void;
-  onImageVisibleChange: (v: boolean) => void;
-  onImageOpacityChange: (v: number) => void;
-  onImageEditModeChange: (v: boolean) => void;
-  onRequestRemoveImage: () => void;
-  onClear: () => void;
-  pipettePrefilledColor?: string | null;
-  onPipettePrefilledClear?: () => void;
-  gridSettingsSlot?: ReactNode;
+  return { open, setOpen, handlers };
 }
 
 function TopBtn({
