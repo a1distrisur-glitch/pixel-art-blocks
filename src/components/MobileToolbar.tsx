@@ -292,7 +292,7 @@ export default function MobileToolbar({
   };
 
   return (
-    <>
+    <TooltipProvider delayDuration={300}>
       {/* Top compact bar */}
       <header className="fixed top-0 inset-x-0 z-30 flex items-stretch gap-0.5 px-1.5 pt-1 pb-1 bg-toolbar border-b border-toolbar-border toolbar-shadow">
         <ReferenceImageTopBarControls
