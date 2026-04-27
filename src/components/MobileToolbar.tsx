@@ -1,10 +1,115 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
   MousePointer2, Bold, Italic, X, Trash2, Plus, LogOut,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+/**
+ * MobileTooltip
+ * Wraps a button (or any focusable element) with a Radix Tooltip that activates on:
+ *  - Hover (delay 300ms) — desktop/mouse
+ *  - Tap corto (<500ms) — shows tooltip ~1.5s and lets the click execute
+ *  - Long-press (>=500ms) — shows tooltip while held and CANCELS the click
+ *
+ * The wrapper element itself catches pointer events; the inner trigger keeps its onClick.
+ */
+function MobileTooltip({
+  label,
+  side = "top",
+  children,
+}: {
+  label: string;
+  side?: "top" | "bottom" | "left" | "right";
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const longPressTimer = useRef<number | null>(null);
+  const autoHideTimer = useRef<number | null>(null);
+  const longPressFired = useRef(false);
+
+  const clearTimers = () => {
+    if (longPressTimer.current !== null) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    if (autoHideTimer.current !== null) {
+      window.clearTimeout(autoHideTimer.current);
+      autoHideTimer.current = null;
+    }
+  };
+
+  useEffect(() => () => clearTimers(), []);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse") return; // hover handles mouse
+    longPressFired.current = false;
+    clearTimers();
+    longPressTimer.current = window.setTimeout(() => {
+      longPressFired.current = true;
+      setOpen(true);
+    }, 500);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse") return;
+    if (longPressFired.current) {
+      // Cancel the click that would fire on the inner button
+      e.preventDefault();
+      e.stopPropagation();
+      // Keep tooltip visible briefly, then hide
+      if (autoHideTimer.current !== null) window.clearTimeout(autoHideTimer.current);
+      autoHideTimer.current = window.setTimeout(() => setOpen(false), 600);
+    } else {
+      // Short tap: clear long-press timer, show tooltip briefly, allow click
+      if (longPressTimer.current !== null) {
+        window.clearTimeout(longPressTimer.current);
+        longPressTimer.current = null;
+      }
+      setOpen(true);
+      if (autoHideTimer.current !== null) window.clearTimeout(autoHideTimer.current);
+      autoHideTimer.current = window.setTimeout(() => setOpen(false), 1500);
+    }
+  };
+
+  const handlePointerCancel = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse") return;
+    clearTimers();
+    setOpen(false);
+    longPressFired.current = false;
+  };
+
+  const handleClickCapture = (e: React.MouseEvent) => {
+    // If a long-press happened, swallow the synthetic click as well
+    if (longPressFired.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      longPressFired.current = false;
+    }
+  };
+
+  return (
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <span
+          className="contents"
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
+          onPointerLeave={handlePointerCancel}
+          onClickCapture={handleClickCapture}
+        >
+          {children}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side={side} className="text-xs">
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, ShapeType, ShapeFillMode } from "@/hooks/useBrickEditor";
 import { SHAPE_LIST } from "@/lib/shapeRasterizer";
 import ShapeIcon from "@/components/ShapeIcon";
