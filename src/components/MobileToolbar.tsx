@@ -84,7 +84,65 @@ function useTouchTooltip() {
   return { open, setOpen, handlers };
 }
 
-function TopBtn({
+import type { EditorTool, BrickColor, BrickSize, BrickOrientation, TextOverlay, ShapeType, ShapeFillMode } from "@/hooks/useBrickEditor";
+import { SHAPE_LIST } from "@/lib/shapeRasterizer";
+import ShapeIcon from "@/components/ShapeIcon";
+import ColorPickerButton from "@/components/ColorPickerButton";
+import ReferenceImageControls from "@/components/ReferenceImageControls";
+import ReferenceImageTopBarControls from "@/components/ReferenceImageTopBarControls";
+
+interface MobileToolbarProps {
+  tool: EditorTool;
+  onToolChange: (t: EditorTool) => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  selectedColor: string;
+  onColorChange: (hex: string) => void;
+  colors: BrickColor[];
+  onAddColor: (name: string, value: string) => void;
+  onReplaceColor: (index: number, name: string, value: string) => void;
+  onRemoveColor: (index: number) => void;
+  selectedSize: BrickSize;
+  onSizeChange: (s: BrickSize) => void;
+  orientation: BrickOrientation;
+  onOrientationChange: (o: BrickOrientation) => void;
+  shapeType: ShapeType;
+  onShapeTypeChange: (s: ShapeType) => void;
+  shapeFillMode: ShapeFillMode;
+  onShapeFillModeChange: (m: ShapeFillMode) => void;
+  pixelText: string;
+  onPixelTextChange: (v: string) => void;
+  textFontSize: number;
+  onTextFontSizeChange: (v: number) => void;
+  textFontFamily: string;
+  onTextFontFamilyChange: (v: string) => void;
+  textBold: boolean;
+  onTextBoldChange: (v: boolean) => void;
+  textItalic: boolean;
+  onTextItalicChange: (v: boolean) => void;
+  textOverlays: TextOverlay[];
+  onRemoveTextOverlay: (id: string) => void;
+  imageEditMode: boolean;
+  projectName: string;
+  onOpenWelcome: () => void;
+  topActions?: ReactNode;
+  hasImage: boolean;
+  imageVisible: boolean;
+  imageOpacity: number;
+  onImageUpload: (file: File) => void;
+  onRemoveImage: () => void;
+  onImageVisibleChange: (v: boolean) => void;
+  onImageOpacityChange: (v: number) => void;
+  onImageEditModeChange: (v: boolean) => void;
+  onRequestRemoveImage: () => void;
+  onClear: () => void;
+  pipettePrefilledColor?: string | null;
+  onPipettePrefilledClear?: () => void;
+  gridSettingsSlot?: ReactNode;
+}
+
   onClick, disabled, label, children,
 }: { onClick: () => void; disabled?: boolean; label: string; children: ReactNode }) {
   return (
