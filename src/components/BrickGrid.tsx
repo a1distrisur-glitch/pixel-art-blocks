@@ -458,7 +458,8 @@ export default function BrickGrid({
       setIsDraggingSelection(false);
       return;
     }
-    setIsMouseDown(true);
+    if (tool === "none") return;
+    if (isPaintableTool(tool)) setIsMouseDown(true);
     onCellClick(row, col);
   }, [onCellClick, isPanning, tool, selectedBrickIds, getSelectionRect, referenceImage, imageVisible, imageTransform, onPipetteColor]);
 
