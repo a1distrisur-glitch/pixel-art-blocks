@@ -808,18 +808,18 @@ export default function BrickGrid({
       <div
         className="relative shrink-0"
         style={{
-          width: (gridW + RULER_SIZE) * zoom,
-          height: (gridH + RULER_SIZE) * zoom,
+          width: (gridW + RULER_SIZE * 2) * zoom,
+          height: (gridH + RULER_SIZE * 2) * zoom,
         }}
       >
       <div className="relative animate-fade-in"
         style={{
-          width: gridW + RULER_SIZE, height: gridH + RULER_SIZE,
+          width: gridW + RULER_SIZE * 2, height: gridH + RULER_SIZE * 2,
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
           transformOrigin: "top left",
           willChange: "transform",
         }}>
-        {/* Horizontal ruler (top) — fondo blanco fijo para máximo contraste sobre cualquier color de workspace */}
+        {/* Horizontal ruler (top) */}
         <div className="absolute flex" style={{ left: RULER_SIZE, top: 0, height: RULER_SIZE, width: gridW, background: '#FFFFFF', borderBottom: '1px solid hsl(var(--border))' }}>
           {Array.from({ length: width }).map((_, i) => (
             <div key={i} className="flex items-center justify-center font-mono select-none"
@@ -833,7 +833,21 @@ export default function BrickGrid({
             </div>
           ))}
         </div>
-        {/* Vertical ruler (left) — fondo blanco fijo para máximo contraste sobre cualquier color de workspace */}
+        {/* Horizontal ruler (bottom) */}
+        <div className="absolute flex" style={{ left: RULER_SIZE, top: RULER_SIZE + gridH, height: RULER_SIZE, width: gridW, background: '#FFFFFF', borderTop: '1px solid hsl(var(--border))' }}>
+          {Array.from({ length: width }).map((_, i) => (
+            <div key={i} className="flex items-center justify-center font-mono select-none"
+              style={{
+                width: CELL_SIZE, height: RULER_SIZE,
+                fontSize: 9, color: hoverCell?.col === i ? 'hsl(var(--primary))' : '#1C1917',
+                fontWeight: hoverCell?.col === i ? 700 : 500,
+                background: hoverCell?.col === i ? 'hsl(var(--primary) / 0.12)' : 'transparent',
+              }}>
+              {i + 1}
+            </div>
+          ))}
+        </div>
+        {/* Vertical ruler (left) */}
         <div className="absolute flex flex-col" style={{ left: 0, top: RULER_SIZE, width: RULER_SIZE, height: gridH, background: '#FFFFFF', borderRight: '1px solid hsl(var(--border))' }}>
           {Array.from({ length: height }).map((_, i) => (
             <div key={i} className="flex items-center justify-center font-mono select-none"
@@ -847,8 +861,25 @@ export default function BrickGrid({
             </div>
           ))}
         </div>
-        {/* Corner — fondo blanco para coincidir con las reglas */}
+        {/* Vertical ruler (right) */}
+        <div className="absolute flex flex-col" style={{ left: RULER_SIZE + gridW, top: RULER_SIZE, width: RULER_SIZE, height: gridH, background: '#FFFFFF', borderLeft: '1px solid hsl(var(--border))' }}>
+          {Array.from({ length: height }).map((_, i) => (
+            <div key={i} className="flex items-center justify-center font-mono select-none"
+              style={{
+                width: RULER_SIZE, height: CELL_SIZE,
+                fontSize: 9, color: hoverCell?.row === i ? 'hsl(var(--primary))' : '#1C1917',
+                fontWeight: hoverCell?.row === i ? 700 : 500,
+                background: hoverCell?.row === i ? 'hsl(var(--primary) / 0.12)' : 'transparent',
+              }}>
+              {i + 1}
+            </div>
+          ))}
+        </div>
+        {/* Corners */}
         <div className="absolute" style={{ width: RULER_SIZE, height: RULER_SIZE, top: 0, left: 0, background: '#FFFFFF', borderRight: '1px solid hsl(var(--border))', borderBottom: '1px solid hsl(var(--border))' }} />
+        <div className="absolute" style={{ width: RULER_SIZE, height: RULER_SIZE, top: 0, left: RULER_SIZE + gridW, background: '#FFFFFF', borderLeft: '1px solid hsl(var(--border))', borderBottom: '1px solid hsl(var(--border))' }} />
+        <div className="absolute" style={{ width: RULER_SIZE, height: RULER_SIZE, top: RULER_SIZE + gridH, left: 0, background: '#FFFFFF', borderRight: '1px solid hsl(var(--border))', borderTop: '1px solid hsl(var(--border))' }} />
+        <div className="absolute" style={{ width: RULER_SIZE, height: RULER_SIZE, top: RULER_SIZE + gridH, left: RULER_SIZE + gridW, background: '#FFFFFF', borderLeft: '1px solid hsl(var(--border))', borderTop: '1px solid hsl(var(--border))' }} />
         {/* Grid area */}
         <div className="absolute" style={{ left: RULER_SIZE, top: RULER_SIZE, width: gridW, height: gridH }}>
           {/* Grid shadow */}
