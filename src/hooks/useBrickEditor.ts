@@ -5,7 +5,7 @@ export type { ShapeType, ShapeFillMode } from "@/lib/shapeRasterizer";
 
 export type BrickSize = 1 | 2 | 3;
 export type BrickOrientation = "horizontal" | "vertical";
-export type EditorTool = "place" | "erase" | "text" | "move" | "pipette" | "shape" | "shapeEdit";
+export type EditorTool = "place" | "erase" | "text" | "move" | "pipette" | "shape" | "shapeEdit" | "none";
 
 export interface PlacedBrick {
   id: string;
@@ -185,7 +185,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
   // Text overlays (free text)
   const [textOverlays, setTextOverlays] = useState<TextOverlay[]>([]);
   const [pixelText, setPixelText] = useState("");
-  const [textFontSize, setTextFontSize] = useState(16);
+  const [textFontSize, setTextFontSize] = useState(49);
   const [textFontFamily, setTextFontFamily] = useState("Arial");
   const [textBold, setTextBold] = useState(false);
   const [textItalic, setTextItalic] = useState(false);
@@ -246,7 +246,8 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
           italic: textItalic,
         };
         setTextOverlays((prev) => [...prev, newOverlay]);
-        // Keep tool as 'text' so user can place multiple texts; reverts to 'place' when popover closes
+        // Auto-deactivate after placing a single text overlay
+        setTool("none");
         return;
       }
       if (!canPlace(row, col, selectedSize, orientation)) return;
