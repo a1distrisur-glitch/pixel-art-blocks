@@ -232,6 +232,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
         }
         return;
       }
+      if (tool === "none") return;
       if (tool === "text") {
         // Add a free text overlay at the click position (not snapped to grid)
         const newOverlay: TextOverlay = {
