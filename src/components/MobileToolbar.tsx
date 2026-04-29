@@ -528,7 +528,7 @@ export default function MobileToolbar({
                 <input
                   type="number"
                   min={1}
-                  max={96}
+                  max={500}
                   value={fontSizeText}
                   onChange={(e) => {
                     const raw = e.target.value;
@@ -538,7 +538,7 @@ export default function MobileToolbar({
                     }
                     const n = parseInt(raw, 10);
                     if (Number.isNaN(n)) return;
-                    const c = Math.max(1, Math.min(96, n));
+                    const c = Math.max(1, Math.min(500, n));
                     setFontSizeText(String(c));
                     activateTool("text");
                     if (c !== textFontSize) onTextFontSizeChange(c);
@@ -549,6 +549,19 @@ export default function MobileToolbar({
                     }
                   }}
                   className={`${inputCls} mt-0.5`}
+                />
+                <input
+                  type="range"
+                  min={1}
+                  max={500}
+                  value={textFontSize}
+                  onChange={(e) => {
+                    const c = parseInt(e.target.value, 10);
+                    setFontSizeText(String(c));
+                    activateTool("text");
+                    if (c !== textFontSize) onTextFontSizeChange(c);
+                  }}
+                  className="w-full mt-1 accent-primary"
                 />
               </label>
               <label className="flex-1">
