@@ -487,7 +487,8 @@ export default function BrickGrid({
       if (isDrawingShape && shapeStart && shapeEnd) {
         onAddShapeOverlay(shapeStart.row, shapeStart.col, shapeEnd.row, shapeEnd.col);
         onSizeChange(1);
-        onToolChange("place");
+        // Tras colocar la forma, no queda ninguna herramienta seleccionada
+        onToolChange("none");
       }
       setIsDrawingShape(false);
       setShapeStart(null);
