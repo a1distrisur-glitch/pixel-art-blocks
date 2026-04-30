@@ -275,21 +275,43 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
 
   const addShapeOverlay = useCallback((startRow: number, startCol: number, endRow: number, endCol: number) => {
     const r1 = Math.min(startRow, endRow);
+    const r2 = Math.max(startRow, endRow);
     const c1 = Math.min(startCol, endCol);
+    const c2 = Math.max(startCol, endCol);
+
+    // Aumentar 5x el tamaño por defecto, expandiendo desde el centro
+    const SCALE = 5;
+    const h = Math.max(1, r2 - r1);
+    const w = Math.max(1, c2 - c1);
+    const newH = h * SCALE;
+    const newW = w * SCALE;
+    const cy = (r1 + r2) / 2;
+    const cx = (c1 + c2) / 2;
+    let nr1 = Math.round(cy - newH / 2);
+    let nc1 = Math.round(cx - newW / 2);
+    let nr2 = nr1 + newH;
+    let nc2 = nc1 + newW;
+
+    // Clamp dentro de la cuadrícula
+    if (nr1 < 0) { nr2 -= nr1; nr1 = 0; }
+    if (nc1 < 0) { nc2 -= nc1; nc1 = 0; }
+    if (nr2 > gridHeight) { const d = nr2 - gridHeight; nr1 = Math.max(0, nr1 - d); nr2 = gridHeight; }
+    if (nc2 > gridWidth) { const d = nc2 - gridWidth; nc1 = Math.max(0, nc1 - d); nc2 = gridWidth; }
+
     const newOverlay: ShapeOverlay = {
       id: `shape-${idCounter.current++}`,
-      x: c1 * CELL_SIZE,
-      y: r1 * CELL_SIZE,
-      startRow,
-      startCol,
-      endRow,
-      endCol,
+      x: nc1 * CELL_SIZE,
+      y: nr1 * CELL_SIZE,
+      startRow: nr1,
+      startCol: nc1,
+      endRow: nr2,
+      endCol: nc2,
       shapeType,
       fillMode: shapeFillMode,
       color: selectedColor,
     };
     setShapeOverlays((prev) => [...prev, newOverlay]);
-  }, [shapeType, shapeFillMode, selectedColor]);
+  }, [shapeType, shapeFillMode, selectedColor, gridWidth, gridHeight]);
 
   const updateShapeOverlay = useCallback((id: string, updates: Partial<ShapeOverlay>) => {
     setShapeOverlays((prev) => prev.map((s) => (s.id === id ? { ...s, ...updates } : s)));
