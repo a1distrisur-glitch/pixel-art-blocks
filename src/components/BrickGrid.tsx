@@ -547,7 +547,7 @@ export default function BrickGrid({
       }
     }
     return result;
-  }, [width, height, tool, referenceImage, gridVisible, isPanning, handleMouseDown, handleMouseEnter, handleMouseUp]);
+  }, [width, height, tool, referenceImage, gridVisible, gridLineColor, isPanning, handleMouseDown, handleMouseEnter, handleMouseUp]);
 
   const brickElements = useMemo(() => {
     return bricks.map((b) => {
