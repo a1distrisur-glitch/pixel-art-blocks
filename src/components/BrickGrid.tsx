@@ -1027,6 +1027,15 @@ export default function BrickGrid({
         onCancel={() => setBgDialog(null)}
         onRemove={() => { setGridBg(null); setBgDialog(null); }}
       />
+      <BackgroundColorDialog
+        open={bgDialog === "line"}
+        title="Color de Cuadrícula"
+        initialColor={gridLineColor ?? "#000000"}
+        baseColor={gridLineColor ?? "#000000"}
+        onAccept={(hex) => { setGridLineColor(hex); setBgDialog(null); }}
+        onCancel={() => setBgDialog(null)}
+        onRemove={() => { setGridLineColor(null); setBgDialog(null); }}
+      />
     </div>
     </div>
   );
