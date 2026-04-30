@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import {
   Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
-  MousePointer2, Bold, Italic, X, Trash2, Plus, LogOut,
+  MousePointer2, Bold, Italic, X, Trash2, Plus, LogOut, Wrench, Ban,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -373,6 +373,18 @@ export default function MobileToolbar({
 
       {/* Bottom tools bar */}
       <nav className="fixed bottom-0 inset-x-0 z-30 flex items-stretch gap-0.5 px-1.5 pt-1 pb-[max(env(safe-area-inset-bottom),6px)] bg-toolbar border-t border-toolbar-border toolbar-shadow">
+        {/* Liberar herramientas: deselecciona la tool activa */}
+        <BottomTool
+          active={tool === "none"}
+          onClick={guarded("none")}
+          label="Liberar herramientas"
+        >
+          <span className="relative inline-flex items-center justify-center">
+            <Wrench size={18} />
+            <Ban size={22} className="absolute inset-0 m-auto text-destructive" strokeWidth={2.25} />
+          </span>
+        </BottomTool>
+
         {/* Pintar */}
         <Popover open={paintOpen} onOpenChange={setPaintOpen}>
           <PopoverTrigger asChild>
