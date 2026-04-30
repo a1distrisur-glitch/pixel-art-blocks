@@ -264,6 +264,16 @@ export default function ColorPickerButton({
               type="button"
               onClick={() => {
                 setOpen(false);
+                window.dispatchEvent(new CustomEvent("pixcool:bg-open-line"));
+              }}
+              className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-xs rounded-sm text-toolbar-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            >
+              <span>Color de Cuadrícula</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
                 window.dispatchEvent(new CustomEvent("pixcool:bg-open-grid"));
               }}
               className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-xs rounded-sm text-toolbar-foreground hover:bg-secondary hover:text-foreground transition-colors"
