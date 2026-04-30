@@ -97,19 +97,23 @@ export default function BrickGrid({
   const DEFAULT_GRID_BG = "hsl(var(--grid-background))";
   const [workspaceBg, setWorkspaceBg] = useState<string | null>(null);
   const [gridBg, setGridBg] = useState<string | null>(null);
-  const [bgDialog, setBgDialog] = useState<null | "workspace" | "grid">(null);
+  const [gridLineColor, setGridLineColor] = useState<string | null>(null);
+  const [bgDialog, setBgDialog] = useState<null | "workspace" | "grid" | "line">(null);
   // Expose background-color actions globally so the ColorPickerButton popover
   // can trigger the same dialogs/reset as the workspace right-click menu.
   useEffect(() => {
     const openWorkspace = () => setBgDialog("workspace");
     const openGrid = () => setBgDialog("grid");
-    const reset = () => { setWorkspaceBg(null); setGridBg(null); };
+    const openLine = () => setBgDialog("line");
+    const reset = () => { setWorkspaceBg(null); setGridBg(null); setGridLineColor(null); };
     window.addEventListener("pixcool:bg-open-workspace", openWorkspace as EventListener);
     window.addEventListener("pixcool:bg-open-grid", openGrid as EventListener);
+    window.addEventListener("pixcool:bg-open-line", openLine as EventListener);
     window.addEventListener("pixcool:bg-reset", reset as EventListener);
     return () => {
       window.removeEventListener("pixcool:bg-open-workspace", openWorkspace as EventListener);
       window.removeEventListener("pixcool:bg-open-grid", openGrid as EventListener);
+      window.removeEventListener("pixcool:bg-open-line", openLine as EventListener);
       window.removeEventListener("pixcool:bg-reset", reset as EventListener);
     };
   }, []);
@@ -483,7 +487,8 @@ export default function BrickGrid({
       if (isDrawingShape && shapeStart && shapeEnd) {
         onAddShapeOverlay(shapeStart.row, shapeStart.col, shapeEnd.row, shapeEnd.col);
         onSizeChange(1);
-        onToolChange("place");
+        // Tras colocar la forma, no queda ninguna herramienta seleccionada
+        onToolChange("none");
       }
       setIsDrawingShape(false);
       setShapeStart(null);
@@ -531,7 +536,7 @@ export default function BrickGrid({
           <rect key={`cell-${r}-${c}`}
             x={c * CELL_SIZE} y={r * CELL_SIZE} width={CELL_SIZE} height={CELL_SIZE}
             fill="transparent"
-            stroke={gridVisible ? "#000000" : "transparent"}
+            stroke={gridVisible ? (gridLineColor ?? "#000000") : "transparent"}
             strokeWidth={referenceImage ? 0.8 : 0.5}
             strokeOpacity={referenceImage ? 0.55 : 1}
             style={{ cursor: isPanning ? "grabbing" : tool === "erase" ? "crosshair" : tool === "move" ? (isDraggingSelection ? "grabbing" : "crosshair") : tool === "pipette" ? "crosshair" : "pointer" }}
@@ -543,7 +548,7 @@ export default function BrickGrid({
       }
     }
     return result;
-  }, [width, height, tool, referenceImage, gridVisible, isPanning, handleMouseDown, handleMouseEnter, handleMouseUp]);
+  }, [width, height, tool, referenceImage, gridVisible, gridLineColor, isPanning, handleMouseDown, handleMouseEnter, handleMouseUp]);
 
   const brickElements = useMemo(() => {
     return bricks.map((b) => {
@@ -1022,6 +1027,15 @@ export default function BrickGrid({
         onAccept={(hex) => { setGridBg(hex); setBgDialog(null); }}
         onCancel={() => setBgDialog(null)}
         onRemove={() => { setGridBg(null); setBgDialog(null); }}
+      />
+      <BackgroundColorDialog
+        open={bgDialog === "line"}
+        title="Color de Cuadrícula"
+        initialColor={gridLineColor ?? "#000000"}
+        baseColor={gridLineColor ?? "#000000"}
+        onAccept={(hex) => { setGridLineColor(hex); setBgDialog(null); }}
+        onCancel={() => setBgDialog(null)}
+        onRemove={() => { setGridLineColor(null); setBgDialog(null); }}
       />
     </div>
     </div>

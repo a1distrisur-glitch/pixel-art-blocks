@@ -480,6 +480,16 @@ export default function MobileToolbar({
                 </PopBtn>
               </div>
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                activateTool("shape");
+                setShapeOpen(false);
+              }}
+              className="w-full h-9 rounded-md bg-primary text-primary-foreground text-xs font-medium shadow-sm hover:bg-primary/90 transition-colors"
+            >
+              Colocar
+            </button>
             <p className="text-[18px] text-toolbar-foreground/70 flex items-center gap-1">
               <MousePointer2 size={18} /> Arrastra en la grilla para dibujar
             </p>
