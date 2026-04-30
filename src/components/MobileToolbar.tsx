@@ -380,8 +380,25 @@ export default function MobileToolbar({
           label="Liberar herramientas"
         >
           <span className="relative inline-flex items-center justify-center">
-            <Wrench size={18} />
-            <Ban size={22} className="absolute inset-0 m-auto text-destructive" strokeWidth={2.25} />
+            <Wrench size={18} className="text-white" />
+            <svg
+              viewBox="0 0 24 24"
+              className="absolute inset-0 m-auto pointer-events-none"
+              width={22}
+              height={22}
+              aria-hidden
+            >
+              <line
+                x1="4"
+                y1="20"
+                x2="20"
+                y2="4"
+                stroke="#ffffff"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                style={{ filter: "drop-shadow(0 0 2px rgba(255,255,255,0.9))" }}
+              />
+            </svg>
           </span>
         </BottomTool>
 
