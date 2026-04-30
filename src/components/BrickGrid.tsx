@@ -406,6 +406,10 @@ export default function BrickGrid({
           e.preventDefault();
           onCellClick(cell.row, cell.col);
           touchStateRef.current.lastPaintedCell = cell;
+          // Pulso háptico muy corto por celda nueva (sólo si el dispositivo lo soporta)
+          if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+            try { navigator.vibrate(5); } catch {}
+          }
         }
       }
     }
