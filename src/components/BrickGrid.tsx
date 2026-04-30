@@ -5,7 +5,7 @@ import TextOverlayLayer from "@/components/TextOverlayLayer";
 import ShapeOverlayLayer from "@/components/ShapeOverlayLayer";
 import BackgroundColorDialog from "@/components/BackgroundColorDialog";
 import { rasterizeShape, renderShapeSVGPath } from "@/lib/shapeRasterizer";
-import { ArrowRightLeft, ArrowUpDown, Check, Eraser, Move } from "lucide-react";
+import { ArrowRightLeft, ArrowUpDown, Check, Eraser, Move, Wrench } from "lucide-react";
 
 interface BrickGridProps {
   width: number;
@@ -1012,6 +1012,34 @@ export default function BrickGrid({
           onMouseDown={(e) => e.stopPropagation()}
           onContextMenu={(e) => e.preventDefault()}
         >
+          <button
+            className="w-full flex items-center justify-between px-2 py-1.5 text-sm rounded-sm hover:bg-zinc-800 hover:text-white transition-colors"
+            onClick={() => { onToolChange("none"); closeContextMenu(); }}
+          >
+            <span className="flex items-center gap-2">
+              <span className="relative inline-flex items-center justify-center h-3.5 w-3.5">
+                <Wrench className="h-3.5 w-3.5 text-white" />
+                <svg
+                  viewBox="0 0 24 24"
+                  className="absolute inset-0 m-auto pointer-events-none"
+                  width={16}
+                  height={16}
+                  aria-hidden
+                >
+                  <line
+                    x1="4" y1="20" x2="20" y2="4"
+                    stroke="#ffffff"
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    style={{ filter: "drop-shadow(0 0 2px rgba(255,255,255,0.9))" }}
+                  />
+                </svg>
+              </span>
+              Liberar herramienta
+            </span>
+            {tool === "none" && <Check className="h-3.5 w-3.5" />}
+          </button>
+          <div className="-mx-1 my-1 h-px bg-zinc-700" />
           
           {([1, 2, 3] as BrickSize[]).map((s) => (
             <button
