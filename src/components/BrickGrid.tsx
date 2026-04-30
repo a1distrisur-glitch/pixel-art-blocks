@@ -302,6 +302,8 @@ export default function BrickGrid({
       touchStateRef.current.moved = false;
       userZoomedRef.current = true;
     } else if (t.length === 1) {
+      // Si venimos de un gesto multitouch, ignorar el dedo residual hasta soltar todos.
+      if (touchStateRef.current.mode === "multi") return;
       touchStateRef.current.mode = "single";
       touchStateRef.current.startTime = performance.now();
       touchStateRef.current.moved = false;
@@ -317,6 +319,10 @@ export default function BrickGrid({
         onCellClick(target.row, target.col);
         touchStateRef.current.lastPaintedCell = target;
         touchStateRef.current.painting = true;
+        // Vibración háptica corta al colocar/borrar
+        if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+          try { navigator.vibrate(tool === "erase" ? 18 : 8); } catch {}
+        }
       }
       // Long-press to erase: solo si no es herramienta move y hay un bloque debajo
       if (target && !imageEditMode && !isMoveTool && tool !== "erase") {
