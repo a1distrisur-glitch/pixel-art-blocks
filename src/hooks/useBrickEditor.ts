@@ -179,7 +179,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
     x: 0, y: 0, width: 0, height: 0,
   });
   const [extraImages, setExtraImages] = useState<{ src: string; transform: ImageTransform }[]>([]);
-  const [tool, setTool] = useState<EditorTool>("place");
+  const [tool, setTool] = useState<EditorTool>("none");
   const idCounter = useRef(0);
 
   // Text overlays (free text)
