@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import {
   Undo2, Redo2, Eraser, Move, Type,
   Shapes, Pipette, Paintbrush, ArrowRightLeft, ArrowUpDown,
-  MousePointer2, Bold, Italic, X, Trash2, Plus, LogOut,
+  MousePointer2, Bold, Italic, X, Trash2, Plus, LogOut, Wrench, Ban,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
