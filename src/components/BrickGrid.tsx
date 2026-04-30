@@ -97,19 +97,23 @@ export default function BrickGrid({
   const DEFAULT_GRID_BG = "hsl(var(--grid-background))";
   const [workspaceBg, setWorkspaceBg] = useState<string | null>(null);
   const [gridBg, setGridBg] = useState<string | null>(null);
-  const [bgDialog, setBgDialog] = useState<null | "workspace" | "grid">(null);
+  const [gridLineColor, setGridLineColor] = useState<string | null>(null);
+  const [bgDialog, setBgDialog] = useState<null | "workspace" | "grid" | "line">(null);
   // Expose background-color actions globally so the ColorPickerButton popover
   // can trigger the same dialogs/reset as the workspace right-click menu.
   useEffect(() => {
     const openWorkspace = () => setBgDialog("workspace");
     const openGrid = () => setBgDialog("grid");
-    const reset = () => { setWorkspaceBg(null); setGridBg(null); };
+    const openLine = () => setBgDialog("line");
+    const reset = () => { setWorkspaceBg(null); setGridBg(null); setGridLineColor(null); };
     window.addEventListener("pixcool:bg-open-workspace", openWorkspace as EventListener);
     window.addEventListener("pixcool:bg-open-grid", openGrid as EventListener);
+    window.addEventListener("pixcool:bg-open-line", openLine as EventListener);
     window.addEventListener("pixcool:bg-reset", reset as EventListener);
     return () => {
       window.removeEventListener("pixcool:bg-open-workspace", openWorkspace as EventListener);
       window.removeEventListener("pixcool:bg-open-grid", openGrid as EventListener);
+      window.removeEventListener("pixcool:bg-open-line", openLine as EventListener);
       window.removeEventListener("pixcool:bg-reset", reset as EventListener);
     };
   }, []);
