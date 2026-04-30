@@ -768,9 +768,24 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
         setShapeOverlays([]);
       }
 
-      // Load custom colors
+      // Load custom colors: fusionar con la paleta actual (sin duplicar por value)
       if (project.colors && Array.isArray(project.colors) && project.colors.length > 0) {
-        setColors(project.colors);
+        setColors((current) => {
+          const merged = [...current];
+          const seen = new Set(current.map((c) => c.value.toLowerCase()));
+          for (const c of project.colors as BrickColor[]) {
+            if (!c || typeof c.value !== "string") continue;
+            const key = c.value.toLowerCase();
+            if (!seen.has(key)) {
+              merged.push(c);
+              seen.add(key);
+            }
+          }
+          return merged;
+        });
+      } else {
+        // Proyecto antiguo sin colores guardados → resetear a por defecto
+        setColors(DEFAULT_BRICK_COLORS);
       }
 
       if (project.selectedColor) setSelectedColor(project.selectedColor);
