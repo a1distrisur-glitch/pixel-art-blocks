@@ -5,7 +5,7 @@ export type { ShapeType, ShapeFillMode } from "@/lib/shapeRasterizer";
 
 export type BrickSize = 1 | 2 | 3;
 export type BrickOrientation = "horizontal" | "vertical";
-export type EditorTool = "place" | "erase" | "text" | "move" | "pipette" | "shape" | "shapeEdit";
+export type EditorTool = "place" | "erase" | "text" | "move" | "pipette" | "shape" | "shapeEdit" | "none";
 
 export interface PlacedBrick {
   id: string;
@@ -165,7 +165,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
   const canUndo = undoStack.current.length > 0;
   const canRedo = redoStack.current.length > 0;
   const [colors, setColors] = useState<BrickColor[]>(DEFAULT_BRICK_COLORS);
-  const [selectedColor, setSelectedColor] = useState(DEFAULT_BRICK_COLORS[0].value);
+  const [selectedColor, setSelectedColor] = useState("#7C3AED");
   const [selectedSize, setSelectedSize] = useState<BrickSize>(1);
   const [gridVisible, setGridVisible] = useState(true);
   const [cursorTrackerVisible, setCursorTrackerVisible] = useState(true);
@@ -179,13 +179,13 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
     x: 0, y: 0, width: 0, height: 0,
   });
   const [extraImages, setExtraImages] = useState<{ src: string; transform: ImageTransform }[]>([]);
-  const [tool, setTool] = useState<EditorTool>("place");
+  const [tool, setTool] = useState<EditorTool>("none");
   const idCounter = useRef(0);
 
   // Text overlays (free text)
   const [textOverlays, setTextOverlays] = useState<TextOverlay[]>([]);
   const [pixelText, setPixelText] = useState("");
-  const [textFontSize, setTextFontSize] = useState(16);
+  const [textFontSize, setTextFontSize] = useState(49);
   const [textFontFamily, setTextFontFamily] = useState("Arial");
   const [textBold, setTextBold] = useState(false);
   const [textItalic, setTextItalic] = useState(false);
@@ -232,6 +232,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
         }
         return;
       }
+      if (tool === "none") return;
       if (tool === "text") {
         // Add a free text overlay at the click position (not snapped to grid)
         const newOverlay: TextOverlay = {
@@ -246,7 +247,8 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
           italic: textItalic,
         };
         setTextOverlays((prev) => [...prev, newOverlay]);
-        // Keep tool as 'text' so user can place multiple texts; reverts to 'place' when popover closes
+        // Auto-deactivate after placing a single text overlay
+        setTool("none");
         return;
       }
       if (!canPlace(row, col, selectedSize, orientation)) return;
@@ -305,6 +307,8 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
 
   const handleImageUpload = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
+    // Al cargar una imagen, desactivar cualquier herramienta activa
+    setTool("none");
     // Push the currently active image (if any) to extras as a lower layer
     setReferenceImage((prevSrc) => {
       if (prevSrc) {
@@ -420,7 +424,7 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
     setGridWidth(initialWidth);
     setGridHeight(initialHeight);
     setColors(DEFAULT_BRICK_COLORS);
-    setSelectedColor(DEFAULT_BRICK_COLORS[0].value);
+    setSelectedColor("#7C3AED");
     setSelectedSize(1);
     setOrientation("horizontal");
     setTool("place");
@@ -764,9 +768,24 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
         setShapeOverlays([]);
       }
 
-      // Load custom colors
+      // Load custom colors: fusionar con la paleta actual (sin duplicar por value)
       if (project.colors && Array.isArray(project.colors) && project.colors.length > 0) {
-        setColors(project.colors);
+        setColors((current) => {
+          const merged = [...current];
+          const seen = new Set(current.map((c) => c.value.toLowerCase()));
+          for (const c of project.colors as BrickColor[]) {
+            if (!c || typeof c.value !== "string") continue;
+            const key = c.value.toLowerCase();
+            if (!seen.has(key)) {
+              merged.push(c);
+              seen.add(key);
+            }
+          }
+          return merged;
+        });
+      } else {
+        // Proyecto antiguo sin colores guardados → resetear a por defecto
+        setColors(DEFAULT_BRICK_COLORS);
       }
 
       if (project.selectedColor) setSelectedColor(project.selectedColor);

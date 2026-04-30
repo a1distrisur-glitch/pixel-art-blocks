@@ -97,19 +97,23 @@ export default function BrickGrid({
   const DEFAULT_GRID_BG = "hsl(var(--grid-background))";
   const [workspaceBg, setWorkspaceBg] = useState<string | null>(null);
   const [gridBg, setGridBg] = useState<string | null>(null);
-  const [bgDialog, setBgDialog] = useState<null | "workspace" | "grid">(null);
+  const [gridLineColor, setGridLineColor] = useState<string | null>(null);
+  const [bgDialog, setBgDialog] = useState<null | "workspace" | "grid" | "line">(null);
   // Expose background-color actions globally so the ColorPickerButton popover
   // can trigger the same dialogs/reset as the workspace right-click menu.
   useEffect(() => {
     const openWorkspace = () => setBgDialog("workspace");
     const openGrid = () => setBgDialog("grid");
-    const reset = () => { setWorkspaceBg(null); setGridBg(null); };
+    const openLine = () => setBgDialog("line");
+    const reset = () => { setWorkspaceBg(null); setGridBg(null); setGridLineColor(null); };
     window.addEventListener("pixcool:bg-open-workspace", openWorkspace as EventListener);
     window.addEventListener("pixcool:bg-open-grid", openGrid as EventListener);
+    window.addEventListener("pixcool:bg-open-line", openLine as EventListener);
     window.addEventListener("pixcool:bg-reset", reset as EventListener);
     return () => {
       window.removeEventListener("pixcool:bg-open-workspace", openWorkspace as EventListener);
       window.removeEventListener("pixcool:bg-open-grid", openGrid as EventListener);
+      window.removeEventListener("pixcool:bg-open-line", openLine as EventListener);
       window.removeEventListener("pixcool:bg-reset", reset as EventListener);
     };
   }, []);
@@ -458,7 +462,8 @@ export default function BrickGrid({
       setIsDraggingSelection(false);
       return;
     }
-    setIsMouseDown(true);
+    if (tool === "none") return;
+    if (isPaintableTool(tool)) setIsMouseDown(true);
     onCellClick(row, col);
   }, [onCellClick, isPanning, tool, selectedBrickIds, getSelectionRect, referenceImage, imageVisible, imageTransform, onPipetteColor]);
 
@@ -482,7 +487,8 @@ export default function BrickGrid({
       if (isDrawingShape && shapeStart && shapeEnd) {
         onAddShapeOverlay(shapeStart.row, shapeStart.col, shapeEnd.row, shapeEnd.col);
         onSizeChange(1);
-        onToolChange("place");
+        // Tras colocar la forma, no queda ninguna herramienta seleccionada
+        onToolChange("none");
       }
       setIsDrawingShape(false);
       setShapeStart(null);
@@ -530,7 +536,7 @@ export default function BrickGrid({
           <rect key={`cell-${r}-${c}`}
             x={c * CELL_SIZE} y={r * CELL_SIZE} width={CELL_SIZE} height={CELL_SIZE}
             fill="transparent"
-            stroke={gridVisible ? (referenceImage ? "hsl(225 20% 30%)" : "hsl(225 14% 82%)") : "transparent"}
+            stroke={gridVisible ? (gridLineColor ?? "#000000") : "transparent"}
             strokeWidth={referenceImage ? 0.8 : 0.5}
             strokeOpacity={referenceImage ? 0.55 : 1}
             style={{ cursor: isPanning ? "grabbing" : tool === "erase" ? "crosshair" : tool === "move" ? (isDraggingSelection ? "grabbing" : "crosshair") : tool === "pipette" ? "crosshair" : "pointer" }}
@@ -542,7 +548,7 @@ export default function BrickGrid({
       }
     }
     return result;
-  }, [width, height, tool, referenceImage, gridVisible, isPanning, handleMouseDown, handleMouseEnter, handleMouseUp]);
+  }, [width, height, tool, referenceImage, gridVisible, gridLineColor, isPanning, handleMouseDown, handleMouseEnter, handleMouseUp]);
 
   const brickElements = useMemo(() => {
     return bricks.map((b) => {
@@ -808,18 +814,18 @@ export default function BrickGrid({
       <div
         className="relative shrink-0"
         style={{
-          width: (gridW + RULER_SIZE) * zoom,
-          height: (gridH + RULER_SIZE) * zoom,
+          width: (gridW + RULER_SIZE * 2) * zoom,
+          height: (gridH + RULER_SIZE * 2) * zoom,
         }}
       >
       <div className="relative animate-fade-in"
         style={{
-          width: gridW + RULER_SIZE, height: gridH + RULER_SIZE,
+          width: gridW + RULER_SIZE * 2, height: gridH + RULER_SIZE * 2,
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
           transformOrigin: "top left",
           willChange: "transform",
         }}>
-        {/* Horizontal ruler (top) — fondo blanco fijo para máximo contraste sobre cualquier color de workspace */}
+        {/* Horizontal ruler (top) */}
         <div className="absolute flex" style={{ left: RULER_SIZE, top: 0, height: RULER_SIZE, width: gridW, background: '#FFFFFF', borderBottom: '1px solid hsl(var(--border))' }}>
           {Array.from({ length: width }).map((_, i) => (
             <div key={i} className="flex items-center justify-center font-mono select-none"
@@ -833,7 +839,21 @@ export default function BrickGrid({
             </div>
           ))}
         </div>
-        {/* Vertical ruler (left) — fondo blanco fijo para máximo contraste sobre cualquier color de workspace */}
+        {/* Horizontal ruler (bottom) */}
+        <div className="absolute flex" style={{ left: RULER_SIZE, top: RULER_SIZE + gridH, height: RULER_SIZE, width: gridW, background: '#FFFFFF', borderTop: '1px solid hsl(var(--border))' }}>
+          {Array.from({ length: width }).map((_, i) => (
+            <div key={i} className="flex items-center justify-center font-mono select-none"
+              style={{
+                width: CELL_SIZE, height: RULER_SIZE,
+                fontSize: 9, color: hoverCell?.col === i ? 'hsl(var(--primary))' : '#1C1917',
+                fontWeight: hoverCell?.col === i ? 700 : 500,
+                background: hoverCell?.col === i ? 'hsl(var(--primary) / 0.12)' : 'transparent',
+              }}>
+              {i + 1}
+            </div>
+          ))}
+        </div>
+        {/* Vertical ruler (left) */}
         <div className="absolute flex flex-col" style={{ left: 0, top: RULER_SIZE, width: RULER_SIZE, height: gridH, background: '#FFFFFF', borderRight: '1px solid hsl(var(--border))' }}>
           {Array.from({ length: height }).map((_, i) => (
             <div key={i} className="flex items-center justify-center font-mono select-none"
@@ -847,8 +867,25 @@ export default function BrickGrid({
             </div>
           ))}
         </div>
-        {/* Corner — fondo blanco para coincidir con las reglas */}
+        {/* Vertical ruler (right) */}
+        <div className="absolute flex flex-col" style={{ left: RULER_SIZE + gridW, top: RULER_SIZE, width: RULER_SIZE, height: gridH, background: '#FFFFFF', borderLeft: '1px solid hsl(var(--border))' }}>
+          {Array.from({ length: height }).map((_, i) => (
+            <div key={i} className="flex items-center justify-center font-mono select-none"
+              style={{
+                width: RULER_SIZE, height: CELL_SIZE,
+                fontSize: 9, color: hoverCell?.row === i ? 'hsl(var(--primary))' : '#1C1917',
+                fontWeight: hoverCell?.row === i ? 700 : 500,
+                background: hoverCell?.row === i ? 'hsl(var(--primary) / 0.12)' : 'transparent',
+              }}>
+              {i + 1}
+            </div>
+          ))}
+        </div>
+        {/* Corners */}
         <div className="absolute" style={{ width: RULER_SIZE, height: RULER_SIZE, top: 0, left: 0, background: '#FFFFFF', borderRight: '1px solid hsl(var(--border))', borderBottom: '1px solid hsl(var(--border))' }} />
+        <div className="absolute" style={{ width: RULER_SIZE, height: RULER_SIZE, top: 0, left: RULER_SIZE + gridW, background: '#FFFFFF', borderLeft: '1px solid hsl(var(--border))', borderBottom: '1px solid hsl(var(--border))' }} />
+        <div className="absolute" style={{ width: RULER_SIZE, height: RULER_SIZE, top: RULER_SIZE + gridH, left: 0, background: '#FFFFFF', borderRight: '1px solid hsl(var(--border))', borderTop: '1px solid hsl(var(--border))' }} />
+        <div className="absolute" style={{ width: RULER_SIZE, height: RULER_SIZE, top: RULER_SIZE + gridH, left: RULER_SIZE + gridW, background: '#FFFFFF', borderLeft: '1px solid hsl(var(--border))', borderTop: '1px solid hsl(var(--border))' }} />
         {/* Grid area */}
         <div className="absolute" style={{ left: RULER_SIZE, top: RULER_SIZE, width: gridW, height: gridH }}>
           {/* Grid shadow */}
@@ -976,7 +1013,7 @@ export default function BrickGrid({
       <BackgroundColorDialog
         open={bgDialog === "workspace"}
         title="Color de fondo"
-        initialColor={workspaceBg ?? "#1a1a1a"}
+        initialColor={workspaceBg ?? "#26293A"}
         baseColor={workspaceBg ?? "hsl(var(--workspace))"}
         onAccept={(hex) => { setWorkspaceBg(hex); setBgDialog(null); }}
         onCancel={() => setBgDialog(null)}
@@ -990,6 +1027,15 @@ export default function BrickGrid({
         onAccept={(hex) => { setGridBg(hex); setBgDialog(null); }}
         onCancel={() => setBgDialog(null)}
         onRemove={() => { setGridBg(null); setBgDialog(null); }}
+      />
+      <BackgroundColorDialog
+        open={bgDialog === "line"}
+        title="Color de Cuadrícula"
+        initialColor={gridLineColor ?? "#000000"}
+        baseColor={gridLineColor ?? "#000000"}
+        onAccept={(hex) => { setGridLineColor(hex); setBgDialog(null); }}
+        onCancel={() => setBgDialog(null)}
+        onRemove={() => { setGridLineColor(null); setBgDialog(null); }}
       />
     </div>
     </div>

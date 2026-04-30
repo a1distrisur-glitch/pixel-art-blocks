@@ -1,32 +1,41 @@
+## Tooltips en versión móvil (Long-press + Tap corto)
 
+### Resumen
+Replicar el sistema de tooltips de escritorio (Radix `Tooltip`) en la versión móvil — barra inferior y flex superior. Doble activación táctil: **tap corto** muestra tooltip ~1.5s y ejecuta la acción; **long-press** (≥500ms) muestra tooltip mientras se mantiene presionado y **cancela** el click (no ejecuta la acción).
 
-# Guardar regla crítica en memoria del proyecto
+### Comportamiento
 
-Voy a registrar como **regla permanente (constraint)** que el flex lateral (`Toolbar.tsx` de escritorio) y sus conexiones con los demás controles son **intocables** salvo petición explícita tuya. Cualquier cambio futuro que pueda afectar al flex lateral deberá ser notificado con claridad antes de ejecutarse.
+| Gesto | Tooltip | Acción del botón |
+|---|---|---|
+| Hover (mouse) | Aparece tras 300ms | — |
+| Tap corto (<500ms) | Aparece y se oculta solo a los 1.5s | Se ejecuta normal |
+| Long-press (≥500ms) | Aparece al cumplir 500ms, persiste mientras se mantiene | NO se ejecuta al soltar |
+| Tap fuera | Cierra cualquier tooltip abierto | — |
 
-## Cambios
+### Implementación
 
-### 1. Crear `mem://constraints/flex-lateral-sagrado.md`
-Memoria de tipo `constraint` con el contenido:
+**Nuevo componente helper en `src/components/MobileToolbar.tsx`** (`MobileTooltip`):
+- Envuelve children con `Tooltip` controlado (`open` state).
+- Maneja `onPointerDown` / `onPointerUp` / `onPointerCancel` / `onPointerLeave`:
+  - Al `pointerdown` arranca timer de 500ms → si se cumple, marca `longPress=true` y abre tooltip.
+  - En `pointerup`: si fue long-press, llama `e.preventDefault()` y `e.stopPropagation()` para evitar el click, mantiene tooltip abierto unos ms y luego cierra.
+  - Si fue tap corto, abre tooltip y programa cierre a 1.5s.
+- Reutiliza `TooltipContent` con el mismo styling (`text-xs`, `side`).
 
-- **Regla:** No modificar `src/components/Toolbar.tsx` (flex lateral de escritorio) ni sus conexiones (props, handlers, cableado con `useBrickEditor`, `BrickEditor.tsx`, `ReferenceImageControls`, diálogos) sin instrucción explícita del usuario.
-- **Si una tarea pudiera afectar al flex lateral indirectamente:** detenerse, avisar con claridad notoria, y pedir aprobación antes de tocarlo.
-- **Por qué:** El usuario considera esta sección y su cableado críticos y estables; cambios no autorizados rompen la confianza y la fiabilidad.
+**Cambios en `src/components/MobileToolbar.tsx`**:
+1. Importar `Tooltip`, `TooltipContent`, `TooltipProvider`, `TooltipTrigger` desde `@/components/ui/tooltip`.
+2. Envolver todo el componente `MobileToolbar` con `<TooltipProvider delayDuration={300}>` (para hover desktop si existiera).
+3. Modificar los componentes internos `TopBtn`, `BottomTool`, `PopBtn` para envolver el `<button>` con `MobileTooltip` usando el `label` como contenido.
+4. Para los botones `PopoverTrigger` (Pintar/Formas/Texto) y los botones inline (Colocar/Salir/Borrar texto, shape buttons): envolver también con `MobileTooltip`.
+5. Mantener `aria-label` y `title` (accesibilidad / fallback).
 
-### 2. Crear `mem://index.md`
-Índice de memoria con sección **Core** (siempre aplicada) que incluye la regla resumida en una línea, más una referencia al archivo de constraint:
+**Cambios en `src/components/TopActions.tsx` y `ColorPickerButton.tsx` / `ProjectMenuButton.tsx`**:
+- No requieren cambios — ya usan tooltips Radix desde `Toolbar.tsx`. Pero como en móvil estos botones se renderizan dentro de `MobileToolbar`, hay que verificar que el `TooltipProvider` envuelva también esos slots. Como `MobileToolbar` ya wrappea su `<header>` y `<nav>` completos, los `topActions` y `gridSettingsSlot` heredan el provider. Solo asegurar que `ColorPickerButton` y `ProjectMenuButton` triggers tengan tooltip funcional en táctil.
 
-```text
-# Project Memory
+### Archivos a modificar
+- `src/components/MobileToolbar.tsx` — agregar `MobileTooltip` helper, envolver con `TooltipProvider`, aplicar a `TopBtn`/`BottomTool`/`PopBtn` y triggers de Popover.
 
-## Core
-NO modificar Toolbar.tsx (flex lateral) ni sus conexiones sin pedirme permiso explícito. Si una tarea lo afecta indirectamente, AVISAR con claridad notoria antes de tocarlo.
-
-## Memories
-- [Flex lateral sagrado](mem://constraints/flex-lateral-sagrado.md) — Toolbar.tsx y su cableado son intocables sin autorización explícita
-```
-
-## Resultado
-
-A partir de aprobar este plan, en cada turno futuro aplicaré la regla automáticamente: ningún cambio tocará `Toolbar.tsx` ni su cableado (props desde `BrickEditor.tsx`, conexión con `ReferenceImageControls`, handlers del hook) sin que tú lo indiques expresamente, y cualquier tarea que pudiera rozarlo se detendrá para avisarte primero.
-
+### Resultado esperado
+- En móvil, mantener presionado cualquier botón muestra una burbuja con la descripción (mismo look que escritorio) sin disparar la acción.
+- Un tap rápido ejecuta la acción y muestra una vista breve del tooltip.
+- Funciona con mouse en navegador móvil/desktop también.
