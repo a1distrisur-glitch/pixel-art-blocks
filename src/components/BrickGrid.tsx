@@ -214,6 +214,7 @@ export default function BrickGrid({
     startDist: number;
     startZoom: number;
     startMid: { x: number; y: number };
+    startMidLocal: { x: number; y: number };
     startPan: { x: number; y: number };
     startTime: number;
     moved: boolean;
@@ -227,6 +228,7 @@ export default function BrickGrid({
     startDist: 0,
     startZoom: 1,
     startMid: { x: 0, y: 0 },
+    startMidLocal: { x: 0, y: 0 },
     startPan: { x: 0, y: 0 },
     startTime: 0,
     moved: false,
@@ -277,10 +279,24 @@ export default function BrickGrid({
     const t = e.touches;
     if (t.length === 2) {
       cancelLongPress();
+      // Anti-fantasma: si el primer dedo ya pintó un bloque al apoyarse,
+      // deshacer ese trazo cuando aparece el segundo dedo (el usuario quería pinch).
+      if (touchStateRef.current.painting && touchStateRef.current.lastPaintedCell && onUndo) {
+        onUndo();
+      }
+      touchStateRef.current.painting = false;
+      touchStateRef.current.lastPaintedCell = null;
+
       touchStateRef.current.mode = "multi";
       touchStateRef.current.startDist = distance(t[0], t[1]);
       touchStateRef.current.startZoom = zoom;
-      touchStateRef.current.startMid = midpoint(t[0], t[1]);
+      // Punto medio en coordenadas de pantalla y relativo al contenedor (para anclar el pinch)
+      const mid = midpoint(t[0], t[1]);
+      touchStateRef.current.startMid = mid;
+      const rect = containerRef.current?.getBoundingClientRect();
+      touchStateRef.current.startMidLocal = rect
+        ? { x: mid.x - rect.left, y: mid.y - rect.top }
+        : { x: mid.x, y: mid.y };
       touchStateRef.current.startPan = { x: pan.x, y: pan.y };
       touchStateRef.current.startTime = performance.now();
       touchStateRef.current.moved = false;
@@ -290,22 +306,24 @@ export default function BrickGrid({
       touchStateRef.current.startTime = performance.now();
       touchStateRef.current.moved = false;
       touchStateRef.current.initialTouchClient = { x: t[0].clientX, y: t[0].clientY };
+      touchStateRef.current.startPan = { x: pan.x, y: pan.y };
       touchStateRef.current.lastPaintedCell = null;
       touchStateRef.current.painting = false;
+      // Pan con un dedo cuando la herramienta es 'mover' y no hay edición de imagen
+      const isMoveTool = tool === "move" && !imageEditMode;
       const target = cellFromClientPoint(t[0].clientX, t[0].clientY);
-      // Tap-to-place: immediately place a brick on the touched cell (mirrors mouse-down)
-      if (target && !imageEditMode && !isPanning && isPaintableTool(tool)) {
+      // Tap-to-place: pintar al apoyar (mirrors mouse-down). Se deshace si aparece pinch (ver arriba).
+      if (target && !imageEditMode && !isPanning && !isMoveTool && isPaintableTool(tool)) {
         onCellClick(target.row, target.col);
         touchStateRef.current.lastPaintedCell = target;
         touchStateRef.current.painting = true;
       }
-      // Long-press to erase: only when not in image edit mode and not already erasing
-      if (target && !imageEditMode && tool !== "erase") {
+      // Long-press to erase: solo si no es herramienta move y hay un bloque debajo
+      if (target && !imageEditMode && !isMoveTool && tool !== "erase") {
         const occupant = getCellOccupant(target.row, target.col);
         if (occupant) {
           touchStateRef.current.longPressTarget = target;
           touchStateRef.current.longPressTimer = window.setTimeout(() => {
-            // Trigger erase: temporarily switch tool, place, restore
             const prevTool = tool;
             onToolChange("erase");
             setTimeout(() => {
@@ -317,7 +335,7 @@ export default function BrickGrid({
         }
       }
     }
-  }, [zoom, pan, cancelLongPress, cellFromClientPoint, imageEditMode, getCellOccupant, tool, onToolChange, onCellClick, isPanning]);
+  }, [zoom, pan, cancelLongPress, cellFromClientPoint, imageEditMode, getCellOccupant, tool, onToolChange, onCellClick, onUndo, isPanning]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     const t = e.touches;
@@ -328,24 +346,53 @@ export default function BrickGrid({
       const mid = midpoint(t[0], t[1]);
       const scaleFactor = dist / Math.max(1, touchStateRef.current.startDist);
       const newZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, touchStateRef.current.startZoom * scaleFactor));
-      setZoom(newZoom);
-      // Two-finger pan: translate by mid delta
+      // Pinch anclado: mantener fijo el punto medio en coordenadas del contenedor.
+      // El contenido se renderiza centrado por flex y trasladado por `pan`.
+      // Al cambiar zoom de Z0 a Z1 con foco en F (local), el desplazamiento
+      // adicional aplicado al contenido es (F - C) * (Z1/Z0 - 1) hacia afuera del centro C,
+      // pero como el centrado por flex ya recoloca el contenedor según el tamaño escalado,
+      // basta con compensar respecto al punto local del pinch:
+      const startMidLocal = touchStateRef.current.startMidLocal;
+      const rect = containerRef.current?.getBoundingClientRect();
+      const cx = rect ? rect.width / 2 : 0;
+      const cy = rect ? rect.height / 2 : 0;
+      const ratio = newZoom / touchStateRef.current.startZoom;
+      // Desplazamiento del punto local respecto al centro del contenedor
+      const offsetX = startMidLocal.x - cx;
+      const offsetY = startMidLocal.y - cy;
+      // Compensar para anclar el punto del pellizco
+      const anchorDx = offsetX * (1 - ratio);
+      const anchorDy = offsetY * (1 - ratio);
+      // Translación libre de los dedos (pan adicional)
       const dx = mid.x - touchStateRef.current.startMid.x;
       const dy = mid.y - touchStateRef.current.startMid.y;
+      setZoom(newZoom);
       setPan({
-        x: touchStateRef.current.startPan.x + dx,
-        y: touchStateRef.current.startPan.y + dy,
+        x: touchStateRef.current.startPan.x + dx + anchorDx,
+        y: touchStateRef.current.startPan.y + dy + anchorDy,
       });
     } else if (touchStateRef.current.mode === "single" && t.length === 1) {
       const start = touchStateRef.current.initialTouchClient;
+      const isMoveTool = tool === "move" && !imageEditMode;
       if (start) {
-        const moved = Math.hypot(t[0].clientX - start.x, t[0].clientY - start.y) > 8;
+        const dx = t[0].clientX - start.x;
+        const dy = t[0].clientY - start.y;
+        const moved = Math.hypot(dx, dy) > 8;
         if (moved) {
           touchStateRef.current.moved = true;
           cancelLongPress();
         }
+        // Pan con un dedo si la herramienta es 'mover'
+        if (isMoveTool && moved) {
+          e.preventDefault();
+          setPan({
+            x: touchStateRef.current.startPan.x + dx,
+            y: touchStateRef.current.startPan.y + dy,
+          });
+          return;
+        }
       }
-      // Continuous paint while finger is held and dragged across cells (mirrors mouse drag)
+      // Pintado continuo arrastrando
       if (touchStateRef.current.painting && isPaintableTool(tool) && !imageEditMode) {
         const cell = cellFromClientPoint(t[0].clientX, t[0].clientY);
         const last = touchStateRef.current.lastPaintedCell;
