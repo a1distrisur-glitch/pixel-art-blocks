@@ -535,7 +535,7 @@ export default function BrickGrid({
           <rect key={`cell-${r}-${c}`}
             x={c * CELL_SIZE} y={r * CELL_SIZE} width={CELL_SIZE} height={CELL_SIZE}
             fill="transparent"
-            stroke={gridVisible ? "#000000" : "transparent"}
+            stroke={gridVisible ? (gridLineColor ?? "#000000") : "transparent"}
             strokeWidth={referenceImage ? 0.8 : 0.5}
             strokeOpacity={referenceImage ? 0.55 : 1}
             style={{ cursor: isPanning ? "grabbing" : tool === "erase" ? "crosshair" : tool === "move" ? (isDraggingSelection ? "grabbing" : "crosshair") : tool === "pipette" ? "crosshair" : "pointer" }}
