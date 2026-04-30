@@ -307,6 +307,8 @@ export function useBrickEditor(initialWidth = 32, initialHeight = 32) {
 
   const handleImageUpload = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
+    // Al cargar una imagen, desactivar cualquier herramienta activa
+    setTool("none");
     // Push the currently active image (if any) to extras as a lower layer
     setReferenceImage((prevSrc) => {
       if (prevSrc) {
