@@ -214,6 +214,7 @@ export default function BrickGrid({
     startDist: number;
     startZoom: number;
     startMid: { x: number; y: number };
+    startMidLocal: { x: number; y: number };
     startPan: { x: number; y: number };
     startTime: number;
     moved: boolean;
@@ -227,6 +228,7 @@ export default function BrickGrid({
     startDist: 0,
     startZoom: 1,
     startMid: { x: 0, y: 0 },
+    startMidLocal: { x: 0, y: 0 },
     startPan: { x: 0, y: 0 },
     startTime: 0,
     moved: false,
