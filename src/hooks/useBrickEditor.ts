@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { toast } from "sonner";
 import { ShapeType, ShapeFillMode } from "@/lib/shapeRasterizer";
 
 export type { ShapeType, ShapeFillMode } from "@/lib/shapeRasterizer";
