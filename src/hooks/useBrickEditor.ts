@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { toast } from "sonner";
 import { ShapeType, ShapeFillMode } from "@/lib/shapeRasterizer";
 
 export type { ShapeType, ShapeFillMode } from "@/lib/shapeRasterizer";
@@ -119,15 +120,26 @@ async function saveNativeAndShare(blob: Blob, suggestedName: string, mimeType: s
 // Helper: save blob using File System Access API with fallback
 async function saveWithPicker(blob: Blob, suggestedName: string, description: string, accept: Record<string, string[]>) {
   // Native platforms (Capacitor on Android/iOS): use Filesystem + Share
+  let isNative = false;
   try {
     const { Capacitor } = await import("@capacitor/core");
-    if (Capacitor.isNativePlatform()) {
-      const mime = Object.keys(accept)[0] ?? "application/octet-stream";
-      await saveNativeAndShare(blob, suggestedName, mime);
-      return;
-    }
+    isNative = Capacitor.isNativePlatform();
   } catch {
     // Capacitor no disponible → continúa con flujo web
+  }
+  if (isNative) {
+    try {
+      const mime = Object.keys(accept)[0] ?? "application/octet-stream";
+      await saveNativeAndShare(blob, suggestedName, mime);
+      toast.success("Archivo guardado", {
+        description: `${suggestedName} en Documentos/PixCool`,
+      });
+    } catch (err: any) {
+      toast.error("No se pudo guardar el archivo", {
+        description: err?.message ?? "Error desconocido al guardar en el dispositivo.",
+      });
+    }
+    return;
   }
 
   if ("showSaveFilePicker" in window) {
