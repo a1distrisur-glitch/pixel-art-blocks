@@ -78,8 +78,58 @@ const timestamp = () => {
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())} ${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
 };
 
+// Convert Blob to base64 string (without data URL prefix)
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      const comma = result.indexOf(",");
+      resolve(comma >= 0 ? result.slice(comma + 1) : result);
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+// Native (Capacitor) save: write to Documents/PixCool then offer Share sheet.
+async function saveNativeAndShare(blob: Blob, suggestedName: string, mimeType: string) {
+  const { Filesystem, Directory } = await import("@capacitor/filesystem");
+  const { Share } = await import("@capacitor/share");
+  const data = await blobToBase64(blob);
+  const path = `PixCool/${suggestedName}`;
+  const result = await Filesystem.writeFile({
+    path,
+    data,
+    directory: Directory.Documents,
+    recursive: true,
+  });
+  try {
+    await Share.share({
+      title: suggestedName,
+      text: `Archivo guardado en Documentos/PixCool`,
+      url: result.uri,
+      dialogTitle: "Compartir o guardar archivo",
+    });
+  } catch {
+    // Usuario canceló el share — el archivo ya quedó guardado en Documentos/PixCool
+  }
+}
+
 // Helper: save blob using File System Access API with fallback
 async function saveWithPicker(blob: Blob, suggestedName: string, description: string, accept: Record<string, string[]>) {
+  // Native platforms (Capacitor on Android/iOS): use Filesystem + Share
+  try {
+    const { Capacitor } = await import("@capacitor/core");
+    if (Capacitor.isNativePlatform()) {
+      const mime = Object.keys(accept)[0] ?? "application/octet-stream";
+      await saveNativeAndShare(blob, suggestedName, mime);
+      return;
+    }
+  } catch {
+    // Capacitor no disponible → continúa con flujo web
+  }
+
   if ("showSaveFilePicker" in window) {
     try {
       const handle = await (window as any).showSaveFilePicker({
